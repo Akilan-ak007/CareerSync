@@ -12,7 +12,8 @@
         },
         "backend": {
             "root": "backend",
-            "entrypoint": "src/index.ts"
+            "buildCommand": "prisma generate && tsc",
+            "entrypoint": "dist/index.js"
         }
     },
     "rewrites": [
