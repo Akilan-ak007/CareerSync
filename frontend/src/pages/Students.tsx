@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
 import { getGoogleDriveImageUrl } from '../utils/imageUtils';
@@ -179,28 +180,30 @@ export const Students: React.FC = () => {
       setTerminating(true);
       const res = await api.students.terminate(studentToTerminate.id, terminationReason);
       if (res.success) {
+        toast.success(`Student ${studentToTerminate.name} terminated.`);
         setShowTerminateModal(false);
+        setTerminationReason('');
         setStudentToTerminate(null);
         if (selectedStudent?.id === studentToTerminate.id) setSelectedStudent(null);
         loadStudents();
       }
     } catch (err: any) {
-      alert(err.message || 'Termination failed.');
+      toast.error(err.message || 'Termination failed.');
     } finally {
       setTerminating(false);
     }
   };
 
   const handleRestoreStudent = async (studentId: string) => {
-    if (!window.confirm('Re-instate this student to active status?')) return;
     try {
       const res = await api.students.restore(studentId);
       if (res.success) {
+        toast.success('Student profile reinstated.');
         loadStudents();
         if (selectedStudent?.id === studentId) setSelectedStudent(null);
       }
     } catch (err: any) {
-      alert(err.message || 'Restoration failed.');
+      toast.error(err.message || 'Restoration failed.');
     }
   };
 
@@ -296,7 +299,7 @@ export const Students: React.FC = () => {
       setShowFormModal(false);
       loadStudents();
     } catch (err: any) {
-      alert(err.message || 'Action failed.');
+      toast.error(err.message || 'Action failed.');
     }
   };
 
@@ -304,10 +307,11 @@ export const Students: React.FC = () => {
     if (!window.confirm('Delete Student Profile? This action will hide the student from the portal database.')) return;
     try {
       await api.students.delete(id);
+      toast.success('Student profile deleted.');
       loadStudents();
       if (selectedStudent?.id === id) setSelectedStudent(null);
     } catch (err: any) {
-      alert(err.message || 'Failed to delete student.');
+      toast.error(err.message || 'Failed to delete student.');
     }
   };
 
@@ -335,14 +339,14 @@ export const Students: React.FC = () => {
       const payload = importPreview.validRows.map((r: any) => r.data);
       const res = await api.students.importConfirm(payload);
       if (res.success) {
-        alert(res.message);
+        toast.success(res.message);
         setShowImportModal(false);
         setExcelFile(null);
         setImportPreview(null);
         loadStudents();
       }
     } catch (err: any) {
-      alert(err.message || 'Bulk import transaction failed.');
+      toast.error(err.message || 'Bulk import transaction failed.');
     } finally {
       setImporting(false);
     }

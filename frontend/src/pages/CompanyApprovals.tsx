@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { api } from '../services/api.js';
 import {
   Check,
@@ -58,7 +59,7 @@ export const CompanyApprovals: React.FC = () => {
     if (!actionSubmission || !actionType) return;
 
     if (actionType === 'REJECT' && !rejectionReason.trim()) {
-      alert('Please specify a reason for rejection.');
+      toast.error('Please specify a reason for rejection.');
       return;
     }
 
@@ -67,19 +68,19 @@ export const CompanyApprovals: React.FC = () => {
       if (actionType === 'APPROVE') {
         const res = await api.companies.approve(actionSubmission.id);
         if (res.success) {
-          alert('Company successfully approved.');
+          toast.success('Company successfully approved!');
         }
       } else {
         const res = await api.companies.reject(actionSubmission.id, rejectionReason);
         if (res.success) {
-          alert('Company successfully rejected.');
+          toast.success('Company successfully rejected.');
         }
       }
       setActionSubmission(null);
       setActionType(null);
       loadQueue();
     } catch (err: any) {
-      alert(err.message || 'Action failed.');
+      toast.error(err.message || 'Action failed.');
     } finally {
       setActionLoading(false);
     }

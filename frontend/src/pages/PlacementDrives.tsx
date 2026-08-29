@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-hot-toast';
 import { utils, writeFile } from 'xlsx';
 import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
@@ -212,7 +213,7 @@ export const PlacementDrives: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      alert('AI Extraction failed: ' + err.message);
+      toast.error('AI Extraction failed: ' + err.message);
       setUploadStatus(null);
     } finally {
       setIsExtracting(false);
@@ -224,6 +225,7 @@ export const PlacementDrives: React.FC = () => {
     try {
       const res = await api.ats.updateJd(selectedDrive.id, editedJdInfo);
       if (res.success) {
+        toast.success('Job Description updated successfully.');
         setSelectedDrive({
           ...selectedDrive,
           jdExtractedInfo: editedJdInfo
@@ -233,7 +235,7 @@ export const PlacementDrives: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      alert('Failed to save Job Description edits.');
+      toast.error('Failed to save Job Description edits.');
     }
   };
 
@@ -257,7 +259,7 @@ export const PlacementDrives: React.FC = () => {
     // Filter placed students
     const placed = drive.students.filter((s: any) => s.selected === true);
     if (placed.length === 0) {
-      alert("No students are marked as Placed (Selected) in this drive yet.");
+      toast.error("No students are marked as Placed (Selected) in this drive yet.");
       return;
     }
 
@@ -366,13 +368,15 @@ export const PlacementDrives: React.FC = () => {
     try {
       if (editingDriveId) {
         await api.drives.update(editingDriveId, formData);
+        toast.success('Placement drive updated.');
       } else {
         await api.drives.create(formData);
+        toast.success('New placement drive scheduled!');
       }
       setShowFormModal(false);
       loadDrives();
     } catch (err: any) {
-      alert(err.message || 'Action failed.');
+      toast.error(err.message || 'Action failed.');
     }
   };
 
@@ -380,10 +384,11 @@ export const PlacementDrives: React.FC = () => {
     if (!window.confirm('Delete Placement Drive record? This cannot be undone.')) return;
     try {
       await api.drives.delete(id);
+      toast.success('Placement drive record deleted.');
       loadDrives();
       if (selectedDrive?.id === id) setSelectedDrive(null);
     } catch (err: any) {
-      alert(err.message || 'Delete failed.');
+      toast.error(err.message || 'Delete failed.');
     }
   };
 
@@ -408,7 +413,7 @@ export const PlacementDrives: React.FC = () => {
       }
     } catch (err) {
       console.error(err);
-      alert('Failed to load registered student candidates.');
+      toast.error('Failed to load registered student candidates.');
     }
   };
 
@@ -442,12 +447,12 @@ export const PlacementDrives: React.FC = () => {
     try {
       const res = await api.drives.complete(completingDrive.id, completionData);
       if (res.success) {
-        alert(res.message);
+        toast.success(res.message);
         setCompletingDrive(null);
         loadDrives();
       }
     } catch (err: any) {
-      alert(err.message || 'Failed to complete drive transaction.');
+      toast.error(err.message || 'Failed to complete drive transaction.');
     } finally {
       setCompletionLoading(false);
     }

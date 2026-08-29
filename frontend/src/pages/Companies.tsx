@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { toast } from 'react-hot-toast';
 import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
 import { utils, writeFile } from 'xlsx';
@@ -170,20 +171,20 @@ export const Companies: React.FC = () => {
     try {
       if (editingCompanyId) {
         await api.companies.update(editingCompanyId, formData);
-        alert(
+        toast.success(
           isTeam
-            ? 'Company details updated. Since you edited an active profile, it has been resubmitted for Admin approval.'
+            ? 'Company profile updated and resubmitted for Admin approval.'
             : 'Company details successfully updated.'
         );
       } else {
         await api.companies.create(formData);
-        alert('Company submission created. It is now pending Admin approval.');
+        toast.success('Company submission created. Pending Admin approval.');
       }
       setShowFormModal(false);
       loadCompanies();
       if (selectedCompany?.id === editingCompanyId) setSelectedCompany(null);
     } catch (err: any) {
-      alert(err.message || 'Action failed.');
+      toast.error(err.message || 'Action failed.');
     }
   };
 
@@ -207,10 +208,11 @@ export const Companies: React.FC = () => {
       if (deletePermanent) {
         const res = await api.companies.permanentDelete(deleteTargetId);
         if (res.success) {
-          alert('Company permanently purged.');
+          toast.success('Company permanently purged.');
         }
       } else {
         await api.companies.delete(deleteTargetId);
+        toast.success('Company moved to archived directory.');
       }
       setDeleteConfirmOpen(false);
       setDeleteTargetId(null);
@@ -218,7 +220,7 @@ export const Companies: React.FC = () => {
       loadCompanies();
       if (selectedCompany?.id === deleteTargetId) setSelectedCompany(null);
     } catch (err: any) {
-      alert(err.message || 'Operation failed.');
+      toast.error(err.message || 'Operation failed.');
     }
   };
 
@@ -226,17 +228,17 @@ export const Companies: React.FC = () => {
     try {
       const res = await api.companies.restore(id);
       if (res.success) {
-        alert('Company restored successfully.');
+        toast.success('Company restored successfully.');
         loadCompanies();
       }
     } catch (err: any) {
-      alert(err.message || 'Restoration failed.');
+      toast.error(err.message || 'Restoration failed.');
     }
   };
 
   const exportDeletedCompanies = (data: any[]) => {
     if (data.length === 0) {
-      alert("No deleted companies to export.");
+      toast.error("No deleted companies to export.");
       return;
     }
     const formatted = data.map((comp: any, idx: number) => ({
