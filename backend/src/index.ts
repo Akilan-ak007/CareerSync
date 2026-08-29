@@ -24,10 +24,9 @@ import { errorHandler } from './middleware/error.middleware';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enable CORS — allow local dev + any Vercel deployment URL
+// Enable CORS — allow local dev (any port) + any Vercel deployment URL
 const allowedOrigins = [
-  'http://localhost:5173',
-  'http://127.0.0.1:5173',
+  /^http:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/,
   /\.vercel\.app$/,
 ];
 app.use(cors({
