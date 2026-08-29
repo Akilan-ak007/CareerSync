@@ -24,9 +24,20 @@ import { errorHandler } from './middleware/error.middleware.js';
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// Enable CORS with origins (standard Vite is 5173)
+// Enable CORS — allow local dev + any Vercel deployment URL
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  /\.vercel\.app$/,
+];
 app.use(cors({
-  origin: ['http://localhost:5173', 'http://127.0.0.1:5173'],
+  origin: (origin, callback) => {
+    if (!origin) return callback(null, true); // allow server-to-server
+    const allowed = allowedOrigins.some((o) =>
+      typeof o === 'string' ? o === origin : o.test(origin)
+    );
+    callback(allowed ? null : new Error('Not allowed by CORS'), allowed);
+  },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
@@ -67,6 +78,12 @@ app.use((req, res) => {
 // Centralized error handler
 app.use(errorHandler);
 
-app.listen(PORT, () => {
-  console.log(`[API Server] Running in ${process.env.NODE_ENV} mode on port ${PORT}`);
-});
+// Export app for Vercel serverless runtime
+export default app;
+
+// Start local server only outside Vercel environment
+if (process.env.VERCEL !== '1') {
+  app.listen(PORT, () => {
+    console.log(`[API Server] Running in ${process.env.NODE_ENV} mode on port ${PORT}`);
+  });
+}
