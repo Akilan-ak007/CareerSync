@@ -15,10 +15,27 @@ function getHeaders(isMultipart = false) {
 
 // Global response parsing helper
 async function handleResponse(response: Response) {
-  const data = await response.json();
-  if (!response.ok) {
-    throw new Error(data.message || 'Something went wrong.');
+  let data: any = {};
+  const contentType = response.headers.get('content-type');
+  
+  if (contentType && contentType.includes('application/json')) {
+    try {
+      data = await response.json();
+    } catch {
+      data = {};
+    }
+  } else {
+    const text = await response.text();
+    if (!response.ok) {
+      throw new Error(text || `Server Error (${response.status})`);
+    }
+    throw new Error('Unexpected server response format.');
   }
+
+  if (!response.ok) {
+    throw new Error(data.message || `Server Error (${response.status}): ${response.statusText || 'Operation failed'}`);
+  }
+
   return data;
 }
 
