@@ -10,8 +10,8 @@ import {
   getCandidateAtsDetail,
   updateAtsStatus,
   getAtsAnalytics
-} from '../controllers/ats.controller.js';
-import { authenticateToken, requireRoles } from '../middleware/auth.middleware.js';
+} from '../controllers/ats.controller';
+import { authenticateToken, requireRoles } from '../middleware/auth.middleware';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });

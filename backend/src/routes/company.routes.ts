@@ -11,8 +11,8 @@ import {
   getDeletedCompanies,
   restoreCompany,
   permanentlyDeleteCompany
-} from '../controllers/company.controller.js';
-import { authenticateToken, requireRoles } from '../middleware/auth.middleware.js';
+} from '../controllers/company.controller';
+import { authenticateToken, requireRoles } from '../middleware/auth.middleware';
 
 const router = Router();
 

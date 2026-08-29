@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import * as xlsx from 'xlsx';
-import prisma from '../utils/prisma.js';
-import { createAuditLog } from '../utils/audit.js';
+import prisma from '../utils/prisma';
+import { createAuditLog } from '../utils/audit';
 import { PlacementStatus } from '@prisma/client';
 
 // Email & URL Validation Regex

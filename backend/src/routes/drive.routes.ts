@@ -6,8 +6,8 @@ import {
   updateDrive,
   deleteDrive,
   completeDrive
-} from '../controllers/drive.controller.js';
-import { authenticateToken, requireRoles } from '../middleware/auth.middleware.js';
+} from '../controllers/drive.controller';
+import { authenticateToken, requireRoles } from '../middleware/auth.middleware';
 
 const router = Router();
 

@@ -3,8 +3,8 @@ import {
   getAdminDashboard,
   getManagerDashboard,
   getPlacementTeamDashboard
-} from '../controllers/dashboard.controller.js';
-import { authenticateToken, requireRoles } from '../middleware/auth.middleware.js';
+} from '../controllers/dashboard.controller';
+import { authenticateToken, requireRoles } from '../middleware/auth.middleware';
 
 const router = Router();
 

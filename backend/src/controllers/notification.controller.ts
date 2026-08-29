@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../utils/prisma.js';
+import prisma from '../utils/prisma';
 
 export async function getNotifications(req: Request, res: Response, next: NextFunction) {
   try {

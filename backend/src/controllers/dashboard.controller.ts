@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../utils/prisma.js';
+import prisma from '../utils/prisma';
 import { CompanyStatus, DriveStatus, PlacementStatus, UserRole } from '@prisma/client';
 
 // Common helper to aggregate stats

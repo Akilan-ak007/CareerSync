@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../utils/prisma.js';
-import { createAuditLog } from '../utils/audit.js';
+import prisma from '../utils/prisma';
+import { createAuditLog } from '../utils/audit';
 import { DriveStatus, PlacementStatus, OfferStatus } from '@prisma/client';
 
 // 1. Get all drives with filters

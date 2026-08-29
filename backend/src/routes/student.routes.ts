@@ -9,8 +9,8 @@ import {
   uploadPreview,
   importConfirm,
   getDepartments
-} from '../controllers/student.controller.js';
-import { authenticateToken, requireRoles } from '../middleware/auth.middleware.js';
+} from '../controllers/student.controller';
+import { authenticateToken, requireRoles } from '../middleware/auth.middleware';
 
 const router = Router();
 const upload = multer({ storage: multer.memoryStorage() });

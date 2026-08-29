@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import bcrypt from 'bcryptjs';
-import prisma from '../utils/prisma.js';
-import { createAuditLog } from '../utils/audit.js';
+import prisma from '../utils/prisma';
+import { createAuditLog } from '../utils/audit';
 import { UserRole } from '@prisma/client';
 
 // 1. Get users (with filter by role)

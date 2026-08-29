@@ -7,19 +7,19 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Import Routers
-import authRouter from './routes/auth.routes.js';
-import studentRouter from './routes/student.routes.js';
-import companyRouter from './routes/company.routes.js';
-import driveRouter from './routes/drive.routes.js';
-import offerRouter from './routes/offer.routes.js';
-import dashboardRouter from './routes/dashboard.routes.js';
-import auditRouter from './routes/audit.routes.js';
-import userRouter from './routes/user.routes.js';
-import notificationRouter from './routes/notification.routes.js';
-import atsRouter from './routes/ats.routes.js';
+import authRouter from './routes/auth.routes';
+import studentRouter from './routes/student.routes';
+import companyRouter from './routes/company.routes';
+import driveRouter from './routes/drive.routes';
+import offerRouter from './routes/offer.routes';
+import dashboardRouter from './routes/dashboard.routes';
+import auditRouter from './routes/audit.routes';
+import userRouter from './routes/user.routes';
+import notificationRouter from './routes/notification.routes';
+import atsRouter from './routes/ats.routes';
 
 // Error Middleware
-import { errorHandler } from './middleware/error.middleware.js';
+import { errorHandler } from './middleware/error.middleware';
 
 const app = express();
 const PORT = process.env.PORT || 5000;

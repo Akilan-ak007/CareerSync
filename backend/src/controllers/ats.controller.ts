@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import prisma from '../utils/prisma.js';
+import prisma from '../utils/prisma';
 import { Prisma } from '@prisma/client';
-import { createAuditLog } from '../utils/audit.js';
+import { createAuditLog } from '../utils/audit';
 import fs from 'fs';
 import path from 'path';
 
