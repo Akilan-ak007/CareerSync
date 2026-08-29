@@ -27,9 +27,19 @@ import {
 
 export const Dashboard: React.FC = () => {
   const { user } = useAuth();
-  const [stats, setStats] = useState<any>(null);
-  const [atsAnalytics, setAtsAnalytics] = useState<any>(null);
-  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<any>(() => {
+    try {
+      const cached = sessionStorage.getItem('dashboard_stats_cache');
+      return cached ? JSON.parse(cached) : null;
+    } catch { return null; }
+  });
+  const [atsAnalytics, setAtsAnalytics] = useState<any>(() => {
+    try {
+      const cached = sessionStorage.getItem('ats_analytics_cache');
+      return cached ? JSON.parse(cached) : null;
+    } catch { return null; }
+  });
+  const [loading, setLoading] = useState(!stats);
   const [error, setError] = useState<string | null>(null);
 
   const COLORS = ['#988686', '#5C4E4E', '#D1D0D0', '#000000'];
@@ -38,7 +48,7 @@ export const Dashboard: React.FC = () => {
     const fetchStats = async () => {
       if (!user) return;
       try {
-        setLoading(true);
+        if (!stats) setLoading(true);
         const [res, atsRes] = await Promise.all([
           api.dashboard.getStats(user.role),
           user.role === 'ADMIN' ? api.ats.getAnalytics() : Promise.resolve({ success: false, data: null }),
@@ -46,13 +56,15 @@ export const Dashboard: React.FC = () => {
 
         if (res.success) {
           setStats(res.data);
+          sessionStorage.setItem('dashboard_stats_cache', JSON.stringify(res.data));
         }
         if (atsRes && atsRes.success) {
           setAtsAnalytics(atsRes.data);
+          sessionStorage.setItem('ats_analytics_cache', JSON.stringify(atsRes.data));
         }
       } catch (err: any) {
         console.error(err);
-        setError('Failed to aggregate dashboard analytics.');
+        if (!stats) setError('Failed to aggregate dashboard analytics.');
       } finally {
         setLoading(false);
       }

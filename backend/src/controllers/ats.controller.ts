@@ -761,42 +761,44 @@ export async function updateAtsStatus(req: Request, res: Response, next: NextFun
 // 8. Get global ATS Analytics (Admin Dashboard)
 export async function getAtsAnalytics(req: Request, res: Response, next: NextFunction) {
   try {
-    const drivesWithJd = await prisma.placementDrive.count({
-      where: { deletedAt: null, jdFileUrl: { not: null } }
-    });
-
-    const resumesAnalyzed = await prisma.driveStudent.count({
-      where: { atsScore: { not: null } }
-    });
-
-    const shortlistedStudents = await prisma.driveStudent.count({
-      where: { atsStatus: 'Shortlisted' }
-    });
-
-    const activeAtsDrives = await prisma.placementDrive.count({
-      where: { deletedAt: null, jdExtracted: true }
-    });
-
-    // Calculate Average ATS score
-    const avgScoreResult = await prisma.driveStudent.aggregate({
-      where: { atsScore: { not: null } },
-      _avg: {
-        atsScore: true
-      }
-    });
-
-    // Fetch top matching candidate profiles
-    const topMatches = await prisma.driveStudent.findMany({
-      where: { atsScore: { not: null } },
-      include: {
-        student: { include: { department: true } },
-        drive: { include: { company: true } }
-      },
-      orderBy: {
-        atsScore: 'desc'
-      },
-      take: 5
-    });
+    const [
+      drivesWithJd,
+      resumesAnalyzed,
+      shortlistedStudents,
+      activeAtsDrives,
+      avgScoreResult,
+      topMatches
+    ] = await Promise.all([
+      prisma.placementDrive.count({
+        where: { deletedAt: null, jdFileUrl: { not: null } }
+      }),
+      prisma.driveStudent.count({
+        where: { atsScore: { not: null } }
+      }),
+      prisma.driveStudent.count({
+        where: { atsStatus: 'Shortlisted' }
+      }),
+      prisma.placementDrive.count({
+        where: { deletedAt: null, jdExtracted: true }
+      }),
+      prisma.driveStudent.aggregate({
+        where: { atsScore: { not: null } },
+        _avg: {
+          atsScore: true
+        }
+      }),
+      prisma.driveStudent.findMany({
+        where: { atsScore: { not: null } },
+        include: {
+          student: { include: { department: true } },
+          drive: { include: { company: true } }
+        },
+        orderBy: {
+          atsScore: 'desc'
+        },
+        take: 5
+      })
+    ]);
 
     return res.status(200).json({
       success: true,
