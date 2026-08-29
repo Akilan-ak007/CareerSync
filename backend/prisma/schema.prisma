@@ -83,6 +83,8 @@ model Student {
   department          Department      @relation(fields: [departmentId], references: [id])
   studentType         String          // "HOSTEL" | "DAY_SCHOLAR"
   email               String          @unique
+  collegeEmail        String?
+  personalEmail       String?
   phoneNumber         String
   sslcPercentage      Float
   hscPercentage       Float
@@ -91,8 +93,12 @@ model Student {
   resumeUrl           String
   selfIntroUrl        String
   linkedinUrl         String
+  linkedinId          String?
   githubUrl           String
+  githubId            String?
   portfolioUrl        String
+  photoUrl            String?
+  graduationDate      DateTime?
   placementStatus     PlacementStatus @default(NOT_PLACED)
   extraAcademicFields Json?           // Dynamic fields configuration
   offers              Offer[]

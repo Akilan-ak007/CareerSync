@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
+import { getGoogleDriveImageUrl } from '../utils/imageUtils';
 import {
   Search,
   Plus,
@@ -17,8 +18,23 @@ import {
   ExternalLink,
   UploadCloud,
   CheckCircle,
-  FileCheck
+  FileCheck,
+  Globe,
+  Mail,
+  Calendar
 } from 'lucide-react';
+
+const GithubIcon = () => (
+  <svg className="w-4 h-4 text-white shrink-0 fill-current" viewBox="0 0 24 24">
+    <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+  </svg>
+);
+
+const LinkedinIcon = () => (
+  <svg className="w-4 h-4 text-blue-400 shrink-0 fill-current" viewBox="0 0 24 24">
+    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.28 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.75M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+  </svg>
+);
 
 export const Students: React.FC = () => {
   const { user } = useAuth();
@@ -49,6 +65,8 @@ export const Students: React.FC = () => {
     departmentId: '',
     studentType: 'DAY_SCHOLAR',
     email: '',
+    collegeEmail: '',
+    personalEmail: '',
     phoneNumber: '',
     sslcPercentage: '',
     hscPercentage: '',
@@ -57,8 +75,12 @@ export const Students: React.FC = () => {
     resumeUrl: '',
     selfIntroUrl: '',
     linkedinUrl: '',
+    linkedinId: '',
     githubUrl: '',
+    githubId: '',
     portfolioUrl: '',
+    photoUrl: '',
+    graduationDate: '',
     placementStatus: 'NOT_PLACED'
   });
 
@@ -128,6 +150,8 @@ export const Students: React.FC = () => {
       departmentId: departments[0]?.id || '',
       studentType: 'DAY_SCHOLAR',
       email: '',
+      collegeEmail: '',
+      personalEmail: '',
       phoneNumber: '',
       sslcPercentage: '',
       hscPercentage: '',
@@ -136,8 +160,12 @@ export const Students: React.FC = () => {
       resumeUrl: '',
       selfIntroUrl: '',
       linkedinUrl: '',
+      linkedinId: '',
       githubUrl: '',
+      githubId: '',
       portfolioUrl: '',
+      photoUrl: '',
+      graduationDate: '',
       placementStatus: 'NOT_PLACED'
     });
     setShowFormModal(true);
@@ -151,16 +179,22 @@ export const Students: React.FC = () => {
       departmentId: student.departmentId,
       studentType: student.studentType,
       email: student.email,
+      collegeEmail: student.collegeEmail || student.email,
+      personalEmail: student.personalEmail || '',
       phoneNumber: student.phoneNumber,
       sslcPercentage: String(student.sslcPercentage),
       hscPercentage: String(student.hscPercentage),
       ugPercentage: String(student.ugPercentage),
       pgPercentage: student.pgPercentage ? String(student.pgPercentage) : '',
-      resumeUrl: student.resumeUrl,
-      selfIntroUrl: student.selfIntroUrl,
-      linkedinUrl: student.linkedinUrl,
-      githubUrl: student.githubUrl,
-      portfolioUrl: student.portfolioUrl,
+      resumeUrl: student.resumeUrl || '',
+      selfIntroUrl: student.selfIntroUrl || '',
+      linkedinUrl: student.linkedinUrl || '',
+      linkedinId: student.linkedinId || '',
+      githubUrl: student.githubUrl || '',
+      githubId: student.githubId || '',
+      portfolioUrl: student.portfolioUrl || '',
+      photoUrl: student.photoUrl || '',
+      graduationDate: student.graduationDate ? new Date(student.graduationDate).toISOString().split('T')[0] : '',
       placementStatus: student.placementStatus
     });
     setShowFormModal(true);
@@ -361,7 +395,28 @@ export const Students: React.FC = () => {
                     onClick={() => setSelectedStudent(student)}
                     className="hover:bg-brand-card hover:bg-opacity-40 cursor-pointer transition-colors"
                   >
-                    <td className="p-4 font-bold text-white">{student.name}</td>
+                    <td className="p-4 font-bold text-white flex items-center space-x-3">
+                      {student.photoUrl ? (
+                        <img
+                          src={getGoogleDriveImageUrl(student.photoUrl) || ''}
+                          alt={student.name}
+                          className="w-8 h-8 rounded-full object-cover border border-brand-cocoa shrink-0"
+                          onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                        />
+                      ) : (
+                        <div className="w-8 h-8 rounded-full bg-brand-cocoa text-white font-bold text-xs flex items-center justify-center shrink-0">
+                          {student.name.charAt(0)}
+                        </div>
+                      )}
+                      <div>
+                        <div>{student.name}</div>
+                        {student.graduationDate && (
+                          <div className="text-[10px] text-gray-500 font-normal">
+                            Grad: {new Date(student.graduationDate).toLocaleDateString([], { month: 'short', year: 'numeric' })}
+                          </div>
+                        )}
+                      </div>
+                    </td>
                     <td className="p-4 font-mono">{student.registerNumber}</td>
                     <td className="p-4">{student.department?.code}</td>
                     <td className="p-4 font-mono">{student.email}</td>
@@ -458,12 +513,94 @@ export const Students: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs">
             {/* Header info card */}
             <div className="text-center pb-4 border-b border-brand-cocoa border-opacity-20">
-              <div className="w-16 h-16 rounded-full bg-brand-cocoa text-white font-black text-2xl flex items-center justify-center mx-auto mb-3 shadow-md">
-                {selectedStudent.name.charAt(0)}
-              </div>
+              {selectedStudent.photoUrl ? (
+                <img
+                  src={getGoogleDriveImageUrl(selectedStudent.photoUrl) || ''}
+                  alt={selectedStudent.name}
+                  className="w-20 h-20 rounded-full object-cover border-2 border-brand-rosy mx-auto mb-3 shadow-lg"
+                />
+              ) : (
+                <div className="w-20 h-20 rounded-full bg-brand-cocoa text-white font-black text-3xl flex items-center justify-center mx-auto mb-3 shadow-md">
+                  {selectedStudent.name.charAt(0)}
+                </div>
+              )}
               <h3 className="text-base font-bold text-white">{selectedStudent.name}</h3>
               <p className="text-gray-500 font-mono mt-0.5">{selectedStudent.registerNumber}</p>
               <p className="text-[10px] text-brand-rosy font-semibold uppercase tracking-wider mt-1">{selectedStudent.studentType.replace('_', ' ')}</p>
+              {selectedStudent.graduationDate && (
+                <p className="text-[11px] text-gray-400 mt-1 flex items-center justify-center space-x-1">
+                  <Calendar className="w-3.5 h-3.5 text-brand-rosy" />
+                  <span>Graduation: {new Date(selectedStudent.graduationDate).toLocaleDateString([], { month: 'long', year: 'numeric' })}</span>
+                </p>
+              )}
+            </div>
+
+            {/* Email & Contact Info */}
+            <div className="space-y-2 p-3 bg-brand-dark bg-opacity-30 rounded-lg border border-brand-cocoa border-opacity-20">
+              <div className="flex items-center space-x-2 text-gray-300">
+                <Mail className="w-4 h-4 text-brand-rosy shrink-0" />
+                <div className="truncate">
+                  <span className="text-[10px] text-gray-500 block uppercase font-bold">College Email</span>
+                  <span className="font-mono text-white">{selectedStudent.collegeEmail || selectedStudent.email}</span>
+                </div>
+              </div>
+              {selectedStudent.personalEmail && (
+                <div className="flex items-center space-x-2 text-gray-300 pt-1 border-t border-brand-cocoa border-opacity-15">
+                  <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+                  <div className="truncate">
+                    <span className="text-[10px] text-gray-500 block uppercase font-bold">Personal Email</span>
+                    <span className="font-mono text-white">{selectedStudent.personalEmail}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Social & Portfolio Links */}
+            <div className="grid grid-cols-1 gap-2">
+              {selectedStudent.githubUrl || selectedStudent.githubId ? (
+                <a
+                  href={selectedStudent.githubUrl || `https://github.com/${selectedStudent.githubId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                >
+                  <span className="flex items-center space-x-2">
+                    <GithubIcon />
+                    <span>GitHub: <span className="font-mono text-brand-rosy">{selectedStudent.githubId || 'Profile'}</span></span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                </a>
+              ) : null}
+
+              {selectedStudent.linkedinUrl || selectedStudent.linkedinId ? (
+                <a
+                  href={selectedStudent.linkedinUrl || `https://linkedin.com/in/${selectedStudent.linkedinId}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                >
+                  <span className="flex items-center space-x-2">
+                    <LinkedinIcon />
+                    <span>LinkedIn: <span className="font-mono text-blue-300">{selectedStudent.linkedinId || 'Profile'}</span></span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                </a>
+              ) : null}
+
+              {selectedStudent.portfolioUrl ? (
+                <a
+                  href={selectedStudent.portfolioUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                >
+                  <span className="flex items-center space-x-2">
+                    <Globe className="w-4 h-4 text-emerald-400" />
+                    <span>Portfolio Website</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                </a>
+              ) : null}
             </div>
 
             {/* Academic Section */}
@@ -599,12 +736,21 @@ export const Students: React.FC = () => {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Email Address *</label>
+                  <label className="text-gray-400 font-semibold">College Email ID *</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value, collegeEmail: e.target.value })}
+                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-gray-400 font-semibold">Personal Email ID</label>
+                  <input
+                    type="email"
+                    value={formData.personalEmail}
+                    onChange={(e) => setFormData({ ...formData, personalEmail: e.target.value })}
                     className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
                   />
                 </div>
@@ -615,6 +761,76 @@ export const Students: React.FC = () => {
                     required
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
+                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-gray-400 font-semibold">Graduation Date</label>
+                  <input
+                    type="date"
+                    value={formData.graduationDate}
+                    onChange={(e) => setFormData({ ...formData, graduationDate: e.target.value })}
+                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  />
+                </div>
+              </div>
+
+              {/* Student Photo Section */}
+              <div className="space-y-2 border-t border-brand-cocoa border-opacity-20 pt-4">
+                <label className="text-gray-400 font-semibold flex items-center justify-between">
+                  <span>Student Photo (Google Drive Link / Image URL)</span>
+                  {formData.photoUrl && (
+                    <span className="text-[10px] text-brand-rosy">Auto-converts Google Drive Share Links</span>
+                  )}
+                </label>
+                <div className="flex items-center space-x-3">
+                  <input
+                    type="url"
+                    placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
+                    value={formData.photoUrl}
+                    onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
+                    className="flex-1 bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  />
+                  {formData.photoUrl && (
+                    <img
+                      src={getGoogleDriveImageUrl(formData.photoUrl) || ''}
+                      alt="Preview"
+                      className="w-9 h-9 rounded-full object-cover border border-brand-rosy shrink-0"
+                      onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+                    />
+                  )}
+                </div>
+              </div>
+
+              {/* GitHub, LinkedIn, Portfolio Links & IDs */}
+              <div className="grid grid-cols-2 gap-4 border-t border-brand-cocoa border-opacity-20 pt-4">
+                <div className="space-y-1">
+                  <label className="text-gray-400 font-semibold">GitHub ID / Username</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. akilan-dev"
+                    value={formData.githubId}
+                    onChange={(e) => setFormData({ ...formData, githubId: e.target.value, githubUrl: e.target.value ? `https://github.com/${e.target.value}` : formData.githubUrl })}
+                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                  />
+                </div>
+                <div className="space-y-1">
+                  <label className="text-gray-400 font-semibold">LinkedIn ID / Username</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. akilan-profile"
+                    value={formData.linkedinId}
+                    onChange={(e) => setFormData({ ...formData, linkedinId: e.target.value, linkedinUrl: e.target.value ? `https://linkedin.com/in/${e.target.value}` : formData.linkedinUrl })}
+                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                  />
+                </div>
+                <div className="space-y-1 col-span-2">
+                  <label className="text-gray-400 font-semibold">Portfolio Website Link</label>
+                  <input
+                    type="url"
+                    placeholder="https://akilan.dev"
+                    value={formData.portfolioUrl}
+                    onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
                     className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
                   />
                 </div>
