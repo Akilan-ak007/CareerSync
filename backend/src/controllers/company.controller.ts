@@ -208,6 +208,8 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
         foundedYear: data.foundedYear ? parseInt(data.foundedYear, 10) : null,
         companyType: data.companyType || '',
         linkedinUrl: data.linkedinUrl || '',
+        ctcLakhs: data.ctcLakhs ? parseFloat(data.ctcLakhs) : null,
+        sampleResumeUrl: data.sampleResumeUrl || '',
         status: initialStatus,
         createdById: user.userId,
       }
@@ -230,7 +232,7 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
       entity: 'Company',
       entityId: company.id,
       ipAddress: req.ip,
-      newValue: company
+      newValue: company,
     });
 
     // If submitted by Manager or Placement Team, create notification for Admins
@@ -252,6 +254,9 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
 
     return res.status(201).json({
       success: true,
+      message: user.role === 'ADMIN'
+        ? 'Company created and approved successfully.'
+        : 'Company profile created and submitted for Admin approval.',
       data: company
     });
   } catch (error) {
@@ -259,7 +264,7 @@ export async function createCompany(req: Request, res: Response, next: NextFunct
   }
 }
 
-// 4. Update Company
+// 4. Update Company Profile
 export async function updateCompany(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params;
@@ -271,8 +276,8 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
     }
 
     const company = await prisma.company.findUnique({ where: { id } });
-    if (!company || company.deletedAt) {
-      return res.status(404).json({ success: false, message: 'Company not found.' });
+    if (!company) {
+      return res.status(404).json({ success: false, message: 'Company profile not found.' });
     }
 
     // Role check: Admin can edit anything. Placement Team can edit their own. Manager cannot edit.
@@ -312,8 +317,8 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
         website: data.website,
         companySize: data.companySize,
         companyAddress: data.companyAddress,
-        latitude: data.latitude ? parseFloat(data.latitude) : undefined,
-        longitude: data.longitude ? parseFloat(data.longitude) : undefined,
+        latitude: data.latitude !== undefined ? (data.latitude ? parseFloat(data.latitude) : null) : undefined,
+        longitude: data.longitude !== undefined ? (data.longitude ? parseFloat(data.longitude) : null) : undefined,
         formattedAddress: data.formattedAddress,
         googleMapsUrl: data.googleMapsUrl,
         contactPersonName: data.contactPersonName,
@@ -325,6 +330,8 @@ export async function updateCompany(req: Request, res: Response, next: NextFunct
         foundedYear: data.foundedYear ? parseInt(data.foundedYear, 10) : undefined,
         companyType: data.companyType,
         linkedinUrl: data.linkedinUrl,
+        ctcLakhs: data.ctcLakhs !== undefined ? (data.ctcLakhs ? parseFloat(data.ctcLakhs) : null) : undefined,
+        sampleResumeUrl: data.sampleResumeUrl,
         status: statusToSet,
       }
     });

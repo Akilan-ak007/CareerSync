@@ -23,6 +23,7 @@ import {
   XCircle,
   HelpCircle,
   RefreshCw,
+  FileText,
   Download
 } from 'lucide-react';
 
@@ -71,7 +72,9 @@ export const Companies: React.FC = () => {
     industry: '',
     foundedYear: '',
     companyType: '',
-    linkedinUrl: ''
+    linkedinUrl: '',
+    ctcLakhs: '',
+    sampleResumeUrl: ''
   });
 
   const loadCompanies = async () => {
@@ -128,7 +131,9 @@ export const Companies: React.FC = () => {
       industry: '',
       foundedYear: '',
       companyType: '',
-      linkedinUrl: ''
+      linkedinUrl: '',
+      ctcLakhs: '',
+      sampleResumeUrl: ''
     });
     setShowFormModal(true);
   };
@@ -153,7 +158,9 @@ export const Companies: React.FC = () => {
       industry: comp.industry || '',
       foundedYear: comp.foundedYear ? String(comp.foundedYear) : '',
       companyType: comp.companyType || '',
-      linkedinUrl: comp.linkedinUrl || ''
+      linkedinUrl: comp.linkedinUrl || '',
+      ctcLakhs: comp.ctcLakhs ? String(comp.ctcLakhs) : '',
+      sampleResumeUrl: comp.sampleResumeUrl || ''
     });
     setShowFormModal(true);
   };
@@ -548,10 +555,29 @@ export const Companies: React.FC = () => {
                 <p className="leading-relaxed">{selectedCompany.description || 'No description provided.'}</p>
                 <div className="grid grid-cols-2 gap-3 text-gray-500 mt-2 font-medium">
                   <div>Company Size: <span className="text-white block mt-0.5">{selectedCompany.companySize}</span></div>
+                  {selectedCompany.ctcLakhs && (
+                    <div>Offered CTC: <span className="text-brand-rosy font-bold block mt-0.5">{selectedCompany.ctcLakhs} LPA</span></div>
+                  )}
                   {selectedCompany.foundedYear && (
                     <div>Founded In: <span className="text-white block mt-0.5">{selectedCompany.foundedYear}</span></div>
                   )}
                 </div>
+                {selectedCompany.sampleResumeUrl && (
+                  <div className="pt-2">
+                    <a
+                      href={selectedCompany.sampleResumeUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                    >
+                      <span className="flex items-center space-x-2">
+                        <FileText className="w-4 h-4 text-brand-rosy" />
+                        <span>Sample Resume / JD Document</span>
+                      </span>
+                      <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                    </a>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -681,6 +707,33 @@ export const Companies: React.FC = () => {
                         placeholder="e.g. Software Development"
                         value={formData.industry}
                         onChange={(e) => setFormData({ ...formData, industry: e.target.value })}
+                        className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-gray-400 font-semibold flex items-center justify-between">
+                        <span>Offered CTC (LPA)</span>
+                        <span className="text-[10px] text-brand-rosy">e.g. 12.5</span>
+                      </label>
+                      <input
+                        type="number"
+                        step="0.1"
+                        placeholder="e.g. 12.5"
+                        value={formData.ctcLakhs}
+                        onChange={(e) => setFormData({ ...formData, ctcLakhs: e.target.value })}
+                        className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-gray-400 font-semibold">Sample Resume / JD Link</label>
+                      <input
+                        type="url"
+                        placeholder="https://drive.google.com/file/d/..."
+                        value={formData.sampleResumeUrl}
+                        onChange={(e) => setFormData({ ...formData, sampleResumeUrl: e.target.value })}
                         className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
                       />
                     </div>

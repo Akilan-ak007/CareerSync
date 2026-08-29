@@ -128,6 +128,8 @@ model Company {
   foundedYear         Int?
   companyType         String?
   linkedinUrl         String?
+  ctcLakhs            Float?              // Offered CTC in LPA
+  sampleResumeUrl     String?             // Sample Resume / JD Document URL
   status              CompanyStatus       @default(PENDING_APPROVAL)
   createdById         String
   createdBy           User                @relation("CompanyCreator", fields: [createdById], references: [id])
