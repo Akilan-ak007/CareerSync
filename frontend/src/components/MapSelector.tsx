@@ -77,32 +77,97 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
     }
   };
 
-  // Geocoding Search: Text address -> Coordinates (OSM Nominatim API)
+  // Geocoding Search: Text address -> Coordinates (Progressive fallback algorithm)
   const handleSearch = async (e?: React.FormEvent | React.MouseEvent | React.KeyboardEvent) => {
     if (e) e.preventDefault();
-    if (!searchQuery.trim()) return;
+    const rawQuery = searchQuery.trim();
+    if (!rawQuery) return;
 
     setSearching(true);
     try {
-      const res = await fetch(
-        `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=1`
-      );
-      const data = await res.json();
-      if (data && data.length > 0) {
-        const lat = parseFloat(data[0].lat);
-        const lon = parseFloat(data[0].lon);
-        const displayName = data[0].display_name;
+      // 1. Check if user pasted a Google Maps URL with lat,lon or q=
+      const urlCoords = rawQuery.match(/@(-?\d+\.\d+),(-?\d+\.\d+)|q=(-?\d+\.\d+),(-?\d+\.\d+)/);
+      if (urlCoords) {
+        const lat = parseFloat(urlCoords[1] || urlCoords[3]);
+        const lon = parseFloat(urlCoords[2] || urlCoords[4]);
+        if (!isNaN(lat) && !isNaN(lon)) {
+          setPosition([lat, lon]);
+          setAddress(rawQuery);
+          onChange({
+            latitude: lat,
+            longitude: lon,
+            formattedAddress: rawQuery,
+            googleMapsUrl: `https://www.google.com/maps?q=${lat},${lon}`,
+          });
+          setSearching(false);
+          return;
+        }
+      }
 
-        setPosition([lat, lon]);
-        setAddress(displayName);
+      // 2. Build progressive search query candidate list (full string -> stripped comma parts)
+      const parts = rawQuery.split(',').map(p => p.trim()).filter(Boolean);
+      const queriesToTry: string[] = [rawQuery];
+
+      // Add combinations by dropping left-most terms (e.g. company name)
+      for (let i = 1; i < parts.length; i++) {
+        const sub = parts.slice(i).join(', ');
+        if (sub.length > 3) queriesToTry.push(sub);
+      }
+
+      let foundLat: number | null = null;
+      let foundLon: number | null = null;
+
+      for (const q of queriesToTry) {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(q)}&limit=1`
+          );
+          const data = await res.json();
+          if (data && data.length > 0) {
+            foundLat = parseFloat(data[0].lat);
+            foundLon = parseFloat(data[0].lon);
+            break;
+          }
+        } catch {
+          // Continue to next sub-query candidate
+        }
+      }
+
+      // 3. Fallback: Photon API if Nominatim query failed
+      if (foundLat === null) {
+        try {
+          const photonQuery = parts.slice(Math.max(0, parts.length - 3)).join(', ');
+          const pRes = await fetch(`https://photon.komoot.io/api/?q=${encodeURIComponent(photonQuery)}&limit=1`);
+          const pData = await pRes.json();
+          if (pData && pData.features && pData.features.length > 0) {
+            const coords = pData.features[0].geometry.coordinates;
+            foundLon = coords[0];
+            foundLat = coords[1];
+          }
+        } catch {
+          // ignore fallback error
+        }
+      }
+
+      if (foundLat !== null && foundLon !== null) {
+        setPosition([foundLat, foundLon]);
+        setAddress(rawQuery); // Keep user's full detailed address
         onChange({
-          latitude: lat,
-          longitude: lon,
-          formattedAddress: displayName,
-          googleMapsUrl: `https://www.google.com/maps?q=${lat},${lon}`,
+          latitude: foundLat,
+          longitude: foundLon,
+          formattedAddress: rawQuery,
+          googleMapsUrl: `https://www.google.com/maps?q=${foundLat},${foundLon}`,
         });
       } else {
-        alert('Location not found. Try refining your search query.');
+        // Fallback: Default to Bangalore center if unknown, allow manual marker placement
+        setPosition([12.9716, 77.5946]);
+        setAddress(rawQuery);
+        onChange({
+          latitude: 12.9716,
+          longitude: 77.5946,
+          formattedAddress: rawQuery,
+          googleMapsUrl: `https://www.google.com/maps?q=12.9716,77.5946`,
+        });
       }
     } catch (error) {
       console.error('Geocoding search failed:', error);
