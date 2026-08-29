@@ -1,0 +1,247 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  PLACEMENT_TEAM
+}
+
+enum CompanyStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  ARCHIVED
+}
+
+enum DriveStatus {
+  UPCOMING
+  ONGOING
+  COMPLETED
+  CANCELLED
+}
+
+enum PlacementStatus {
+  NOT_PLACED
+  PLACED
+  MULTIPLE_OFFERS
+  WITHDRAWN
+}
+
+enum OfferStatus {
+  OFFERED
+  ACCEPTED
+  REJECTED
+  JOINED
+}
+
+model Role {
+  id    String   @id @default(uuid())
+  name  UserRole @unique
+  users User[]
+}
+
+model User {
+  id                 String              @id @default(uuid())
+  email              String              @unique
+  passwordHash       String
+  name               String
+  roleId             String
+  role               Role                @relation(fields: [roleId], references: [id])
+  createdCompanies   Company[]           @relation("CompanyCreator")
+  submissions        CompanySubmission[] @relation("Submitter")
+  reviewedSubmissions CompanySubmission[] @relation("Reviewer")
+  auditLogs          AuditLog[]
+  notifications      Notification[]
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+  deletedAt          DateTime?
+}
+
+model Department {
+  id        String    @id @default(uuid())
+  name      String    @unique
+  code      String    @unique
+  students  Student[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Student {
+  id                  String          @id @default(uuid())
+  name                String
+  registerNumber      String          @unique
+  departmentId        String
+  department          Department      @relation(fields: [departmentId], references: [id])
+  studentType         String          // "HOSTEL" | "DAY_SCHOLAR"
+  email               String          @unique
+  phoneNumber         String
+  sslcPercentage      Float
+  hscPercentage       Float
+  ugPercentage        Float
+  pgPercentage        Float?
+  resumeUrl           String
+  selfIntroUrl        String
+  linkedinUrl         String
+  githubUrl           String
+  portfolioUrl        String
+  placementStatus     PlacementStatus @default(NOT_PLACED)
+  extraAcademicFields Json?           // Dynamic fields configuration
+  offers              Offer[]
+  drives              DriveStudent[]
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  deletedAt           DateTime?
+}
+
+model Company {
+  id                  String              @id @default(uuid())
+  name                String              @unique
+  location            String
+  website             String
+  companySize         String
+  companyAddress      String
+  latitude            Float?
+  longitude           Float?
+  formattedAddress    String?
+  googleMapsUrl       String?
+  contactPersonName   String
+  contactPersonPhone  String
+  contactPersonEmail  String
+  description         String
+  logoUrl             String?
+  industry            String?
+  foundedYear         Int?
+  companyType         String?
+  linkedinUrl         String?
+  status              CompanyStatus       @default(PENDING_APPROVAL)
+  createdById         String
+  createdBy           User                @relation("CompanyCreator", fields: [createdById], references: [id])
+  submissions         CompanySubmission[]
+  drives              PlacementDrive[]
+  offers              Offer[]
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+  deletedAt           DateTime?
+}
+
+model CompanySubmission {
+  id              String        @id @default(uuid())
+  companyId       String
+  company         Company       @relation(fields: [companyId], references: [id])
+  status          CompanyStatus
+  submittedById   String
+  submittedBy     User          @relation("Submitter", fields: [submittedById], references: [id])
+  reviewedById    String?
+  reviewedBy      User?         @relation("Reviewer", fields: [reviewedById], references: [id])
+  rejectionReason String?
+  createdAt       DateTime      @default(now())
+}
+
+model PlacementDrive {
+  id                  String         @id @default(uuid())
+  companyId           String
+  company             Company        @relation(fields: [companyId], references: [id])
+  driveDate           DateTime
+  driveLocation       String
+  driveType           String         // "ON_CAMPUS" | "OFF_CAMPUS" | "VIRTUAL"
+  jobRole             String
+  eligibleDepartments String[]       // Array of department codes
+  minimumCgpa         Float
+  maximumBacklogs     Int
+  status              DriveStatus    @default(UPCOMING)
+  offersCount         Int            @default(0)
+  ctc                 Float          // CTC in LPA
+  highestCtc          Float?
+  averageCtc          Float?
+  lowestCtc           Float?
+  
+  // Job Description Fields
+  jdFileName          String?
+  jdFileSize          Int?
+  jdFileUrl           String?
+  jdText              String?
+  jdExtracted         Boolean        @default(false)
+  jdExtractedInfo     Json?
+
+  students            DriveStudent[]
+  offers              Offer[]
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  deletedAt           DateTime?
+}
+
+model DriveStudent {
+  id           String         @id @default(uuid())
+  driveId      String
+  drive        PlacementDrive @relation(fields: [driveId], references: [id])
+  studentId    String
+  student      Student        @relation(fields: [studentId], references: [id])
+  participated Boolean        @default(false)
+  selected     Boolean        @default(false)
+
+  // ATS Matching Fields
+  atsScore         Int?
+  skillsMatch      Int?
+  educationMatch   String?        // "Match" | "Partial" | "No Match"
+  experienceMatch  String?        // "Match" | "Partial" | "No Match"
+  requirementMatch Int?
+  keywordMatch     Int?
+  resumeStrength   Int?
+  missingSkills    String[]
+  matchingSkills   String[]
+  matchingKeywords String[]
+  missingKeywords  String[]
+  recommendations  String[]
+  atsStatus        String         @default("Pending") // "Shortlisted" | "Review" | "Pending"
+
+  createdAt    DateTime       @default(now())
+}
+
+model Offer {
+  id          String         @id @default(uuid())
+  studentId   String
+  student     Student        @relation(fields: [studentId], references: [id])
+  companyId   String
+  company     Company        @relation(fields: [companyId], references: [id])
+  driveId     String?
+  drive       PlacementDrive? @relation(fields: [driveId], references: [id])
+  jobRole     String
+  ctc         Float          // in LPA
+  offerDate   DateTime
+  status      OfferStatus    @default(OFFERED)
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  deletedAt   DateTime?
+}
+
+model AuditLog {
+  id        String   @id @default(uuid())
+  userId    String?
+  user      User?    @relation(fields: [userId], references: [id])
+  role      String
+  action    String
+  entity    String
+  entityId  String
+  ipAddress String?
+  oldValue  Json?
+  newValue  Json?
+  createdAt DateTime @default(now())
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  title     String
+  message   String
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
