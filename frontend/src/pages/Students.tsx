@@ -37,16 +37,35 @@ const LinkedinIcon = () => (
 );
 
 const StudentAvatar: React.FC<{ name: string; photoUrl?: string | null; className?: string }> = ({ name, photoUrl, className = 'w-8 h-8 text-xs' }) => {
-  const [imgError, setImgError] = useState(false);
-  const src = photoUrl ? getGoogleDriveImageUrl(photoUrl) : null;
+  const [retryCount, setRetryCount] = useState(0);
 
-  if (src && !imgError) {
+  const getSource = () => {
+    if (!photoUrl || typeof photoUrl !== 'string') return null;
+    const clean = photoUrl.trim();
+    if (!clean) return null;
+
+    const match = clean.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
+    const fileId = match ? match[1] : (clean.length >= 25 ? clean : null);
+
+    if (fileId) {
+      if (retryCount === 0) return `https://lh3.googleusercontent.com/d/${fileId}`;
+      if (retryCount === 1) return `https://drive.google.com/uc?export=view&id=${fileId}`;
+      if (retryCount === 2) return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    }
+
+    return clean;
+  };
+
+  const src = getSource();
+
+  if (src && retryCount < 3) {
     return (
       <img
         src={src}
         alt={name}
+        referrerPolicy="no-referrer"
         className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0 bg-brand-dark`}
-        onError={() => setImgError(true)}
+        onError={() => setRetryCount(prev => prev + 1)}
       />
     );
   }
