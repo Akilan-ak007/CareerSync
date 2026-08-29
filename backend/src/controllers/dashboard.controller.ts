@@ -2,35 +2,68 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prisma';
 import { CompanyStatus, DriveStatus, PlacementStatus, UserRole } from '@prisma/client';
 
-// Common helper to aggregate stats
+// Common helper to aggregate stats in parallel
 async function getCoreStats() {
-  const totalStudents = await prisma.student.count({ where: { deletedAt: null } });
-  const totalCompanies = await prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.APPROVED } });
-  const pendingCompanies = await prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.PENDING_APPROVAL } });
-  const approvedCompanies = await prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.APPROVED } });
-  const rejectedCompanies = await prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.REJECTED } });
-  
-  const completedDrives = await prisma.placementDrive.count({ where: { deletedAt: null, status: DriveStatus.COMPLETED } });
-  const upcomingDrives = await prisma.placementDrive.count({ where: { deletedAt: null, status: DriveStatus.UPCOMING } });
-  const ongoingDrives = await prisma.placementDrive.count({ where: { deletedAt: null, status: DriveStatus.ONGOING } });
-
-  const totalOffers = await prisma.offer.count({ where: { deletedAt: null } });
-
-  const placedStudents = await prisma.student.count({
-    where: {
-      deletedAt: null,
-      placementStatus: { in: [PlacementStatus.PLACED, PlacementStatus.MULTIPLE_OFFERS] },
-    },
-  });
+  const [
+    totalStudents,
+    totalCompanies,
+    pendingCompanies,
+    approvedCompanies,
+    rejectedCompanies,
+    completedDrives,
+    upcomingDrives,
+    ongoingDrives,
+    totalOffers,
+    placedStudents,
+    activeOffers,
+    totalPlacementTeam,
+    departments,
+    offersByCompany,
+  ] = await Promise.all([
+    prisma.student.count({ where: { deletedAt: null } }),
+    prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.APPROVED } }),
+    prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.PENDING_APPROVAL } }),
+    prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.APPROVED } }),
+    prisma.company.count({ where: { deletedAt: null, status: CompanyStatus.REJECTED } }),
+    prisma.placementDrive.count({ where: { deletedAt: null, status: DriveStatus.COMPLETED } }),
+    prisma.placementDrive.count({ where: { deletedAt: null, status: DriveStatus.UPCOMING } }),
+    prisma.placementDrive.count({ where: { deletedAt: null, status: DriveStatus.ONGOING } }),
+    prisma.offer.count({ where: { deletedAt: null } }),
+    prisma.student.count({
+      where: {
+        deletedAt: null,
+        placementStatus: { in: [PlacementStatus.PLACED, PlacementStatus.MULTIPLE_OFFERS] },
+      },
+    }),
+    prisma.offer.findMany({
+      where: { deletedAt: null },
+      select: { ctc: true },
+    }),
+    prisma.user.count({
+      where: {
+        deletedAt: null,
+        role: { name: UserRole.PLACEMENT_TEAM },
+      },
+    }),
+    prisma.department.findMany({
+      include: {
+        students: {
+          where: { deletedAt: null },
+        },
+      },
+    }),
+    prisma.offer.groupBy({
+      by: ['companyId'],
+      where: { deletedAt: null },
+      _count: { id: true },
+      orderBy: { _count: { id: 'desc' } },
+      take: 5,
+    }),
+  ]);
 
   const placementPercentage = totalStudents > 0 ? parseFloat(((placedStudents / totalStudents) * 100).toFixed(1)) : 0;
 
   // CTC stats
-  const activeOffers = await prisma.offer.findMany({
-    where: { deletedAt: null },
-    select: { ctc: true },
-  });
-
   const ctcValues = activeOffers.map(o => o.ctc);
   const highestPackage = ctcValues.length > 0 ? Math.max(...ctcValues) : 0;
   const lowestPackage = ctcValues.length > 0 ? Math.min(...ctcValues) : 0;
@@ -38,22 +71,7 @@ async function getCoreStats() {
     ? parseFloat((ctcValues.reduce((a, b) => a + b, 0) / ctcValues.length).toFixed(1))
     : 0;
 
-  const totalPlacementTeam = await prisma.user.count({
-    where: {
-      deletedAt: null,
-      role: { name: UserRole.PLACEMENT_TEAM }
-    }
-  });
-
   // Department-wise placements
-  const departments = await prisma.department.findMany({
-    include: {
-      students: {
-        where: { deletedAt: null }
-      }
-    }
-  });
-
   const deptStats = departments.map(d => {
     const total = d.students.length;
     const placed = d.students.filter(s =>
@@ -90,20 +108,6 @@ async function getCoreStats() {
   ];
 
   // Company offers chart (top 5 companies)
-  const offersByCompany = await prisma.offer.groupBy({
-    by: ['companyId'],
-    where: { deletedAt: null },
-    _count: {
-      id: true
-    },
-    orderBy: {
-      _count: {
-        id: 'desc'
-      }
-    },
-    take: 5
-  });
-
   const companyOffers = await Promise.all(offersByCompany.map(async (item) => {
     const comp = await prisma.company.findUnique({
       where: { id: item.companyId },
@@ -156,23 +160,22 @@ async function getCoreStats() {
 
 export async function getAdminDashboard(req: Request, res: Response, next: NextFunction) {
   try {
-    const stats = await getCoreStats();
-
-    // Admin can also see recent activity (Audit Logs) and recent approvals
-    const recentLogs = await prisma.auditLog.findMany({
-      include: {
-        user: { select: { name: true, email: true } }
-      },
-      orderBy: { createdAt: 'desc' },
-      take: 5
-    });
-
-    const recentPending = await prisma.company.findMany({
-      where: { status: CompanyStatus.PENDING_APPROVAL, deletedAt: null },
-      include: { createdBy: { select: { name: true } } },
-      orderBy: { createdAt: 'desc' },
-      take: 5
-    });
+    const [stats, recentLogs, recentPending] = await Promise.all([
+      getCoreStats(),
+      prisma.auditLog.findMany({
+        include: {
+          user: { select: { name: true, email: true } }
+        },
+        orderBy: { createdAt: 'desc' },
+        take: 5
+      }),
+      prisma.company.findMany({
+        where: { status: CompanyStatus.PENDING_APPROVAL, deletedAt: null },
+        include: { createdBy: { select: { name: true } } },
+        orderBy: { createdAt: 'desc' },
+        take: 5
+      })
+    ]);
 
     return res.status(200).json({
       success: true,

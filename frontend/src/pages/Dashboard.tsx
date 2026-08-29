@@ -39,15 +39,16 @@ export const Dashboard: React.FC = () => {
       if (!user) return;
       try {
         setLoading(true);
-        const res = await api.dashboard.getStats(user.role);
+        const [res, atsRes] = await Promise.all([
+          api.dashboard.getStats(user.role),
+          user.role === 'ADMIN' ? api.ats.getAnalytics() : Promise.resolve({ success: false, data: null }),
+        ]);
+
         if (res.success) {
           setStats(res.data);
         }
-        if (user.role === 'ADMIN') {
-          const atsRes = await api.ats.getAnalytics();
-          if (atsRes.success) {
-            setAtsAnalytics(atsRes.data);
-          }
+        if (atsRes && atsRes.success) {
+          setAtsAnalytics(atsRes.data);
         }
       } catch (err: any) {
         console.error(err);
