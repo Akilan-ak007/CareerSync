@@ -8,7 +8,9 @@ import {
   deleteStudent,
   uploadPreview,
   importConfirm,
-  getDepartments
+  getDepartments,
+  terminateStudent,
+  restoreStudent
 } from '../controllers/student.controller';
 import { authenticateToken, requireRoles } from '../middleware/auth.middleware';
 
@@ -17,6 +19,10 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Departments
 router.get('/departments', authenticateToken, getDepartments);
+
+// Termination routes
+router.post('/:id/terminate', authenticateToken, requireRoles(['ADMIN']), terminateStudent);
+router.post('/:id/restore', authenticateToken, requireRoles(['ADMIN']), restoreStudent);
 
 // Students CRUD
 router.get('/', authenticateToken, getStudents);

@@ -34,6 +34,7 @@ enum PlacementStatus {
   PLACED
   MULTIPLE_OFFERS
   WITHDRAWN
+  TERMINATED
 }
 
 enum OfferStatus {
@@ -100,6 +101,9 @@ model Student {
   photoUrl            String?
   graduationDate      DateTime?
   placementStatus     PlacementStatus @default(NOT_PLACED)
+  isTerminated        Boolean         @default(false)
+  terminationReason   String?
+  terminatedAt        DateTime?
   extraAcademicFields Json?           // Dynamic fields configuration
   offers              Offer[]
   drives              DriveStudent[]

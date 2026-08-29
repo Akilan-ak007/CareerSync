@@ -65,6 +65,7 @@ export const api = {
       departmentId?: string;
       studentType?: string;
       placementStatus?: string;
+      isTerminated?: string;
       minUg?: string;
       page?: number;
       limit?: number;
@@ -107,6 +108,21 @@ export const api = {
     delete: async (id: string) => {
       const res = await fetch(`${API_BASE_URL}/students/${id}`, {
         method: 'DELETE',
+        headers: getHeaders(),
+      });
+      return handleResponse(res);
+    },
+    terminate: async (id: string, reason: string) => {
+      const res = await fetch(`${API_BASE_URL}/students/${id}/terminate`, {
+        method: 'POST',
+        headers: getHeaders(),
+        body: JSON.stringify({ reason }),
+      });
+      return handleResponse(res);
+    },
+    restore: async (id: string) => {
+      const res = await fetch(`${API_BASE_URL}/students/${id}/restore`, {
+        method: 'POST',
         headers: getHeaders(),
       });
       return handleResponse(res);

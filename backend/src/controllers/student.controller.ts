@@ -28,9 +28,20 @@ export async function getStudents(req: Request, res: Response, next: NextFunctio
     const offset = (pageNum - 1) * limitNum;
 
     // Build Prisma query filters
+    const { isTerminated } = req.query;
+
     const whereClause: any = {
       deletedAt: null,
     };
+
+    if (isTerminated !== undefined) {
+      whereClause.isTerminated = isTerminated === 'true';
+    } else if (placementStatus === 'TERMINATED') {
+      whereClause.isTerminated = true;
+    } else {
+      // Default to active non-terminated students unless explicitly filtering
+      whereClause.isTerminated = false;
+    }
 
     if (search) {
       whereClause.OR = [
@@ -644,6 +655,97 @@ export async function importConfirm(req: Request, res: Response, next: NextFunct
       data: {
         importedCount: result.count,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 9. Terminate Student (Admin only)
+export async function terminateStudent(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const user = req.user;
+
+    if (user?.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Only Admins can terminate student records.' });
+    }
+
+    const student = await prisma.student.findUnique({ where: { id } });
+    if (!student || student.deletedAt) {
+      return res.status(404).json({ success: false, message: 'Student profile not found.' });
+    }
+
+    const updated = await prisma.student.update({
+      where: { id },
+      data: {
+        isTerminated: true,
+        placementStatus: PlacementStatus.TERMINATED,
+        terminationReason: reason || 'Terminated by Administrator',
+        terminatedAt: new Date()
+      }
+    });
+
+    await createAuditLog({
+      userId: user.userId,
+      role: user.role,
+      action: 'TERMINATE_STUDENT',
+      entity: 'Student',
+      entityId: id,
+      ipAddress: req.ip,
+      newValue: { reason: updated.terminationReason, registerNumber: student.registerNumber }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Student ${student.name} (${student.registerNumber}) has been terminated.`,
+      data: updated
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
+// 10. Restore / Reinstate Terminated Student (Admin only)
+export async function restoreStudent(req: Request, res: Response, next: NextFunction) {
+  try {
+    const { id } = req.params;
+    const user = req.user;
+
+    if (user?.role !== 'ADMIN') {
+      return res.status(403).json({ success: false, message: 'Only Admins can restore terminated students.' });
+    }
+
+    const student = await prisma.student.findUnique({ where: { id } });
+    if (!student || student.deletedAt) {
+      return res.status(404).json({ success: false, message: 'Student profile not found.' });
+    }
+
+    const updated = await prisma.student.update({
+      where: { id },
+      data: {
+        isTerminated: false,
+        placementStatus: PlacementStatus.NOT_PLACED,
+        terminationReason: null,
+        terminatedAt: null
+      }
+    });
+
+    await createAuditLog({
+      userId: user.userId,
+      role: user.role,
+      action: 'RESTORE_STUDENT',
+      entity: 'Student',
+      entityId: id,
+      ipAddress: req.ip,
+      newValue: { registerNumber: student.registerNumber }
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: `Student ${student.name} has been reinstated to active status.`,
+      data: updated
     });
   } catch (error) {
     next(error);

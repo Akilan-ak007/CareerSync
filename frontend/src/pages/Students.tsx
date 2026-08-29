@@ -21,7 +21,10 @@ import {
   FileCheck,
   Globe,
   Mail,
-  Calendar
+  Calendar,
+  UserX,
+  ShieldAlert,
+  RotateCcw
 } from 'lucide-react';
 
 const GithubIcon = () => (
@@ -127,6 +130,13 @@ export const Students: React.FC = () => {
   const [importing, setImporting] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
 
+  // Termination States
+  const [viewTerminated, setViewTerminated] = useState(false);
+  const [showTerminateModal, setShowTerminateModal] = useState(false);
+  const [studentToTerminate, setStudentToTerminate] = useState<any>(null);
+  const [terminationReason, setTerminationReason] = useState('');
+  const [terminating, setTerminating] = useState(false);
+
   // Fetch list
   const loadStudents = async () => {
     try {
@@ -135,7 +145,8 @@ export const Students: React.FC = () => {
         search,
         departmentId: selectedDept,
         studentType: selectedType,
-        placementStatus: selectedStatus,
+        placementStatus: viewTerminated ? 'TERMINATED' : selectedStatus,
+        isTerminated: viewTerminated ? 'true' : 'false',
         page,
         limit: 10,
         sortBy,
@@ -154,7 +165,44 @@ export const Students: React.FC = () => {
 
   useEffect(() => {
     loadStudents();
-  }, [search, selectedDept, selectedType, selectedStatus, sortBy, sortOrder, page]);
+  }, [search, selectedDept, selectedType, selectedStatus, sortBy, sortOrder, page, viewTerminated]);
+
+  const handleOpenTerminate = (student: any) => {
+    setStudentToTerminate(student);
+    setTerminationReason('');
+    setShowTerminateModal(true);
+  };
+
+  const handleConfirmTerminate = async () => {
+    if (!studentToTerminate) return;
+    try {
+      setTerminating(true);
+      const res = await api.students.terminate(studentToTerminate.id, terminationReason);
+      if (res.success) {
+        setShowTerminateModal(false);
+        setStudentToTerminate(null);
+        if (selectedStudent?.id === studentToTerminate.id) setSelectedStudent(null);
+        loadStudents();
+      }
+    } catch (err: any) {
+      alert(err.message || 'Termination failed.');
+    } finally {
+      setTerminating(false);
+    }
+  };
+
+  const handleRestoreStudent = async (studentId: string) => {
+    if (!window.confirm('Re-instate this student to active status?')) return;
+    try {
+      const res = await api.students.restore(studentId);
+      if (res.success) {
+        loadStudents();
+        if (selectedStudent?.id === studentId) setSelectedStudent(null);
+      }
+    } catch (err: any) {
+      alert(err.message || 'Restoration failed.');
+    }
+  };
 
   useEffect(() => {
     const loadDepts = async () => {
@@ -331,6 +379,28 @@ export const Students: React.FC = () => {
           )}
         </div>
 
+        {/* Tab Selector: Active vs Terminated List */}
+        <div className="flex border-b border-brand-cocoa border-opacity-25 pb-px font-mono text-[10px]">
+          <button
+            onClick={() => { setViewTerminated(false); setPage(1); }}
+            className={`pb-2 px-4 font-bold border-b-2 transition-all flex items-center space-x-2 ${
+              !viewTerminated ? 'border-brand-rosy text-white font-black' : 'border-transparent text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <User className="w-3.5 h-3.5" />
+            <span>ACTIVE STUDENTS</span>
+          </button>
+          <button
+            onClick={() => { setViewTerminated(true); setPage(1); }}
+            className={`pb-2 px-4 font-bold border-b-2 transition-all flex items-center space-x-2 ${
+              viewTerminated ? 'border-red-500 text-red-300 font-black' : 'border-transparent text-gray-500 hover:text-gray-300'
+            }`}
+          >
+            <UserX className="w-3.5 h-3.5 text-red-400" />
+            <span>TERMINATED STUDENTS LIST</span>
+          </button>
+        </div>
+
         {/* Filters and Search toolbar */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-30 rounded-xl">
           <div className="relative">
@@ -450,14 +520,16 @@ export const Students: React.FC = () => {
                     <td className="p-4">
                       <span
                         className={`px-2.5 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider ${
-                          student.placementStatus === 'PLACED'
+                          student.placementStatus === 'TERMINATED' || student.isTerminated
+                            ? 'bg-red-950 text-red-300 border-red-800'
+                            : student.placementStatus === 'PLACED'
                             ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
                             : student.placementStatus === 'MULTIPLE_OFFERS'
                             ? 'bg-blue-950 text-blue-300 border-blue-800'
                             : 'bg-zinc-900 text-zinc-400 border-zinc-700'
                         }`}
                       >
-                        {student.placementStatus.replace('_', ' ')}
+                        {student.isTerminated ? 'TERMINATED' : student.placementStatus.replace('_', ' ')}
                       </span>
                     </td>
                     <td className="p-4 text-center" onClick={(e) => e.stopPropagation()}>
@@ -471,20 +543,40 @@ export const Students: React.FC = () => {
                         </button>
                         {isAdmin && (
                           <>
-                            <button
-                              onClick={() => handleOpenEdit(student)}
-                              className="text-gray-400 hover:text-brand-rosy transition-colors"
-                              title="Edit"
-                            >
-                              <Edit2 className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(student.id)}
-                              className="text-gray-500 hover:text-red-400 transition-colors"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
+                            {!student.isTerminated ? (
+                              <>
+                                <button
+                                  onClick={() => handleOpenEdit(student)}
+                                  className="text-gray-400 hover:text-brand-rosy transition-colors"
+                                  title="Edit"
+                                >
+                                  <Edit2 className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleOpenTerminate(student)}
+                                  className="text-amber-500 hover:text-red-400 transition-colors"
+                                  title="Terminate Student"
+                                >
+                                  <UserX className="w-4 h-4" />
+                                </button>
+                                <button
+                                  onClick={() => handleDelete(student.id)}
+                                  className="text-gray-500 hover:text-red-400 transition-colors"
+                                  title="Delete"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() => handleRestoreStudent(student.id)}
+                                className="bg-emerald-950 hover:bg-emerald-800 text-emerald-300 px-2.5 py-1 rounded text-[10px] font-bold border border-emerald-800 flex items-center space-x-1 transition-all"
+                                title="Re-instate / Restore Student"
+                              >
+                                <RotateCcw className="w-3 h-3" />
+                                <span>Re-instate</span>
+                              </button>
+                            )}
                           </>
                         )}
                       </div>
@@ -543,11 +635,32 @@ export const Students: React.FC = () => {
               <h3 className="text-base font-bold text-white">{selectedStudent.name}</h3>
               <p className="text-gray-500 font-mono mt-0.5">{selectedStudent.registerNumber}</p>
               <p className="text-[10px] text-brand-rosy font-semibold uppercase tracking-wider mt-1">{selectedStudent.studentType.replace('_', ' ')}</p>
-              {selectedStudent.graduationDate && !isNaN(new Date(selectedStudent.graduationDate).getTime()) && new Date(selectedStudent.graduationDate).getFullYear() > 1970 && (
-                <p className="text-[11px] text-gray-400 mt-1 flex items-center justify-center space-x-1">
-                  <Calendar className="w-3.5 h-3.5 text-brand-rosy" />
-                  <span>Graduation: {new Date(selectedStudent.graduationDate).toLocaleDateString([], { month: 'long', year: 'numeric' })}</span>
-                </p>
+              {selectedStudent.isTerminated && (
+                <div className="mt-3 p-3 bg-red-950 bg-opacity-60 border border-red-800 rounded-lg text-left space-y-1">
+                  <div className="flex items-center space-x-1.5 text-red-300 font-bold text-xs uppercase tracking-wider">
+                    <ShieldAlert className="w-4 h-4" />
+                    <span>TERMINATED STUDENT RECORD</span>
+                  </div>
+                  {selectedStudent.terminatedAt && (
+                    <div className="text-[10px] text-red-400 font-mono">
+                      Terminated on: {new Date(selectedStudent.terminatedAt).toLocaleDateString()}
+                    </div>
+                  )}
+                  {selectedStudent.terminationReason && (
+                    <div className="text-[11px] text-gray-300 italic pt-1 border-t border-red-900 border-opacity-40">
+                      "{selectedStudent.terminationReason}"
+                    </div>
+                  )}
+                  {isAdmin && (
+                    <button
+                      onClick={() => handleRestoreStudent(selectedStudent.id)}
+                      className="mt-2 w-full bg-emerald-950 hover:bg-emerald-800 text-emerald-300 py-1.5 rounded text-xs font-bold border border-emerald-800 flex items-center justify-center space-x-1.5 transition-all"
+                    >
+                      <RotateCcw className="w-3.5 h-3.5" />
+                      <span>Re-instate / Restore Student</span>
+                    </button>
+                  )}
+                </div>
               )}
             </div>
 
@@ -1108,6 +1221,63 @@ export const Students: React.FC = () => {
                 </div>
               </div>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Terminate Student Modal */}
+      {showTerminateModal && studentToTerminate && (
+        <div className="fixed inset-0 bg-brand-black bg-opacity-80 z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-brand-card border border-red-900 border-opacity-50 rounded-xl shadow-2xl p-6 space-y-5 text-xs text-gray-300">
+            <div className="flex justify-between items-center border-b border-red-900 border-opacity-30 pb-3">
+              <div className="flex items-center space-x-2 text-red-400 font-bold text-sm">
+                <ShieldAlert className="w-5 h-5" />
+                <span>Terminate Student Profile</span>
+              </div>
+              <button onClick={() => setShowTerminateModal(false)} className="text-gray-400 hover:text-white">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <p className="text-gray-300">
+                Are you sure you want to terminate <strong className="text-white">{studentToTerminate.name}</strong> ({studentToTerminate.registerNumber})?
+              </p>
+              <p className="text-[11px] text-gray-400 leading-relaxed">
+                Terminating a student will move their record out of active placement repository to the <strong className="text-red-300">Terminated Students List</strong> and set their placement status to <span className="text-red-400 font-bold font-mono">TERMINATED</span>.
+              </p>
+
+              <div className="space-y-1 pt-2">
+                <label className="text-gray-400 font-semibold block">Termination Reason *</label>
+                <textarea
+                  rows={3}
+                  required
+                  placeholder="e.g. Disciplinary action, policy breach, academic drop out..."
+                  value={terminationReason}
+                  onChange={(e) => setTerminationReason(e.target.value)}
+                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none focus:border-red-500 resize-none text-xs"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end space-x-3 pt-3 border-t border-brand-cocoa border-opacity-20">
+              <button
+                type="button"
+                onClick={() => setShowTerminateModal(false)}
+                className="bg-brand-dark hover:bg-brand-cocoa text-gray-300 px-4 py-2 rounded-lg font-semibold"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                disabled={terminating || !terminationReason.trim()}
+                onClick={handleConfirmTerminate}
+                className="bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 px-5 py-2 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center space-x-1.5 shadow-md"
+              >
+                <UserX className="w-4 h-4" />
+                <span>{terminating ? 'Terminating...' : 'Confirm Termination'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
