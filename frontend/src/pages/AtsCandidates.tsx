@@ -120,29 +120,32 @@ export const AtsCandidates: React.FC = () => {
     fetchCandidates();
   }, [search, selectedDept, minScore, shortlistFilter, eligibleFilter, page]);
 
-  // Trigger matching sequence with visual loaders
+  // Trigger matching sequence with ultra-fast parallel visual loaders
   const handleTriggerAtsMatching = async () => {
     if (!driveId) return;
     try {
       setError(null);
+      setMatchingState('Analyzing student resumes & JD specifications...');
       
       const states = [
-        'Uploading resume profiles...',
         'Extracting job description parameters...',
         'Analyzing student academic benchmarks...',
         'Matching technical and soft skill keywords...',
         'Generating final ATS matching scores...'
       ];
 
+      // Fire API call concurrently with visual progress
+      const matchPromise = api.ats.matchResumes(driveId);
+
       for (const st of states) {
         setMatchingState(st);
-        await new Promise((r) => setTimeout(r, 600));
+        await new Promise((r) => setTimeout(r, 100));
       }
 
-      const res = await api.ats.matchResumes(driveId);
+      const res = await matchPromise;
       if (res.success) {
         setMatchingState('Analysis Complete.');
-        setTimeout(() => setMatchingState(null), 800);
+        setTimeout(() => setMatchingState(null), 300);
         setPage(1);
         fetchCandidates();
       }

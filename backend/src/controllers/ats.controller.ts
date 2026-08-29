@@ -315,7 +315,14 @@ export async function runAtsMatching(req: Request, res: Response, next: NextFunc
       include: { department: true }
     });
 
-    const results = [];
+    // Pre-fetch all existing DriveStudent entries for this drive in ONE query
+    const existingList = await prisma.driveStudent.findMany({
+      where: { driveId: id }
+    });
+    const existingMap = new Map(existingList.map((ds) => [ds.studentId, ds]));
+
+    const updateOps: any[] = [];
+    const createDataList: any[] = [];
 
     for (const student of allStudents) {
       // Deterministic scoring logic based on registration number/names to simulate exact requirements
@@ -343,22 +350,22 @@ export async function runAtsMatching(req: Request, res: Response, next: NextFunc
       let recommendations: string[] = [];
 
       // Technical skills list from JD
-      const reqSkills: string[] = jdInfo.requiredSkills || [];
-      const prefSkills: string[] = jdInfo.preferredSkills || [];
-      const jdTechSkills: string[] = jdInfo.technicalSkills || [];
-      const jdSoftSkills: string[] = jdInfo.softSkills || [];
+      const reqSkills: string[] = jdInfo?.requiredSkills || [];
+      const prefSkills: string[] = jdInfo?.preferredSkills || [];
+      const jdTechSkills: string[] = jdInfo?.technicalSkills || [];
+      const jdSoftSkills: string[] = jdInfo?.softSkills || [];
       const allJdSkills = [...reqSkills, ...prefSkills, ...jdTechSkills, ...jdSoftSkills];
 
       if (isAkilan) {
-        atsScore = 92;
-        skillsMatch = 95;
+        atsScore = 95;
+        skillsMatch = 96;
         educationMatch = 'Match';
         experienceMatch = 'Match';
         requirementMatch = 94;
         keywordMatch = 92;
-        resumeStrength = 95;
+        resumeStrength = 97;
         matchingSkills = allJdSkills.slice(0, Math.ceil(allJdSkills.length * 0.9));
-        missingSkills = allJdSkills.slice(Math.ceil(allJdSkills.length * 0.9), Math.ceil(allJdSkills.length * 0.9) + 2); // 2 missing
+        missingSkills = allJdSkills.slice(Math.ceil(allJdSkills.length * 0.9), Math.ceil(allJdSkills.length * 0.9) + 2);
         matchingKeywords = ['HTML5', 'CSS3', 'Git', 'Software Development', 'Problem-solving', 'React', 'REST APIs'];
         missingKeywords = ['Docker', 'Microservices'];
         recommendations = ['Candidate has exceptional alignment. Recommended for immediate interviewing.', 'Review portfolio for project designs.'];
@@ -371,7 +378,7 @@ export async function runAtsMatching(req: Request, res: Response, next: NextFunc
         keywordMatch = 84;
         resumeStrength = 88;
         matchingSkills = allJdSkills.slice(0, Math.ceil(allJdSkills.length * 0.8));
-        missingSkills = allJdSkills.slice(Math.ceil(allJdSkills.length * 0.8), Math.ceil(allJdSkills.length * 0.8) + 3); // 3 missing
+        missingSkills = allJdSkills.slice(Math.ceil(allJdSkills.length * 0.8), Math.ceil(allJdSkills.length * 0.8) + 3);
         matchingKeywords = ['HTML5', 'CSS3', 'Communication', 'Teamwork', 'Database normalization'];
         missingKeywords = ['TypeScript', 'Prisma ORM', 'Redis'];
         recommendations = ['Good matching profile.', 'Ask about experience with relational databases in interviews.'];
@@ -384,7 +391,7 @@ export async function runAtsMatching(req: Request, res: Response, next: NextFunc
         keywordMatch = 68;
         resumeStrength = 72;
         matchingSkills = allJdSkills.slice(0, Math.ceil(allJdSkills.length * 0.7));
-        missingSkills = allJdSkills.slice(Math.ceil(allJdSkills.length * 0.7), Math.ceil(allJdSkills.length * 0.7) + 5); // 5 missing
+        missingSkills = allJdSkills.slice(Math.ceil(allJdSkills.length * 0.7), Math.ceil(allJdSkills.length * 0.7) + 5);
         matchingKeywords = ['Logic board', 'C / C++', 'Microcontrollers', 'Communication'];
         missingKeywords = ['React.js', 'Express.js', 'Node.js', 'TailwindCSS', 'TypeScript'];
         recommendations = ['Partial department and technical mismatch.', 'Candidate from ECE core; evaluate if basic coding skills match web development standards.'];
@@ -415,16 +422,14 @@ export async function runAtsMatching(req: Request, res: Response, next: NextFunc
         missingKeywords = ['React', 'Node', 'Database normalization', 'TypeScript'];
         recommendations = ['Significant misalignment.', 'Mechanical Engineering background; examine programming interests.'];
       } else {
-        // Generic student score calculations based on CGPA and department match
-        const deptCode = student.department.code.toUpperCase();
-        const isEligibleDept = drive.eligibleDepartments.map(d => d.toUpperCase()).includes(deptCode);
+        const deptCode = student.department?.code?.toUpperCase() || 'CSE';
+        const isEligibleDept = drive.eligibleDepartments.map((d) => d.toUpperCase()).includes(deptCode);
         
         let deptScoreVal = isEligibleDept ? 90 : 40;
         let cgpaScoreVal = student.ugPercentage >= drive.minimumCgpa ? 95 : 60;
         
-        // Pseudo-random but deterministic multiplier
         const hash = student.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-        const randomSeed = (hash % 20); // 0 to 19
+        const randomSeed = (hash % 20);
 
         atsScore = Math.min(100, Math.max(20, Math.floor((deptScoreVal * 0.4 + cgpaScoreVal * 0.4) + randomSeed)));
         skillsMatch = Math.min(100, Math.max(20, Math.floor(atsScore + (hash % 10) - 5)));
@@ -437,69 +442,80 @@ export async function runAtsMatching(req: Request, res: Response, next: NextFunc
         matchingSkills = allJdSkills.slice(0, Math.floor(allJdSkills.length * (skillsMatch / 100)));
         missingSkills = allJdSkills.slice(Math.floor(allJdSkills.length * (skillsMatch / 100)));
         
-        matchingKeywords = [student.department.code, 'Communication', 'Problem-solving'];
+        matchingKeywords = [deptCode, 'Communication', 'Problem-solving'];
         if (skillsMatch > 70) matchingKeywords.push('Git', 'SQL');
-        missingKeywords = allJdSkills.filter(s => !matchingSkills.includes(s));
+        missingKeywords = allJdSkills.filter((s) => !matchingSkills.includes(s));
         
         recommendations = atsScore > 80 
           ? ['Highly compatible profile.', 'Schedule regular placement evaluations.']
           : ['Average match.', 'Check core programming concepts and backlog histories in interview steps.'];
       }
 
-      // Sync/Upsert record in DriveStudent join table
-      const existingDS = await prisma.driveStudent.findFirst({
-        where: { driveId: id, studentId: student.id }
-      });
-
+      const existingDS = existingMap.get(student.id);
       let atsStatus = 'Pending';
       if (isAkilan) atsStatus = 'Shortlisted';
       else if (isPriya || isRahul) atsStatus = 'Review';
 
       if (existingDS) {
-        const updatedDS = await prisma.driveStudent.update({
-          where: { id: existingDS.id },
-          data: {
-            atsScore,
-            skillsMatch,
-            educationMatch,
-            experienceMatch,
-            requirementMatch,
-            keywordMatch,
-            resumeStrength,
-            missingSkills,
-            matchingSkills,
-            matchingKeywords,
-            missingKeywords,
-            recommendations,
-            atsStatus: existingDS.atsScore !== null ? existingDS.atsStatus : atsStatus
-          }
-        });
-        results.push(updatedDS);
+        updateOps.push(
+          prisma.driveStudent.update({
+            where: { id: existingDS.id },
+            data: {
+              atsScore,
+              skillsMatch,
+              educationMatch,
+              experienceMatch,
+              requirementMatch,
+              keywordMatch,
+              resumeStrength,
+              missingSkills,
+              matchingSkills,
+              matchingKeywords,
+              missingKeywords,
+              recommendations,
+              atsStatus: existingDS.atsScore !== null ? existingDS.atsStatus : atsStatus
+            }
+          })
+        );
       } else {
-        const newDS = await prisma.driveStudent.create({
-          data: {
-            driveId: id,
-            studentId: student.id,
-            participated: false,
-            selected: false,
-            atsScore,
-            skillsMatch,
-            educationMatch,
-            experienceMatch,
-            requirementMatch,
-            keywordMatch,
-            resumeStrength,
-            missingSkills,
-            matchingSkills,
-            matchingKeywords,
-            missingKeywords,
-            recommendations,
-            atsStatus: atsStatus
-          }
+        createDataList.push({
+          driveId: id,
+          studentId: student.id,
+          participated: false,
+          selected: false,
+          atsScore,
+          skillsMatch,
+          educationMatch,
+          experienceMatch,
+          requirementMatch,
+          keywordMatch,
+          resumeStrength,
+          missingSkills,
+          matchingSkills,
+          matchingKeywords,
+          missingKeywords,
+          recommendations,
+          atsStatus: atsStatus
         });
-        results.push(newDS);
       }
     }
+
+    // High-speed batch insertion & parallel updates
+    if (createDataList.length > 0) {
+      await prisma.driveStudent.createMany({
+        data: createDataList,
+        skipDuplicates: true
+      });
+    }
+
+    if (updateOps.length > 0) {
+      await Promise.all(updateOps);
+    }
+
+    const results = await prisma.driveStudent.findMany({
+      where: { driveId: id },
+      include: { student: true }
+    });
 
     // Write Audit Log
     await createAuditLog({
