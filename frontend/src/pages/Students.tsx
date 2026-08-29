@@ -949,8 +949,8 @@ export const Students: React.FC = () => {
               <div className="flex flex-col items-center justify-center border-2 border-dashed border-brand-cocoa border-opacity-40 rounded-xl py-12 px-6 bg-brand-dark bg-opacity-20 text-center hover:border-brand-rosy transition-all">
                 <UploadCloud className="w-12 h-12 text-brand-rosy mb-4" />
                 <p className="text-sm font-bold text-white">Upload your Excel student roster</p>
-                <p className="text-[10px] text-gray-500 mt-1 max-w-sm">
-                  Roster must have headings: <span className="font-mono text-brand-rosy">name, register_number, department, student_type, email, phone_number, sslc_percentage, hsc_percentage, ug_percentage, pg_percentage, resume_url</span>
+                <p className="text-[10px] text-gray-400 mt-2 max-w-lg leading-relaxed">
+                  Supported Headings: <span className="font-mono text-brand-rosy">name, register_number, department, student_type, email, college_email, personal_email, phone_number, sslc_percentage, hsc_percentage, ug_percentage, photo_url (Google Drive), graduation_date, github_id, linkedin_id, portfolio_url</span>
                 </p>
                 <input
                   type="file"

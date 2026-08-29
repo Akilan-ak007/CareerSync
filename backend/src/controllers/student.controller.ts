@@ -450,6 +450,8 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
         department: String(row.department).trim(),
         studentType: String(row.student_type).trim().toUpperCase() === 'HOSTEL' ? 'HOSTEL' : 'DAY_SCHOLAR',
         email: String(row.email).trim(),
+        collegeEmail: row.college_email ? String(row.college_email).trim() : String(row.email).trim(),
+        personalEmail: row.personal_email ? String(row.personal_email).trim() : null,
         phoneNumber: String(row.phone_number).trim(),
         sslcPercentage: sslc,
         hscPercentage: hsc,
@@ -457,9 +459,13 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
         pgPercentage: pg,
         resumeUrl: row.resume_url || '',
         selfIntroUrl: row.self_intro_url || '',
-        linkedinUrl: row.linkedin_url || '',
-        githubUrl: row.github_url || '',
+        linkedinUrl: row.linkedin_url || (row.linkedin_id ? `https://linkedin.com/in/${row.linkedin_id}` : ''),
+        linkedinId: row.linkedin_id || null,
+        githubUrl: row.github_url || (row.github_id ? `https://github.com/${row.github_id}` : ''),
+        githubId: row.github_id || null,
         portfolioUrl: row.portfolio_url || '',
+        photoUrl: row.photo_url || row.drive_photo_url || null,
+        graduationDate: row.graduation_date ? new Date(row.graduation_date) : null,
       };
 
       if (errors.length > 0) {
@@ -527,6 +533,8 @@ export async function importConfirm(req: Request, res: Response, next: NextFunct
             departmentId: deptId,
             studentType: item.studentType,
             email: item.email,
+            collegeEmail: item.collegeEmail || item.email,
+            personalEmail: item.personalEmail || null,
             phoneNumber: item.phoneNumber,
             sslcPercentage: item.sslcPercentage,
             hscPercentage: item.hscPercentage,
@@ -535,8 +543,12 @@ export async function importConfirm(req: Request, res: Response, next: NextFunct
             resumeUrl: item.resumeUrl || '',
             selfIntroUrl: item.selfIntroUrl || '',
             linkedinUrl: item.linkedinUrl || '',
+            linkedinId: item.linkedinId || null,
             githubUrl: item.githubUrl || '',
+            githubId: item.githubId || null,
             portfolioUrl: item.portfolioUrl || '',
+            photoUrl: item.photoUrl || null,
+            graduationDate: item.graduationDate ? new Date(item.graduationDate) : null,
           },
         });
         createdStudents.push(student);
