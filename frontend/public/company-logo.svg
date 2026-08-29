@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="100%" height="100%">
+  <rect width="120" height="120" rx="28" fill="#463c3b" />
+  
+  <!-- Outer Building Frame -->
+  <rect x="36" y="22" width="48" height="76" rx="12" ry="12" fill="none" stroke="#b2a2a0" stroke-width="6.5" />
+  
+  <!-- 3x3 Window Dots Grid -->
+  <circle cx="48" cy="38" r="3.2" fill="#b2a2a0" />
+  <circle cx="60" cy="38" r="3.2" fill="#b2a2a0" />
+  <circle cx="72" cy="38" r="3.2" fill="#b2a2a0" />
+  
+  <circle cx="48" cy="50" r="3.2" fill="#b2a2a0" />
+  <circle cx="60" cy="50" r="3.2" fill="#b2a2a0" />
+  <circle cx="72" cy="50" r="3.2" fill="#b2a2a0" />
+  
+  <circle cx="48" cy="62" r="3.2" fill="#b2a2a0" />
+  <circle cx="60" cy="62" r="3.2" fill="#b2a2a0" />
+  <circle cx="72" cy="62" r="3.2" fill="#b2a2a0" />
+  
+  <!-- Door Arch -->
+  <path d="M 52 98 V 83 A 8 8 0 0 1 68 83 V 98" fill="none" stroke="#b2a2a0" stroke-width="6.5" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

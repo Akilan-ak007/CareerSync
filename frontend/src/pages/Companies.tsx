@@ -425,12 +425,8 @@ export const Companies: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-lg bg-brand-cocoa bg-opacity-20 border border-brand-cocoa border-opacity-30 flex items-center justify-center text-white">
-                        {comp.logoUrl ? (
-                          <img src={comp.logoUrl} alt="Logo" className="w-8 h-8 object-contain rounded" />
-                        ) : (
-                          <Building className="w-5 h-5 text-brand-rosy" />
-                        )}
+                      <div className="w-10 h-10 rounded-lg bg-brand-cocoa bg-opacity-20 border border-brand-cocoa border-opacity-30 flex items-center justify-center text-white overflow-hidden">
+                        <img src="/company-logo.svg" alt={comp.name} className="w-full h-full object-cover rounded-lg" />
                       </div>
                       <div>
                         <h4 className="text-sm font-bold text-white leading-tight">{comp.name}</h4>
@@ -535,12 +531,8 @@ export const Companies: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-gray-400">
             {/* Header branding */}
             <div className="text-center pb-4 border-b border-brand-cocoa border-opacity-20">
-              <div className="w-16 h-16 rounded-xl bg-brand-cocoa bg-opacity-35 text-white flex items-center justify-center mx-auto mb-3 shadow-md border border-brand-cocoa border-opacity-20">
-                {selectedCompany.logoUrl ? (
-                  <img src={selectedCompany.logoUrl} alt="Logo" className="w-12 h-12 object-contain" />
-                ) : (
-                  <Building className="w-8 h-8 text-brand-rosy" />
-                )}
+              <div className="w-16 h-16 rounded-xl bg-brand-cocoa bg-opacity-35 text-white flex items-center justify-center mx-auto mb-3 shadow-md border border-brand-cocoa border-opacity-20 overflow-hidden">
+                <img src="/company-logo.svg" alt={selectedCompany.name} className="w-full h-full object-cover rounded-xl" />
               </div>
               <h3 className="text-base font-bold text-white">{selectedCompany.name}</h3>
               <p className="text-[10px] text-gray-500 mt-1">{selectedCompany.industry || 'Corporate Partner'}</p>
