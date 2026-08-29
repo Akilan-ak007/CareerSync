@@ -37,43 +37,39 @@ const LinkedinIcon = () => (
 );
 
 const StudentAvatar: React.FC<{ name: string; photoUrl?: string | null; className?: string }> = ({ name, photoUrl, className = 'w-8 h-8 text-xs' }) => {
-  const [retryCount, setRetryCount] = useState(0);
+  const [useFallback, setUseFallback] = useState(false);
 
-  const getSource = () => {
+  const getRealDriveUrl = () => {
     if (!photoUrl || typeof photoUrl !== 'string') return null;
     const clean = photoUrl.trim();
     if (!clean) return null;
 
-    const match = clean.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
-    const fileId = match ? match[1] : (clean.length >= 25 ? clean : null);
+    // Detect mock test IDs like "1Photo_..."
+    if (clean.includes('1Photo_') || clean.includes('resume_')) return null;
 
-    if (fileId) {
-      if (retryCount === 0) return `https://lh3.googleusercontent.com/d/${fileId}`;
-      if (retryCount === 1) return `https://drive.google.com/uc?export=view&id=${fileId}`;
-      if (retryCount === 2) return `https://drive.google.com/thumbnail?id=${fileId}&sz=w1000`;
+    const match = clean.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
+    if (match && match[1]) {
+      return `https://lh3.googleusercontent.com/d/${match[1]}`;
     }
 
-    return clean;
+    if (clean.startsWith('http://') || clean.startsWith('https://')) {
+      return clean;
+    }
+
+    return null;
   };
 
-  const src = getSource();
-
-  if (src && retryCount < 3) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        referrerPolicy="no-referrer"
-        className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0 bg-brand-dark`}
-        onError={() => setRetryCount(prev => prev + 1)}
-      />
-    );
-  }
+  const directUrl = getRealDriveUrl();
+  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Student')}&background=5e3838&color=ffffff&size=256&bold=true`;
 
   return (
-    <div className={`${className} rounded-full bg-brand-cocoa text-white font-bold flex items-center justify-center shrink-0`}>
-      {name ? name.charAt(0).toUpperCase() : 'S'}
-    </div>
+    <img
+      src={(!useFallback && directUrl) ? directUrl : fallbackUrl}
+      alt={name}
+      referrerPolicy="no-referrer"
+      className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0 bg-brand-dark shadow-sm`}
+      onError={() => setUseFallback(true)}
+    />
   );
 };
 
