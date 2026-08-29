@@ -502,28 +502,57 @@ export async function importConfirm(req: Request, res: Response, next: NextFunct
       });
     }
 
-    // Pre-fetch departments to link them, or create missing departments
+    // Pre-fetch departments and index by both code and name (case-insensitive)
     const allDepts = await prisma.department.findMany();
-    const deptMap = new Map(allDepts.map(d => [d.code.toUpperCase(), d.id]));
+    const deptMap = new Map<string, string>();
+    allDepts.forEach(d => {
+      deptMap.set(d.code.trim().toLowerCase(), d.id);
+      deptMap.set(d.name.trim().toLowerCase(), d.id);
+    });
 
     const createdStudents = [];
 
     // Perform inside transaction to guarantee consistency
     await prisma.$transaction(async (tx) => {
       for (const item of students) {
-        const dCode = item.department.toUpperCase();
-        let deptId = deptMap.get(dCode);
+        const deptStr = String(item.department || '').trim();
+        let deptId = deptMap.get(deptStr.toLowerCase());
 
-        // Auto-create department if it does not exist
+        // Auto-create or resolve department if not cached
         if (!deptId) {
-          const newDept = await tx.department.create({
-            data: {
-              code: dCode,
-              name: item.department, // Using sheet input as name and code
-            },
+          let existing = await tx.department.findFirst({
+            where: {
+              OR: [
+                { code: { equals: deptStr, mode: 'insensitive' } },
+                { name: { equals: deptStr, mode: 'insensitive' } }
+              ]
+            }
           });
-          deptId = newDept.id;
-          deptMap.set(dCode, deptId); // Add to local map cache
+
+          if (existing) {
+            deptId = existing.id;
+          } else {
+            // Generate clean department code if long name is provided
+            let generatedCode = deptStr.length <= 10
+              ? deptStr.toUpperCase().replace(/\s+/g, '_')
+              : deptStr.split(' ').map(w => w[0]).join('').toUpperCase() || 'DEPT';
+            
+            // Ensure generated code is unique
+            const codeExists = await tx.department.findUnique({ where: { code: generatedCode } });
+            if (codeExists) {
+              generatedCode = `${generatedCode}_${Math.floor(100 + Math.random() * 900)}`;
+            }
+
+            const newDept = await tx.department.create({
+              data: {
+                code: generatedCode,
+                name: deptStr,
+              },
+            });
+            deptId = newDept.id;
+          }
+
+          deptMap.set(deptStr.toLowerCase(), deptId);
         }
 
         const student = await tx.student.create({
