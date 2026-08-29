@@ -54,7 +54,9 @@ The platform is designed as a decoupled two-tier architecture:
 ### 4.1 System Design, ER Diagram & Approval Workflows
 Below is the unified design architecture, database entity relationships (ER), and corporate approval workflow diagram:
 
-![CareerSync System Design & Database Schema](docs/system_design_er_diagram.png)
+[![CareerSync System Design & Database Schema](docs/system_design_er_diagram.png)](https://app.eraser.io/workspace/ERiyH15CUPU29vZhYVRQ?origin=share)
+
+🔗 **[Click here to view the Interactive Eraser Workspace Diagram](https://app.eraser.io/workspace/ERiyH15CUPU29vZhYVRQ?origin=share)**
 
 ---
 
