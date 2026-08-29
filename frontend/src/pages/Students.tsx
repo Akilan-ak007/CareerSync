@@ -36,6 +36,28 @@ const LinkedinIcon = () => (
   </svg>
 );
 
+const StudentAvatar: React.FC<{ name: string; photoUrl?: string | null; className?: string }> = ({ name, photoUrl, className = 'w-8 h-8 text-xs' }) => {
+  const [imgError, setImgError] = useState(false);
+  const src = photoUrl ? getGoogleDriveImageUrl(photoUrl) : null;
+
+  if (src && !imgError) {
+    return (
+      <img
+        src={src}
+        alt={name}
+        className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0`}
+        onError={() => setImgError(true)}
+      />
+    );
+  }
+
+  return (
+    <div className={`${className} rounded-full bg-brand-cocoa text-white font-bold flex items-center justify-center shrink-0`}>
+      {name ? name.charAt(0).toUpperCase() : 'S'}
+    </div>
+  );
+};
+
 export const Students: React.FC = () => {
   const { user } = useAuth();
   const isAdmin = user?.role === 'ADMIN';
@@ -396,21 +418,10 @@ export const Students: React.FC = () => {
                     className="hover:bg-brand-card hover:bg-opacity-40 cursor-pointer transition-colors"
                   >
                     <td className="p-4 font-bold text-white flex items-center space-x-3">
-                      {student.photoUrl ? (
-                        <img
-                          src={getGoogleDriveImageUrl(student.photoUrl) || ''}
-                          alt={student.name}
-                          className="w-8 h-8 rounded-full object-cover border border-brand-cocoa shrink-0"
-                          onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-brand-cocoa text-white font-bold text-xs flex items-center justify-center shrink-0">
-                          {student.name.charAt(0)}
-                        </div>
-                      )}
+                      <StudentAvatar name={student.name} photoUrl={student.photoUrl} className="w-8 h-8 text-xs" />
                       <div>
                         <div>{student.name}</div>
-                        {student.graduationDate && (
+                        {student.graduationDate && !isNaN(new Date(student.graduationDate).getTime()) && new Date(student.graduationDate).getFullYear() > 1970 && (
                           <div className="text-[10px] text-gray-500 font-normal">
                             Grad: {new Date(student.graduationDate).toLocaleDateString([], { month: 'short', year: 'numeric' })}
                           </div>
@@ -513,21 +524,11 @@ export const Students: React.FC = () => {
           <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs">
             {/* Header info card */}
             <div className="text-center pb-4 border-b border-brand-cocoa border-opacity-20">
-              {selectedStudent.photoUrl ? (
-                <img
-                  src={getGoogleDriveImageUrl(selectedStudent.photoUrl) || ''}
-                  alt={selectedStudent.name}
-                  className="w-20 h-20 rounded-full object-cover border-2 border-brand-rosy mx-auto mb-3 shadow-lg"
-                />
-              ) : (
-                <div className="w-20 h-20 rounded-full bg-brand-cocoa text-white font-black text-3xl flex items-center justify-center mx-auto mb-3 shadow-md">
-                  {selectedStudent.name.charAt(0)}
-                </div>
-              )}
+              <StudentAvatar name={selectedStudent.name} photoUrl={selectedStudent.photoUrl} className="w-20 h-20 text-3xl mx-auto mb-3 shadow-lg" />
               <h3 className="text-base font-bold text-white">{selectedStudent.name}</h3>
               <p className="text-gray-500 font-mono mt-0.5">{selectedStudent.registerNumber}</p>
               <p className="text-[10px] text-brand-rosy font-semibold uppercase tracking-wider mt-1">{selectedStudent.studentType.replace('_', ' ')}</p>
-              {selectedStudent.graduationDate && (
+              {selectedStudent.graduationDate && !isNaN(new Date(selectedStudent.graduationDate).getTime()) && new Date(selectedStudent.graduationDate).getFullYear() > 1970 && (
                 <p className="text-[11px] text-gray-400 mt-1 flex items-center justify-center space-x-1">
                   <Calendar className="w-3.5 h-3.5 text-brand-rosy" />
                   <span>Graduation: {new Date(selectedStudent.graduationDate).toLocaleDateString([], { month: 'long', year: 'numeric' })}</span>

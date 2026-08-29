@@ -444,28 +444,43 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
         }
       }
 
+      // Flexible column aliases parsing
+      const photoVal = row.photo_url || row['photo url'] || row.photourl || row.photo || row.drive_photo_url || row.drive_photo || row['drive photo'] || row.student_photo || row['student photo'] || row.image || row.image_url || row.picture || row.avatar || null;
+      const gradDateVal = row.graduation_date || row['graduation date'] || row.graduationdate || row.grad_date || row.grad_year || null;
+      const githubVal = row.github_id || row['github id'] || row.githubid || row.github || row.github_url || row.github_link || null;
+      const linkedinVal = row.linkedin_id || row['linkedin id'] || row.linkedinid || row.linkedin || row.linkedin_url || row.linkedin_link || null;
+      const portfolioVal = row.portfolio_url || row['portfolio url'] || row.portfoliourl || row.portfolio || row.website || null;
+      const collegeEmailVal = row.college_email || row['college email'] || row.collegeemail || row.official_email || row.email || null;
+      const personalEmailVal = row.personal_email || row['personal email'] || row.personalemail || null;
+
+      let parsedGradDate: Date | null = null;
+      if (gradDateVal) {
+        const d = new Date(gradDateVal);
+        if (!isNaN(d.getTime())) parsedGradDate = d;
+      }
+
       const formattedRow = {
         name: row.name,
         registerNumber: String(row.register_number).trim(),
         department: String(row.department).trim(),
-        studentType: String(row.student_type).trim().toUpperCase() === 'HOSTEL' ? 'HOSTEL' : 'DAY_SCHOLAR',
+        studentType: String(row.student_type || 'DAY_SCHOLAR').trim().toUpperCase() === 'HOSTEL' ? 'HOSTEL' : 'DAY_SCHOLAR',
         email: String(row.email).trim(),
-        collegeEmail: row.college_email ? String(row.college_email).trim() : String(row.email).trim(),
-        personalEmail: row.personal_email ? String(row.personal_email).trim() : null,
-        phoneNumber: String(row.phone_number).trim(),
+        collegeEmail: collegeEmailVal ? String(collegeEmailVal).trim() : String(row.email).trim(),
+        personalEmail: personalEmailVal ? String(personalEmailVal).trim() : null,
+        phoneNumber: String(row.phone_number || '').trim(),
         sslcPercentage: sslc,
         hscPercentage: hsc,
         ugPercentage: ug,
         pgPercentage: pg,
-        resumeUrl: row.resume_url || '',
-        selfIntroUrl: row.self_intro_url || '',
-        linkedinUrl: row.linkedin_url || (row.linkedin_id ? `https://linkedin.com/in/${row.linkedin_id}` : ''),
-        linkedinId: row.linkedin_id || null,
-        githubUrl: row.github_url || (row.github_id ? `https://github.com/${row.github_id}` : ''),
-        githubId: row.github_id || null,
-        portfolioUrl: row.portfolio_url || '',
-        photoUrl: row.photo_url || row.drive_photo_url || null,
-        graduationDate: row.graduation_date ? new Date(row.graduation_date) : null,
+        resumeUrl: row.resume_url || row['resume url'] || '',
+        selfIntroUrl: row.self_intro_url || row['self intro url'] || '',
+        linkedinUrl: row.linkedin_url || row['linkedin url'] || (linkedinVal ? `https://linkedin.com/in/${linkedinVal}` : ''),
+        linkedinId: linkedinVal ? String(linkedinVal).trim() : null,
+        githubUrl: row.github_url || row['github url'] || (githubVal ? `https://github.com/${githubVal}` : ''),
+        githubId: githubVal ? String(githubVal).trim() : null,
+        portfolioUrl: portfolioVal ? String(portfolioVal).trim() : '',
+        photoUrl: photoVal ? String(photoVal).trim() : null,
+        graduationDate: parsedGradDate,
       };
 
       if (errors.length > 0) {
