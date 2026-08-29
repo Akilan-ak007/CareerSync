@@ -36,10 +36,10 @@ async function main() {
   // 2. Users
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@example.com' },
-    update: { name: 'Akilan (Admin)' },
+    update: { name: 'Dr. Sivasubramaniam' },
     create: {
       email: 'admin@example.com',
-      name: 'Akilan (Admin)',
+      name: 'Dr. Sivasubramaniam',
       passwordHash: adminHash,
       roleId: adminRole.id,
     },
@@ -47,10 +47,10 @@ async function main() {
 
   const manager1 = await prisma.user.upsert({
     where: { email: 'manager@example.com' },
-    update: {},
+    update: { name: 'Dr. Jayakannan' },
     create: {
       email: 'manager@example.com',
-      name: 'Dean Arthur Miller (Manager)',
+      name: 'Dr. Jayakannan',
       passwordHash: managerHash,
       roleId: managerRole.id,
     },
@@ -58,10 +58,10 @@ async function main() {
 
   const manager2 = await prisma.user.upsert({
     where: { email: 'manager2@example.com' },
-    update: {},
+    update: { name: 'Dr. Jayakannan' },
     create: {
       email: 'manager2@example.com',
-      name: 'Principal Roberts (Manager)',
+      name: 'Dr. Jayakannan',
       passwordHash: managerHash,
       roleId: managerRole.id,
     },
