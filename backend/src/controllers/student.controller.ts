@@ -331,55 +331,106 @@ export async function deleteStudent(req: Request, res: Response, next: NextFunct
   }
 }
 
-// 6. Excel Upload Preview
+// Helper to extract clean field value from flexible column names or fuzzy key matching
+function getFlexibleValue(row: any, primaryKeys: string[], keywords: string[]): any {
+  for (const key of primaryKeys) {
+    if (row[key] !== undefined && row[key] !== null && String(row[key]).trim() !== '') {
+      return row[key];
+    }
+  }
+  for (const rowKey of Object.keys(row)) {
+    const lowerKey = rowKey.toLowerCase();
+    for (const kw of keywords) {
+      if (lowerKey.includes(kw)) {
+        if (row[rowKey] !== undefined && row[rowKey] !== null && String(row[rowKey]).trim() !== '') {
+          return row[rowKey];
+        }
+      }
+    }
+  }
+  return null;
+}
+
+// Helper to parse Excel dates (handles serial numbers like 46538 and standard strings)
+function parseExcelDate(val: any): Date | null {
+  if (val === undefined || val === null || val === '') return null;
+  if (typeof val === 'number') {
+    if (val > 10000 && val < 100000) {
+      return new Date(Math.round((val - 25569) * 86400 * 1000));
+    }
+    if (val >= 2000 && val <= 2100) {
+      return new Date(`${val}-05-31`);
+    }
+  }
+  const str = String(val).trim();
+  if (!str) return null;
+  const d = new Date(str);
+  if (!isNaN(d.getTime()) && d.getFullYear() > 1970) {
+    return d;
+  }
+  return null;
+}
+
+// Helper to normalize social profile URLs & IDs
+function normalizeSocial(inputVal: any, platform: 'github' | 'linkedin'): { id: string | null; url: string } {
+  if (!inputVal) return { id: null, url: '' };
+  const str = String(inputVal).trim();
+  if (!str) return { id: null, url: '' };
+
+  if (str.startsWith('http://') || str.startsWith('https://')) {
+    const cleanUrl = str.replace(/\/$/, '');
+    const parts = cleanUrl.split('/');
+    const handle = parts[parts.length - 1];
+    return { id: handle || null, url: str };
+  }
+
+  const cleanHandle = str.replace(/^@/, '');
+  const baseUrl = platform === 'github' ? 'https://github.com/' : 'https://linkedin.com/in/';
+  return { id: cleanHandle, url: `${baseUrl}${cleanHandle}` };
+}
+
+// 6. Upload and Validate Excel file for preview
 export async function uploadPreview(req: Request, res: Response, next: NextFunction) {
   try {
     if (!req.file) {
       return res.status(400).json({
         success: false,
-        message: 'Please upload an Excel file.',
+        message: 'No file uploaded.',
       });
     }
 
     const workbook = xlsx.read(req.file.buffer, { type: 'buffer' });
     const sheetName = workbook.SheetNames[0];
     const sheet = workbook.Sheets[sheetName];
-    const rawRows = xlsx.utils.sheet_to_json<any>(sheet);
 
-    if (rawRows.length === 0) {
+    const rawRows: any[] = xlsx.utils.sheet_to_json(sheet, { defval: '' });
+
+    if (!rawRows || rawRows.length === 0) {
       return res.status(400).json({
         success: false,
         message: 'Excel file is empty.',
       });
     }
 
-    // Normalize keys: trim and lowercase all headers to handle whitespace/casing variations
+    // Normalize keys: trim and lowercase all headers
     const normalizedRows = rawRows.map((row: any) => {
       const normalized: any = {};
       Object.keys(row).forEach((key) => {
-        const cleanKey = key.trim().toLowerCase();
+        const cleanKey = key.trim().toLowerCase().replace(/\s+/g, '_');
         normalized[cleanKey] = row[key];
       });
       return normalized;
     });
 
-    // 1. Column names validation: only enforce core academic/personal fields
-    const requiredCols = [
-      'name', 'register_number', 'department', 'student_type', 'email', 'phone_number',
-      'sslc_percentage', 'hsc_percentage', 'ug_percentage'
-    ];
-
+    // Validate core columns
+    const requiredCols = ['name', 'register_number', 'department', 'student_type', 'email', 'phone_number', 'sslc_percentage', 'hsc_percentage', 'ug_percentage'];
     const actualCols = Object.keys(normalizedRows[0]);
     const missingCols = requiredCols.filter((col) => !actualCols.includes(col));
 
     if (missingCols.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: `Missing required columns: ${missingCols.join(', ')}`,
-      });
+      return res.status(400).json({ success: false, message: `Missing columns: ${missingCols.join(', ')}` });
     }
 
-    // Fetch existing records for database uniqueness checks
     const allStudents = await prisma.student.findMany({ select: { registerNumber: true, email: true } });
     const existingRegs = new Set(allStudents.map(s => s.registerNumber));
     const existingEmails = new Set(allStudents.map(s => s.email.toLowerCase()));
@@ -389,75 +440,49 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
     const sheetRegs = new Set<string>();
     const sheetEmails = new Set<string>();
 
-    // 2. Validate rows
     normalizedRows.forEach((row: any, idx: number) => {
-      const rowNum = idx + 2; // 1-indexed + header row
+      const rowNum = idx + 2;
       const errors: string[] = [];
 
-      // Required fields
       if (!row.name || String(row.name).trim() === '') errors.push('Name is required.');
       if (!row.register_number || String(row.register_number).trim() === '') errors.push('Register number is required.');
       if (!row.department || String(row.department).trim() === '') errors.push('Department is required.');
-      if (!row.student_type || String(row.student_type).trim() === '') errors.push('Student Type (HOSTEL/DAY_SCHOLAR) is required.');
-      if (!row.email || String(row.email).trim() === '') errors.push('Email is required.');
-      if (!row.phone_number) errors.push('Phone number is required.');
-
-      // Numeric validations
+      if (!row.email || !emailRegex.test(String(row.email).trim())) errors.push('Valid email is required.');
+      
       const sslc = parseFloat(row.sslc_percentage);
       const hsc = parseFloat(row.hsc_percentage);
       const ug = parseFloat(row.ug_percentage);
       const pg = row.pg_percentage ? parseFloat(row.pg_percentage) : null;
 
-      if (isNaN(sslc) || sslc < 0 || sslc > 100) errors.push('SSLC percentage must be between 0 and 100.');
-      if (isNaN(hsc) || hsc < 0 || hsc > 100) errors.push('HSC percentage must be between 0 and 100.');
-      if (isNaN(ug) || ug < 0 || ug > 100) errors.push('UG percentage must be between 0 and 100.');
-      if (pg !== null && (isNaN(pg) || pg < 0 || pg > 100)) errors.push('PG percentage must be between 0 and 100.');
+      if (isNaN(sslc) || sslc < 0 || sslc > 100) errors.push('SSLC % must be 0-100.');
+      if (isNaN(hsc) || hsc < 0 || hsc > 100) errors.push('HSC % must be 0-100.');
+      if (isNaN(ug) || ug < 0 || ug > 100) errors.push('UG % must be 0-100.');
 
-      // Email format
-      if (row.email && !emailRegex.test(String(row.email).trim())) {
-        errors.push('Invalid email format.');
-      }
-
-      // URL formats (Bypassed from blocking row imports)
-
-      // Duplicate Register checks
       if (row.register_number) {
         const regStr = String(row.register_number).trim();
-        if (sheetRegs.has(regStr)) {
-          errors.push('Duplicate register number within the sheet.');
-        } else if (existingRegs.has(regStr)) {
-          errors.push('Register number already exists in the database.');
-        } else {
-          sheetRegs.add(regStr);
-        }
+        if (sheetRegs.has(regStr)) errors.push('Duplicate register number in sheet.');
+        else if (existingRegs.has(regStr)) errors.push('Register number exists in DB.');
+        else sheetRegs.add(regStr);
       }
 
-      // Duplicate Email checks
       if (row.email) {
         const emailStr = String(row.email).trim().toLowerCase();
-        if (sheetEmails.has(emailStr)) {
-          errors.push('Duplicate email within the sheet.');
-        } else if (existingEmails.has(emailStr)) {
-          errors.push('Email already exists in the database.');
-        } else {
-          sheetEmails.add(emailStr);
-        }
+        if (sheetEmails.has(emailStr)) errors.push('Duplicate email in sheet.');
+        else if (existingEmails.has(emailStr)) errors.push('Email exists in DB.');
+        else sheetEmails.add(emailStr);
       }
 
-      // Flexible column aliases parsing
-      const photoVal = row.photo_url || row['photo url'] || row.photourl || row.photo || row.drive_photo_url || row.drive_photo || row['drive photo'] || row.student_photo || row['student photo'] || row.image || row.image_url || row.picture || row.avatar || null;
-      const gradDateVal = row.graduation_date || row['graduation date'] || row.graduationdate || row.grad_date || row.grad_year || null;
-      const githubVal = row.github_id || row['github id'] || row.githubid || row.github || row.github_url || row.github_link || null;
-      const linkedinVal = row.linkedin_id || row['linkedin id'] || row.linkedinid || row.linkedin || row.linkedin_url || row.linkedin_link || null;
-      const portfolioVal = row.portfolio_url || row['portfolio url'] || row.portfoliourl || row.portfolio || row.website || null;
-      const collegeEmailVal = row.college_email || row['college email'] || row.collegeemail || row.official_email || row.email || null;
-      const personalEmailVal = row.personal_email || row['personal email'] || row.personalemail || null;
+      const photoRaw = getFlexibleValue(row, ['photo_url', 'photo url', 'photourl', 'photo', 'drive_photo_url', 'drive_photo', 'drive photo', 'student_photo', 'student photo'], ['photo', 'drive', 'image', 'picture', 'avatar']);
+      const gradDateRaw = getFlexibleValue(row, ['graduation_date', 'graduation date', 'graduationdate', 'grad_date', 'grad_year'], ['grad', 'year']);
+      const githubRaw = getFlexibleValue(row, ['github_id', 'github id', 'githubid', 'github', 'github_url', 'github url'], ['github']);
+      const linkedinRaw = getFlexibleValue(row, ['linkedin_id', 'linkedin id', 'linkedinid', 'linkedin', 'linkedin_url', 'linkedin url'], ['linkedin']);
+      const portfolioRaw = getFlexibleValue(row, ['portfolio_url', 'portfolio url', 'portfoliourl', 'portfolio', 'website'], ['portfolio', 'website']);
+      const collegeEmailRaw = getFlexibleValue(row, ['college_email', 'college email', 'collegeemail', 'official_email'], ['college', 'official']);
+      const personalEmailRaw = getFlexibleValue(row, ['personal_email', 'personal email', 'personalemail'], ['personal']);
 
-      let parsedGradDate: Date | null = null;
-      if (gradDateVal) {
-        const d = new Date(gradDateVal);
-        if (!isNaN(d.getTime())) parsedGradDate = d;
-      }
+      const parsedGradDate = parseExcelDate(gradDateRaw);
+      const githubObj = normalizeSocial(githubRaw, 'github');
+      const linkedinObj = normalizeSocial(linkedinRaw, 'linkedin');
 
       const formattedRow = {
         name: row.name,
@@ -465,8 +490,8 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
         department: String(row.department).trim(),
         studentType: String(row.student_type || 'DAY_SCHOLAR').trim().toUpperCase() === 'HOSTEL' ? 'HOSTEL' : 'DAY_SCHOLAR',
         email: String(row.email).trim(),
-        collegeEmail: collegeEmailVal ? String(collegeEmailVal).trim() : String(row.email).trim(),
-        personalEmail: personalEmailVal ? String(personalEmailVal).trim() : null,
+        collegeEmail: collegeEmailRaw ? String(collegeEmailRaw).trim() : String(row.email).trim(),
+        personalEmail: personalEmailRaw ? String(personalEmailRaw).trim() : null,
         phoneNumber: String(row.phone_number || '').trim(),
         sslcPercentage: sslc,
         hscPercentage: hsc,
@@ -474,12 +499,12 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
         pgPercentage: pg,
         resumeUrl: row.resume_url || row['resume url'] || '',
         selfIntroUrl: row.self_intro_url || row['self intro url'] || '',
-        linkedinUrl: row.linkedin_url || row['linkedin url'] || (linkedinVal ? `https://linkedin.com/in/${linkedinVal}` : ''),
-        linkedinId: linkedinVal ? String(linkedinVal).trim() : null,
-        githubUrl: row.github_url || row['github url'] || (githubVal ? `https://github.com/${githubVal}` : ''),
-        githubId: githubVal ? String(githubVal).trim() : null,
-        portfolioUrl: portfolioVal ? String(portfolioVal).trim() : '',
-        photoUrl: photoVal ? String(photoVal).trim() : null,
+        linkedinUrl: linkedinObj.url,
+        linkedinId: linkedinObj.id,
+        githubUrl: githubObj.url,
+        githubId: githubObj.id,
+        portfolioUrl: portfolioRaw ? String(portfolioRaw).trim() : '',
+        photoUrl: photoRaw ? String(photoRaw).trim() : null,
         graduationDate: parsedGradDate,
       };
 
