@@ -37,24 +37,36 @@ const LinkedinIcon = () => (
 );
 
 const StudentAvatar: React.FC<{ name: string; photoUrl?: string | null; className?: string }> = ({ name, photoUrl, className = 'w-8 h-8 text-xs' }) => {
-  const [imgError, setImgError] = useState(false);
-  const src = photoUrl ? getGoogleDriveImageUrl(photoUrl) : null;
+  const [retryCount, setRetryCount] = useState(0);
 
-  if (src && !imgError) {
-    return (
-      <img
-        src={src}
-        alt={name}
-        className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0`}
-        onError={() => setImgError(true)}
-      />
-    );
-  }
+  const getSource = () => {
+    if (photoUrl && retryCount === 0) {
+      return getGoogleDriveImageUrl(photoUrl);
+    }
+    if (photoUrl && retryCount === 1) {
+      const match = photoUrl.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
+      if (match && match[1]) {
+        return `https://lh3.googleusercontent.com/d/${match[1]}`;
+      }
+    }
+    // High-quality dynamic avatar fallback if Drive link is invalid or unreachable
+    const cleanName = encodeURIComponent(name || 'Student');
+    return `https://api.dicebear.com/7.x/avataaars/svg?seed=${cleanName}&backgroundColor=4a2c2c,2b1e1e`;
+  };
+
+  const currentSrc = getSource();
 
   return (
-    <div className={`${className} rounded-full bg-brand-cocoa text-white font-bold flex items-center justify-center shrink-0`}>
-      {name ? name.charAt(0).toUpperCase() : 'S'}
-    </div>
+    <img
+      src={currentSrc || ''}
+      alt={name}
+      className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0 bg-brand-dark`}
+      onError={() => {
+        if (retryCount < 2) {
+          setRetryCount(prev => prev + 1);
+        }
+      }}
+    />
   );
 };
 
