@@ -12,7 +12,8 @@ import {
   HelpCircle,
   Clock,
   MapPin,
-  ExternalLink
+  ExternalLink,
+  FileText
 } from 'lucide-react';
 
 export const CompanyApprovals: React.FC = () => {
@@ -231,6 +232,37 @@ export const CompanyApprovals: React.FC = () => {
                   <span className="text-gray-300">{viewCompany.companyAddress}</span>
                 </div>
               </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <span className="font-bold text-white block mb-1">Company Size</span>
+                  <span className="text-gray-300">{viewCompany.companySize || 'N/A'}</span>
+                </div>
+                {viewCompany.ctcLakhs && (
+                  <div>
+                    <span className="font-bold text-white block mb-1">Offered CTC</span>
+                    <span className="text-brand-rosy font-bold">{viewCompany.ctcLakhs} LPA</span>
+                  </div>
+                )}
+              </div>
+
+              {viewCompany.sampleResumeUrl && (
+                <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg">
+                  <span className="font-bold text-white block mb-2 font-semibold">Job Description & Sample Resume</span>
+                  <a
+                    href={viewCompany.sampleResumeUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center justify-between p-2.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                  >
+                    <span className="flex items-center space-x-2">
+                      <FileText className="w-4 h-4 text-brand-rosy" />
+                      <span>View Job Description / Document</span>
+                    </span>
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  </a>
+                </div>
+              )}
 
               <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg">
                 <span className="font-bold text-white block mb-2">Corporate Recruiter (HR)</span>
