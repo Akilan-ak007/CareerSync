@@ -510,96 +510,99 @@ export async function importConfirm(req: Request, res: Response, next: NextFunct
       deptMap.set(d.name.trim().toLowerCase(), d.id);
     });
 
-    const createdStudents = [];
+    // 1. Resolve or create missing departments first
+    for (const item of students) {
+      const deptStr = String(item.department || '').trim();
+      if (!deptStr) continue;
 
-    // Perform inside transaction to guarantee consistency
-    await prisma.$transaction(async (tx) => {
-      for (const item of students) {
-        const deptStr = String(item.department || '').trim();
-        let deptId = deptMap.get(deptStr.toLowerCase());
+      let deptId = deptMap.get(deptStr.toLowerCase());
+      if (!deptId) {
+        let existing = await prisma.department.findFirst({
+          where: {
+            OR: [
+              { code: { equals: deptStr, mode: 'insensitive' } },
+              { name: { equals: deptStr, mode: 'insensitive' } }
+            ]
+          }
+        });
 
-        // Auto-create or resolve department if not cached
-        if (!deptId) {
-          let existing = await tx.department.findFirst({
-            where: {
-              OR: [
-                { code: { equals: deptStr, mode: 'insensitive' } },
-                { name: { equals: deptStr, mode: 'insensitive' } }
-              ]
-            }
-          });
+        if (existing) {
+          deptId = existing.id;
+        } else {
+          // Generate clean department code if long name is provided
+          let generatedCode = deptStr.length <= 10
+            ? deptStr.toUpperCase().replace(/\s+/g, '_')
+            : deptStr.split(' ').map(w => w[0]).join('').toUpperCase() || 'DEPT';
 
-          if (existing) {
-            deptId = existing.id;
-          } else {
-            // Generate clean department code if long name is provided
-            let generatedCode = deptStr.length <= 10
-              ? deptStr.toUpperCase().replace(/\s+/g, '_')
-              : deptStr.split(' ').map(w => w[0]).join('').toUpperCase() || 'DEPT';
-            
-            // Ensure generated code is unique
-            const codeExists = await tx.department.findUnique({ where: { code: generatedCode } });
-            if (codeExists) {
-              generatedCode = `${generatedCode}_${Math.floor(100 + Math.random() * 900)}`;
-            }
-
-            const newDept = await tx.department.create({
-              data: {
-                code: generatedCode,
-                name: deptStr,
-              },
-            });
-            deptId = newDept.id;
+          const codeExists = await prisma.department.findUnique({ where: { code: generatedCode } });
+          if (codeExists) {
+            generatedCode = `${generatedCode}_${Math.floor(100 + Math.random() * 900)}`;
           }
 
-          deptMap.set(deptStr.toLowerCase(), deptId);
+          const newDept = await prisma.department.create({
+            data: {
+              code: generatedCode,
+              name: deptStr,
+            },
+          });
+          deptId = newDept.id;
         }
-
-        const student = await tx.student.create({
-          data: {
-            name: item.name,
-            registerNumber: item.registerNumber,
-            departmentId: deptId,
-            studentType: item.studentType,
-            email: item.email,
-            collegeEmail: item.collegeEmail || item.email,
-            personalEmail: item.personalEmail || null,
-            phoneNumber: item.phoneNumber,
-            sslcPercentage: item.sslcPercentage,
-            hscPercentage: item.hscPercentage,
-            ugPercentage: item.ugPercentage,
-            pgPercentage: item.pgPercentage,
-            resumeUrl: item.resumeUrl || '',
-            selfIntroUrl: item.selfIntroUrl || '',
-            linkedinUrl: item.linkedinUrl || '',
-            linkedinId: item.linkedinId || null,
-            githubUrl: item.githubUrl || '',
-            githubId: item.githubId || null,
-            portfolioUrl: item.portfolioUrl || '',
-            photoUrl: item.photoUrl || null,
-            graduationDate: item.graduationDate ? new Date(item.graduationDate) : null,
-          },
-        });
-        createdStudents.push(student);
+        deptMap.set(deptStr.toLowerCase(), deptId);
       }
+    }
 
-      // Write audit log
-      await createAuditLog({
-        userId: req.user?.userId,
-        role: req.user?.role || 'ADMIN',
-        action: 'EXCEL_IMPORT_STUDENTS',
-        entity: 'Student',
-        entityId: 'Multiple',
-        ipAddress: req.ip,
-        newValue: { count: createdStudents.length },
-      });
+    // 2. Format student records for high-speed batch insert
+    const studentRecords = students.map((item) => {
+      const deptStr = String(item.department || '').trim();
+      const deptId = deptMap.get(deptStr.toLowerCase());
+
+      return {
+        name: item.name,
+        registerNumber: item.registerNumber,
+        departmentId: deptId!,
+        studentType: item.studentType || 'DAY_SCHOLAR',
+        email: item.email,
+        collegeEmail: item.collegeEmail || item.email,
+        personalEmail: item.personalEmail || null,
+        phoneNumber: item.phoneNumber,
+        sslcPercentage: item.sslcPercentage,
+        hscPercentage: item.hscPercentage,
+        ugPercentage: item.ugPercentage,
+        pgPercentage: item.pgPercentage || null,
+        resumeUrl: item.resumeUrl || '',
+        selfIntroUrl: item.selfIntroUrl || '',
+        linkedinUrl: item.linkedinUrl || '',
+        linkedinId: item.linkedinId || null,
+        githubUrl: item.githubUrl || '',
+        githubId: item.githubId || null,
+        portfolioUrl: item.portfolioUrl || '',
+        photoUrl: item.photoUrl || null,
+        graduationDate: item.graduationDate ? new Date(item.graduationDate) : null,
+      };
+    });
+
+    // 3. Perform High-Speed Batch Insert
+    const result = await prisma.student.createMany({
+      data: studentRecords,
+      skipDuplicates: true,
+    });
+
+    // Write audit log
+    await createAuditLog({
+      userId: req.user?.userId,
+      role: req.user?.role || 'ADMIN',
+      action: 'EXCEL_IMPORT_STUDENTS',
+      entity: 'Student',
+      entityId: 'Multiple',
+      ipAddress: req.ip,
+      newValue: { count: result.count },
     });
 
     return res.status(200).json({
       success: true,
-      message: `Successfully imported ${createdStudents.length} students.`,
+      message: `Successfully imported ${result.count} students.`,
       data: {
-        importedCount: createdStudents.length,
+        importedCount: result.count,
       },
     });
   } catch (error) {
