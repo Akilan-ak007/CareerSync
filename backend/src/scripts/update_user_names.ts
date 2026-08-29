@@ -10,8 +10,8 @@ async function main() {
 
   console.log('Current users:', users.map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role.name })));
 
-  // Update Admin name to Dr. Sivasubramaniam
-  const adminUsers = users.filter(u => u.role.name === 'ADMIN' || u.name.toLowerCase().includes('akilan'));
+  // Update ALL Admin users to Dr. Sivasubramaniam
+  const adminUsers = users.filter(u => u.role.name === 'ADMIN');
   for (const admin of adminUsers) {
     const updated = await prisma.user.update({
       where: { id: admin.id },
@@ -20,8 +20,8 @@ async function main() {
     console.log(`Updated Admin user ID ${admin.id}: "${admin.name}" -> "${updated.name}"`);
   }
 
-  // Update Manager name to Dr. Jayakannan
-  const managerUsers = users.filter(u => u.role.name === 'MANAGER' || u.name.toLowerCase().includes('manager'));
+  // Update ALL Manager users to Dr. Jayakannan
+  const managerUsers = users.filter(u => u.role.name === 'MANAGER');
   for (const mgr of managerUsers) {
     const updated = await prisma.user.update({
       where: { id: mgr.id },
