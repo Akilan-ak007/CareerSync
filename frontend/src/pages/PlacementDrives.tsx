@@ -792,49 +792,25 @@ export const PlacementDrives: React.FC = () => {
                 <span>Job Description & AI Matching</span>
               </h4>
 
-              {/* Upload section if no JD uploaded */}
-              {!selectedDrive.jdFileUrl ? (
-                <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg space-y-2 text-center">
-                  <p className="text-[10px] text-gray-500">No Job Description PDF uploaded yet.</p>
-                  {(isAdmin || isTeam) ? (
-                    <div className="space-y-2">
-                      <label className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-3 py-1.5 rounded cursor-pointer transition-all inline-block font-bold">
-                        <span>Upload JD PDF</span>
-                        <input
-                          type="file"
-                          accept=".pdf"
-                          onChange={handleJdUpload}
-                          className="hidden"
-                        />
-                      </label>
-                      {uploadStatus && <p className="text-[9px] text-brand-rosy font-mono mt-1">{uploadStatus}</p>}
-                    </div>
-                  ) : (
-                    <p className="text-[10px] text-brand-rosy font-semibold">Recruiter/Officer action required</p>
-                  )}
-                </div>
-              ) : (
-                /* Display metadata if JD uploaded */
-                <div className="space-y-3">
-                  <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg space-y-2">
-                    <div className="flex justify-between items-center text-[10px]">
-                      <span className="font-semibold text-gray-300 truncate max-w-[180px]">{selectedDrive.jdFileName}</span>
-                      <span className="text-gray-500 font-mono">
-                        {selectedDrive.jdFileSize ? `${(selectedDrive.jdFileSize / 1024).toFixed(1)} KB` : 'N/A'}
-                      </span>
-                    </div>
+            {/* Job Description & AI Matching section */}
+            <div className="space-y-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+              <h4 className="font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-25 pb-1 flex items-center space-x-1.5">
+                <FileText className="w-4 h-4 text-brand-rosy" />
+                <span>Job Description & AI Matching</span>
+              </h4>
 
-                    <div className="flex space-x-1.5 pt-1">
-                      <button
-                        onClick={() => setShowPdfViewer(true)}
-                        className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-2 py-1 rounded flex-1 text-center font-bold"
-                      >
-                        View JD
-                      </button>
-                      {(isAdmin || isTeam) && (
-                        <>
-                          <label className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-2 py-1 rounded flex-1 text-center font-bold cursor-pointer">
-                            <span>Replace</span>
+              {(() => {
+                const effectiveJdUrl = selectedDrive.jdFileUrl || selectedDrive.company?.sampleResumeUrl;
+                const effectiveJdFileName = selectedDrive.jdFileName || (selectedDrive.company?.sampleResumeUrl ? `${selectedDrive.company.name}_JD_Document` : null);
+
+                if (!effectiveJdUrl) {
+                  return (
+                    <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg space-y-2 text-center">
+                      <p className="text-[10px] text-gray-500">No Job Description PDF or Google Drive link attached yet.</p>
+                      {(isAdmin || isTeam) ? (
+                        <div className="space-y-2 pt-1">
+                          <label className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-3 py-1.5 rounded cursor-pointer transition-all inline-block font-bold">
+                            <span>Upload JD PDF</span>
                             <input
                               type="file"
                               accept=".pdf"
@@ -842,64 +818,105 @@ export const PlacementDrives: React.FC = () => {
                               className="hidden"
                             />
                           </label>
-                          <button
-                            onClick={handleJdDelete}
-                            className="bg-brand-card hover:bg-red-950 border border-brand-cocoa border-opacity-30 hover:border-red-900 text-gray-400 hover:text-red-300 px-2 py-1 rounded flex-1 text-center font-bold"
-                          >
-                            Remove
-                          </button>
-                        </>
+                          {uploadStatus && <p className="text-[9px] text-brand-rosy font-mono mt-1">{uploadStatus}</p>}
+                        </div>
+                      ) : (
+                        <p className="text-[10px] text-brand-rosy font-semibold">Recruiter/Officer action required</p>
                       )}
                     </div>
-                  </div>
+                  );
+                }
 
-                  {uploadStatus && <p className="text-[9px] text-brand-rosy font-mono my-1 text-center animate-pulse">{uploadStatus}</p>}
+                return (
+                  <div className="space-y-3">
+                    <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg space-y-2">
+                      <div className="flex justify-between items-center text-[10px]">
+                        <span className="font-semibold text-gray-300 truncate max-w-[180px]">
+                          {effectiveJdFileName}
+                        </span>
+                        <span className="text-brand-rosy font-mono text-[9px] bg-brand-cocoa bg-opacity-20 px-1.5 py-0.5 rounded border border-brand-cocoa border-opacity-30">
+                          {selectedDrive.jdFileUrl ? 'PDF File' : 'Google Drive Link'}
+                        </span>
+                      </div>
 
-                  {/* AI Extraction segment */}
-                  {!selectedDrive.jdExtracted ? (
-                    <div className="space-y-2">
-                      {(isAdmin || isTeam) ? (
+                      <div className="flex space-x-1.5 pt-1">
                         <button
-                          disabled={isExtracting}
-                          onClick={handleJdExtraction}
+                          onClick={() => {
+                            if (selectedDrive.jdFileUrl) {
+                              setShowPdfViewer(true);
+                            } else if (effectiveJdUrl) {
+                              window.open(effectiveJdUrl, '_blank', 'noopener,noreferrer');
+                            }
+                          }}
+                          className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-2 py-1.5 rounded flex-1 text-center font-bold flex items-center justify-center space-x-1 transition-all"
+                        >
+                          <ExternalLink className="w-3 h-3" />
+                          <span>View Job Description</span>
+                        </button>
+
+                        {(isAdmin || isTeam) && (
+                          <label className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-2 py-1.5 rounded flex-1 text-center font-bold cursor-pointer flex items-center justify-center">
+                            <span>{selectedDrive.jdFileUrl ? 'Replace' : 'Upload Local PDF'}</span>
+                            <input
+                              type="file"
+                              accept=".pdf"
+                              onChange={handleJdUpload}
+                              className="hidden"
+                            />
+                          </label>
+                        )}
+                      </div>
+                    </div>
+
+                    {uploadStatus && <p className="text-[9px] text-brand-rosy font-mono my-1 text-center animate-pulse">{uploadStatus}</p>}
+
+                    {/* AI Extraction segment */}
+                    {!selectedDrive.jdExtracted ? (
+                      <div className="space-y-2">
+                        {(isAdmin || isTeam) ? (
+                          <button
+                            disabled={isExtracting}
+                            onClick={handleJdExtraction}
+                            className="w-full bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5 shadow"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>{isExtracting ? 'Extracting AI Requirements...' : 'Extract AI Requirements & Match ATS'}</span>
+                          </button>
+                        ) : (
+                          <p className="text-[10px] text-gray-500 italic text-center">Extraction details pending...</p>
+                        )}
+                      </div>
+                    ) : (
+                      /* If extracted, display options */
+                      <div className="space-y-2">
+                        <button
+                          onClick={() => {
+                            setEditedJdInfo(selectedDrive.jdExtractedInfo);
+                            setShowJdEditor(true);
+                          }}
+                          className="w-full bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5"
+                        >
+                          <Sparkles className="w-3.5 h-3.5 text-brand-rosy" />
+                          <span>Review Requirements (AI)</span>
+                        </button>
+
+                        {/* Go to ATS Candidates matching screen */}
+                        <button
+                          onClick={() => {
+                            setSelectedDrive(null);
+                            navigate(`/drives/${selectedDrive.id}/ats`);
+                          }}
                           className="w-full bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5 shadow"
                         >
-                          <Sparkles className="w-3.5 h-3.5" />
-                          <span>{isExtracting ? 'Extracting JD...' : 'Extract JD Information'}</span>
+                          <UserCheck className="w-3.5 h-3.5" />
+                          <span>View ATS Candidate Matching</span>
                         </button>
-                      ) : (
-                        <p className="text-[10px] text-gray-500 italic text-center">Extraction details pending...</p>
-                      )}
-                    </div>
-                  ) : (
-                    /* If extracted, display options */
-                    <div className="space-y-2">
-                      <button
-                        onClick={() => {
-                          setEditedJdInfo(selectedDrive.jdExtractedInfo);
-                          setShowJdEditor(true);
-                        }}
-                        className="w-full bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5"
-                      >
-                        <Sparkles className="w-3.5 h-3.5 text-brand-rosy" />
-                        <span>Review Requirements (AI)</span>
-                      </button>
-
-                      {/* Go to ATS Candidates matching screen */}
-                      <button
-                        onClick={() => {
-                          setSelectedDrive(null);
-                          navigate(`/drives/${selectedDrive.id}/ats`);
-                        }}
-                        className="w-full bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5 shadow"
-                      >
-                        <UserCheck className="w-3.5 h-3.5" />
-                        <span>View ATS Candidates</span>
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
             </div>
           </div>
         </div>

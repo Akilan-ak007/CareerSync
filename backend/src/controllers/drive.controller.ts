@@ -33,7 +33,7 @@ export async function getDrives(req: Request, res: Response, next: NextFunction)
     const drives = await prisma.placementDrive.findMany({
       where: whereClause,
       include: {
-        company: { select: { id: true, name: true, location: true, logoUrl: true } },
+        company: { select: { id: true, name: true, location: true, logoUrl: true, sampleResumeUrl: true } },
       },
       skip: offset,
       take: limitNum,
