@@ -105,54 +105,9 @@ async function main() {
   }
   console.log('Departments seeded.');
 
-  // 4. Students (50 students)
-  const studentsList = [];
-  const names = [
-    'Aarav Sharma', 'Aditya Patel', 'Akash Rao', 'Amit Mishra', 'Ananya Iyer',
-    'Arjun Nair', 'Avani Gupta', 'Ayush Joshi', 'Bhavana Reddy', 'Chaitanya Sen',
-    'Devika Nair', 'Divya Verma', 'Ganesh Kumar', 'Gaurav Mehta', 'Harish Balan',
-    'Isha Kapur', 'Karan Johar', 'Kavitha Ram', 'Kiran Hegde', 'Madhav Das',
-    'Manish Pandey', 'Meera Krishnan', 'Manoj Kumar', 'Nandini Das', 'Nikhil Saxena',
-    'Nisha Pillai', 'Pooja Bhat', 'Pranav Shah', 'Rahul Deshmukh', 'Rajesh Kanna',
-    'Ramesh Babu', 'Rhea Sen', 'Rohan Fernandes', 'Sajid Khan', 'Sanjay Dutt',
-    'Shreya Ghoshal', 'Siddharth Roy', 'Sneha Paul', 'Suresh Raina', 'Swathi Krishna',
-    'Tarun Teja', 'Uday Kiran', 'Varun Dhawan', 'Vijay Sethupathi', 'Vikram Prabhu',
-    'Vinay Kumar', 'Vishaal Singh', 'Yashaswini Rao', 'Yuvraj Singh', 'Zoya Akhtar'
-  ];
-
-  for (let i = 0; i < 50; i++) {
-    const regNum = `2026${String(dbDepts[i % dbDepts.length].code)}${String(100 + i)}`;
-    const student = await prisma.student.upsert({
-      where: { registerNumber: regNum },
-      update: {},
-      create: {
-        name: names[i],
-        registerNumber: regNum,
-        departmentId: dbDepts[i % dbDepts.length].id,
-        studentType: i % 3 === 0 ? 'HOSTEL' : 'DAY_SCHOLAR',
-        email: `${names[i].toLowerCase().replace(' ', '.')}@college.edu`,
-        collegeEmail: `${names[i].toLowerCase().replace(' ', '.')}@college.edu`,
-        personalEmail: `${names[i].toLowerCase().replace(' ', '.')}@gmail.com`,
-        phoneNumber: `98765${String(10000 + i)}`,
-        sslcPercentage: parseFloat((80 + (i % 15) * 1.3).toFixed(1)),
-        hscPercentage: parseFloat((75 + (i % 20) * 1.1).toFixed(1)),
-        ugPercentage: parseFloat((7.0 + (i % 25) * 0.1).toFixed(2)), // Storing CGPA in ugPercentage
-        pgPercentage: i % 4 === 0 ? parseFloat((7.5 + (i % 5) * 0.3).toFixed(2)) : null,
-        resumeUrl: `https://drive.google.com/file/d/resume_${regNum}/view`,
-        selfIntroUrl: `https://youtube.com/watch?v=intro_${regNum}`,
-        linkedinUrl: `https://linkedin.com/in/${names[i].toLowerCase().replace(' ', '-')}`,
-        linkedinId: `${names[i].toLowerCase().replace(' ', '-')}`,
-        githubUrl: `https://github.com/${names[i].toLowerCase().replace(' ', '')}`,
-        githubId: `${names[i].toLowerCase().replace(' ', '')}`,
-        portfolioUrl: `https://${names[i].toLowerCase().replace(' ', '')}.dev`,
-        photoUrl: `https://drive.google.com/file/d/1_photo_${regNum}/view`,
-        graduationDate: new Date('2026-05-31'),
-        placementStatus: i < 15 ? PlacementStatus.PLACED : i < 20 ? PlacementStatus.MULTIPLE_OFFERS : PlacementStatus.NOT_PLACED,
-      },
-    });
-    studentsList.push(student);
-  }
-  console.log('Students seeded.');
+  // 4. Students (Empty for manual / bulk Excel entry)
+  const studentsList: any[] = [];
+  console.log('Students section ready for user entry.');
 
   // 5. Companies (10 companies: 6 approved, 2 pending, 1 rejected, 1 draft)
   const companyData = [
