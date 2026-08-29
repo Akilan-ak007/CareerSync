@@ -1,6 +1,7 @@
 /**
  * Utility to convert Google Drive shareable links into direct displayable image URLs.
- * Uses Google's high-speed thumbnail CDN (https://drive.google.com/thumbnail?id=...&sz=w1000)
+ * Uses Google's direct CDN endpoint (https://lh3.googleusercontent.com/d/FILE_ID)
+ * which returns HTTP 200 OK with access-control-allow-origin: *
  */
 export function getGoogleDriveImageUrl(url: string | null | undefined): string | null {
   if (!url || typeof url !== 'string') return null;
@@ -13,12 +14,12 @@ export function getGoogleDriveImageUrl(url: string | null | undefined): string |
   const match = cleanUrl.match(driveRegex);
 
   if (match && match[1]) {
-    return `https://drive.google.com/thumbnail?id=${match[1]}&sz=w1000`;
+    return `https://lh3.googleusercontent.com/d/${match[1]}`;
   }
 
   // If raw Google Drive ID string was passed directly
   if (/^[a-zA-Z0-9_-]{25,}$/.test(cleanUrl)) {
-    return `https://drive.google.com/thumbnail?id=${cleanUrl}&sz=w1000`;
+    return `https://lh3.googleusercontent.com/d/${cleanUrl}`;
   }
 
   return cleanUrl;
