@@ -32,6 +32,30 @@ import {
   ExternalLink
 } from 'lucide-react';
 
+const PlacementStudentAvatar: React.FC<{ name: string; photoUrl?: string | null; className?: string }> = ({ name, photoUrl, className = 'w-6 h-6 text-[10px]' }) => {
+  const [useFallback, setUseFallback] = useState(false);
+  const getRealDriveUrl = () => {
+    if (!photoUrl || typeof photoUrl !== 'string') return null;
+    const clean = photoUrl.trim();
+    if (!clean || clean.includes('1Photo_') || clean.includes('resume_')) return null;
+    const match = clean.match(/(?:file\/d\/|id=|lh3\.googleusercontent\.com\/d\/)([a-zA-Z0-9_-]{15,})/);
+    if (match && match[1]) return `https://lh3.googleusercontent.com/d/${match[1]}`;
+    if (clean.startsWith('http://') || clean.startsWith('https://')) return clean;
+    return null;
+  };
+  const directUrl = getRealDriveUrl();
+  const fallbackUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'Student')}&background=5e3838&color=ffffff&size=256&bold=true`;
+  return (
+    <img
+      src={(!useFallback && directUrl) ? directUrl : fallbackUrl}
+      alt={name}
+      referrerPolicy="no-referrer"
+      className={`${className} rounded-full object-cover border border-brand-cocoa shrink-0 bg-brand-dark shadow-sm`}
+      onError={() => setUseFallback(true)}
+    />
+  );
+};
+
 export const PlacementDrives: React.FC = () => {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -750,10 +774,25 @@ export const PlacementDrives: React.FC = () => {
                 <h4 className="font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-25 pb-1">
                   Placement Statistics
                 </h4>
+                
+                {/* Number of Placed Students Highlight Box */}
+                <div className="p-3 bg-emerald-950 bg-opacity-40 border border-emerald-800 border-opacity-60 rounded-lg flex items-center justify-between shadow-inner">
+                  <div className="flex items-center space-x-2">
+                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                    <div>
+                      <span className="text-emerald-300 font-bold text-xs block">No. of Placed Students</span>
+                      <span className="text-[10px] text-emerald-400 opacity-80">Confirmed offer letters issued</span>
+                    </div>
+                  </div>
+                  <span className="text-xl font-black font-mono text-white bg-emerald-900 bg-opacity-60 px-3 py-1 rounded border border-emerald-700">
+                    {selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}
+                  </span>
+                </div>
+
                 <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-25 rounded-lg space-y-2 font-mono text-[10px]">
                   <div className="flex justify-between">
-                    <span>Offers Generated:</span>
-                    <span className="text-white font-bold">{selectedDrive.offersCount}</span>
+                    <span>Total Offers Generated:</span>
+                    <span className="text-white font-bold">{selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}</span>
                   </div>
                   {selectedDrive.highestCtc && (
                     <div className="flex justify-between">
@@ -771,6 +810,29 @@ export const PlacementDrives: React.FC = () => {
                     <div className="flex justify-between">
                       <span>Lowest CTC:</span>
                       <span className="text-gray-400 font-bold">{selectedDrive.lowestCtc} LPA</span>
+                    </div>
+                  )}
+
+                  {/* List of Placed Students */}
+                  {selectedDrive.offers && selectedDrive.offers.length > 0 && (
+                    <div className="pt-2 border-t border-brand-cocoa border-opacity-20 space-y-2 font-sans text-left">
+                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Placed Candidates ({selectedDrive.offers.length}):</span>
+                      <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
+                        {selectedDrive.offers.map((off: any) => (
+                          <div key={off.id} className="p-2 bg-brand-dark bg-opacity-60 rounded border border-brand-cocoa border-opacity-20 flex items-center justify-between text-xs">
+                            <div className="flex items-center space-x-2 truncate">
+                              <PlacementStudentAvatar name={off.student?.name || 'Student'} photoUrl={off.student?.photoUrl} className="w-6 h-6 text-[10px]" />
+                              <div className="truncate">
+                                <div className="font-bold text-white truncate">{off.student?.name}</div>
+                                <div className="text-[9px] text-gray-400 font-mono">{off.student?.registerNumber}</div>
+                              </div>
+                            </div>
+                            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-900 shrink-0">
+                              {off.ctc || selectedDrive.ctc} LPA
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                   
