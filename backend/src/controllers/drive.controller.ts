@@ -350,32 +350,32 @@ export async function completeDrive(req: Request, res: Response, next: NextFunct
     const selIds = Array.isArray(selectedStudentIds) ? selectedStudentIds : [];
     const partIds = Array.isArray(participatedStudentIds) ? participatedStudentIds : [];
 
-    await prisma.$transaction(async (tx) => {
-      // 1. Update Drive details
-      await tx.placementDrive.update({
-        where: { id },
-        data: {
-          status: DriveStatus.COMPLETED,
-          offersCount: selIds.length,
-          ctc: ctc ? parseFloat(ctc) : drive.ctc,
-          highestCtc: highestCtc ? parseFloat(highestCtc) : (ctc ? parseFloat(ctc) : drive.ctc),
-          averageCtc: averageCtc ? parseFloat(averageCtc) : (ctc ? parseFloat(ctc) : drive.ctc),
-          lowestCtc: lowestCtc ? parseFloat(lowestCtc) : (ctc ? parseFloat(ctc) : drive.ctc),
-        },
-      });
+    // 1. Update Drive details
+    await prisma.placementDrive.update({
+      where: { id },
+      data: {
+        status: DriveStatus.COMPLETED,
+        offersCount: selIds.length,
+        ctc: ctc ? parseFloat(ctc) : drive.ctc,
+        highestCtc: highestCtc ? parseFloat(highestCtc) : (ctc ? parseFloat(ctc) : drive.ctc),
+        averageCtc: averageCtc ? parseFloat(averageCtc) : (ctc ? parseFloat(ctc) : drive.ctc),
+        lowestCtc: lowestCtc ? parseFloat(lowestCtc) : (ctc ? parseFloat(ctc) : drive.ctc),
+      },
+    });
 
-      // 2. Mark participation status in DriveStudent
-      // First, set everyone who participated
-      await tx.driveStudent.updateMany({
+    // 2. Mark participation status in DriveStudent
+    if (partIds.length > 0) {
+      await prisma.driveStudent.updateMany({
         where: {
           driveId: id,
           studentId: { in: partIds },
         },
         data: { participated: true },
       });
+    }
 
-      // Set everyone who is selected
-      await tx.driveStudent.updateMany({
+    if (selIds.length > 0) {
+      await prisma.driveStudent.updateMany({
         where: {
           driveId: id,
           studentId: { in: selIds },
@@ -383,38 +383,39 @@ export async function completeDrive(req: Request, res: Response, next: NextFunct
         data: { participated: true, selected: true },
       });
 
-      // 3. For each selected student: create Offer and update Student status
-      for (const studentId of selIds) {
-        const student = await tx.student.findUnique({
-          where: { id: studentId },
-          include: { offers: { where: { deletedAt: null } } }
+      // 3. High-speed batch offer creation
+      const offerData = selIds.map((studentId: string) => ({
+        studentId,
+        companyId: drive.companyId,
+        driveId: drive.id,
+        jobRole: drive.jobRole,
+        ctc: ctc ? parseFloat(ctc) : drive.ctc,
+        offerDate: new Date(),
+        status: OfferStatus.OFFERED,
+      }));
+
+      await prisma.offer.createMany({
+        data: offerData,
+        skipDuplicates: true,
+      });
+
+      // Update student placement statuses to PLACED or MULTIPLE_OFFERS
+      const studentsToUpdate = await prisma.student.findMany({
+        where: { id: { in: selIds } },
+        include: { offers: { where: { deletedAt: null } } }
+      });
+
+      const updatePromises = studentsToUpdate.map((student) => {
+        const activeOfferCount = student.offers.length;
+        const nextStatus = activeOfferCount > 1 ? PlacementStatus.MULTIPLE_OFFERS : PlacementStatus.PLACED;
+        return prisma.student.update({
+          where: { id: student.id },
+          data: { placementStatus: nextStatus },
         });
+      });
 
-        if (student) {
-          // Create Offer record
-          await tx.offer.create({
-            data: {
-              studentId,
-              companyId: drive.companyId,
-              driveId: drive.id,
-              jobRole: drive.jobRole,
-              ctc: ctc ? parseFloat(ctc) : drive.ctc,
-              offerDate: new Date(),
-              status: OfferStatus.OFFERED,
-            },
-          });
-
-          // Update student status: PLACED or MULTIPLE_OFFERS
-          const activeOfferCount = student.offers.length;
-          const nextStatus = activeOfferCount >= 1 ? PlacementStatus.MULTIPLE_OFFERS : PlacementStatus.PLACED;
-
-          await tx.student.update({
-            where: { id: studentId },
-            data: { placementStatus: nextStatus },
-          });
-        }
-      }
-    });
+      await Promise.all(updatePromises);
+    }
 
     // Write audit log
     await createAuditLog({
