@@ -1,9 +1,5 @@
 {
-  "services": {
-    "web": {
-      "path": "/"
-    }
-  },
+  "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
