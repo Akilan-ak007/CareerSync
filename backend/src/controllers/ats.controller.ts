@@ -2,23 +2,13 @@ import { Request, Response, NextFunction } from 'express';
 import prisma from '../utils/prisma';
 import { Prisma } from '@prisma/client';
 import { createAuditLog } from '../utils/audit';
-import fs from 'fs';
-import path from 'path';
 
-// Helper to make directory if not exists
-const ensureUploadsDir = () => {
-  const dir = path.join(process.cwd(), 'uploads');
-  if (!fs.existsSync(dir)) {
-    fs.mkdirSync(dir, { recursive: true });
-  }
-};
-
-// 1. Upload JD PDF
+// 1. Upload JD PDF / Document
 export async function uploadJDPdf(req: Request, res: Response, next: NextFunction) {
   try {
     const { id } = req.params; // driveId
     if (!req.file) {
-      return res.status(400).json({ success: false, message: 'No PDF file uploaded.' });
+      return res.status(400).json({ success: false, message: 'No PDF or document file uploaded.' });
     }
 
     const drive = await prisma.placementDrive.findUnique({
@@ -30,14 +20,16 @@ export async function uploadJDPdf(req: Request, res: Response, next: NextFunctio
       return res.status(404).json({ success: false, message: 'Placement drive not found.' });
     }
 
-    ensureUploadsDir();
-    const fileName = `jd_${id}_${Date.now()}.pdf`;
-    const filePath = path.join(process.cwd(), 'uploads', fileName);
-    
-    // Write buffer to file
-    fs.writeFileSync(filePath, req.file.buffer);
+    // Convert file buffer to base64 Data URI for serverless & cloud storage compatibility
+    const mimeType = req.file.mimetype || 'application/pdf';
+    const base64Data = req.file.buffer.toString('base64');
+    const jdUrl = `data:${mimeType};base64,${base64Data}`;
 
-    const jdUrl = `http://localhost:5001/uploads/${fileName}`;
+    // Extract text snippet if plain text
+    let extractedSnippet: string | undefined = undefined;
+    if (mimeType.includes('text') || req.file.originalname.endsWith('.txt')) {
+      extractedSnippet = req.file.buffer.toString('utf-8');
+    }
 
     // Update drive with JD metadata
     const updatedDrive = await prisma.placementDrive.update({
@@ -46,6 +38,7 @@ export async function uploadJDPdf(req: Request, res: Response, next: NextFunctio
         jdFileName: req.file.originalname,
         jdFileSize: req.file.size,
         jdFileUrl: jdUrl,
+        ...(extractedSnippet ? { jdText: extractedSnippet } : {}),
         jdExtracted: false, // Reset extraction status
       }
     });
@@ -63,7 +56,7 @@ export async function uploadJDPdf(req: Request, res: Response, next: NextFunctio
 
     return res.status(200).json({
       success: true,
-      message: 'Job Description PDF uploaded successfully.',
+      message: 'Job Description document uploaded successfully.',
       data: updatedDrive
     });
   } catch (error) {
@@ -79,17 +72,6 @@ export async function deleteJDPdf(req: Request, res: Response, next: NextFunctio
     const drive = await prisma.placementDrive.findUnique({ where: { id } });
     if (!drive) {
       return res.status(404).json({ success: false, message: 'Placement drive not found.' });
-    }
-
-    // Delete local file if it exists
-    if (drive.jdFileUrl) {
-      const fileName = drive.jdFileUrl.split('/').pop();
-      if (fileName) {
-        const filePath = path.join(process.cwd(), 'uploads', fileName);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
-      }
     }
 
     const updatedDrive = await prisma.placementDrive.update({
@@ -117,7 +99,7 @@ export async function deleteJDPdf(req: Request, res: Response, next: NextFunctio
 
     return res.status(200).json({
       success: true,
-      message: 'Job Description PDF removed successfully.',
+      message: 'Job Description document removed successfully.',
       data: updatedDrive
     });
   } catch (error) {
