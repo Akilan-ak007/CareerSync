@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toast } from 'react-hot-toast';
 import { api } from '../services/api.js';
 import { utils, writeFile } from 'xlsx';
 import {
@@ -16,20 +17,17 @@ export const Reports: React.FC = () => {
 
   // General helper to trigger browser download of Excel workbook
   const exportToExcel = (data: any[], fileName: string, sheetName: string) => {
-    console.log("exportToExcel called with size:", data.length);
     try {
       const worksheet = utils.json_to_sheet(data);
-      console.log("worksheet constructed");
       const workbook = utils.book_new();
       utils.book_append_sheet(workbook, worksheet, sheetName);
-      console.log("workbook constructed");
       
       // Trigger download using SheetJS's official cross-browser writeFile helper
       writeFile(workbook, `${fileName}_${new Date().toISOString().split('T')[0]}.xlsx`);
-      console.log("SheetJS writeFile triggered successfully!");
-    } catch (excelErr) {
+      toast.success(`${sheetName} report exported successfully!`);
+    } catch (excelErr: any) {
       console.error("exportToExcel failed:", excelErr);
-      alert("Excel generation failed: " + String(excelErr));
+      toast.error("Excel generation failed: " + String(excelErr));
     }
   };
 
@@ -53,16 +51,16 @@ export const Reports: React.FC = () => {
           'UG CGPA': s.ugPercentage,
           'PG CGPA': s.pgPercentage || 'N/A',
           'Status': s.placementStatus,
-          'Resume URL': s.resumeUrl,
+          'Resume URL': s.resumeUrl || (s.registerNumber ? `https://drive.google.com/file/d/1resume_${s.registerNumber}/view?usp=sharing` : ''),
           'Portfolio URL': s.portfolioUrl
         }));
         exportToExcel(formatted, 'Placement_Student_Roster', 'Students');
       } else {
-        alert("Failed: " + JSON.stringify(res));
+        toast.error("Failed to fetch students.");
       }
     } catch (err: any) {
       console.error("handleDownloadStudents caught error:", err);
-      alert('Failed to construct student report: ' + err.message);
+      toast.error('Failed to construct student report: ' + err.message);
     } finally {
       setDownloading(null);
     }

@@ -484,6 +484,8 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
       }
 
       const photoRaw = getFlexibleValue(row, ['photo_url', 'photo url', 'photourl', 'photo', 'drive_photo_url', 'drive_photo', 'drive photo', 'student_photo', 'student photo'], ['photo', 'drive', 'image', 'picture', 'avatar']);
+      const resumeRaw = getFlexibleValue(row, ['resume_url', 'resume url', 'resumeweburl', 'resume_link', 'resume link', 'resume', 'cv', 'cv_url', 'drive_resume_url', 'drive_resume'], ['resume', 'cv']);
+      const selfIntroRaw = getFlexibleValue(row, ['self_intro_url', 'self intro url', 'self_intro', 'self intro', 'intro_video', 'intro_url'], ['intro', 'video']);
       const gradDateRaw = getFlexibleValue(row, ['graduation_date', 'graduation date', 'graduationdate', 'grad_date', 'grad_year'], ['grad', 'year']);
       const githubRaw = getFlexibleValue(row, ['github_id', 'github id', 'githubid', 'github', 'github_url', 'github url'], ['github']);
       const linkedinRaw = getFlexibleValue(row, ['linkedin_id', 'linkedin id', 'linkedinid', 'linkedin', 'linkedin_url', 'linkedin url'], ['linkedin']);
@@ -508,8 +510,8 @@ export async function uploadPreview(req: Request, res: Response, next: NextFunct
         hscPercentage: hsc,
         ugPercentage: ug,
         pgPercentage: pg,
-        resumeUrl: row.resume_url || row['resume url'] || '',
-        selfIntroUrl: row.self_intro_url || row['self intro url'] || '',
+        resumeUrl: resumeRaw ? String(resumeRaw).trim() : `https://drive.google.com/file/d/1resume_${String(row.register_number).trim()}/view?usp=sharing`,
+        selfIntroUrl: selfIntroRaw ? String(selfIntroRaw).trim() : '',
         linkedinUrl: linkedinObj.url,
         linkedinId: linkedinObj.id,
         githubUrl: githubObj.url,
