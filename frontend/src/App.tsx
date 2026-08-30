@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext.js';
 import { Sidebar } from './components/Sidebar.js';
 import { Navbar } from './components/Navbar.js';
+import { ErrorBoundary } from './components/ErrorBoundary.js';
 import { Login } from './pages/Login.js';
 import { Dashboard } from './pages/Dashboard.js';
 
-// Lazy/Mock pages to compile, will be overwritten with detailed components next
 import { Students } from './pages/Students.js';
 import { Companies } from './pages/Companies.js';
 import { CompanyApprovals } from './pages/CompanyApprovals.js';
@@ -23,7 +23,7 @@ const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       refetchOnWindowFocus: false,
-      retry: false,
+      retry: 1,
     },
   },
 });
@@ -31,6 +31,7 @@ const queryClient = new QueryClient({
 // Layout wrapper for all protected portal paths
 const Layout: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   if (loading) {
     return (
@@ -46,10 +47,10 @@ const Layout: React.FC = () => {
 
   return (
     <div className="flex h-screen overflow-hidden bg-brand-darker">
-      <Sidebar />
-      <div className="flex-1 flex flex-col min-w-0">
-        <Navbar />
-        <main className="flex-1 overflow-hidden">
+      <Sidebar mobileOpen={mobileOpen} onClose={() => setMobileOpen(false)} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Navbar onToggleMobileMenu={() => setMobileOpen(!mobileOpen)} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-8">
           <Outlet />
         </main>
       </div>
@@ -84,68 +85,70 @@ const UnauthorizedPage: React.FC = () => (
 
 export default function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 3500,
-            style: {
-              background: '#231515',
-              color: '#ffffff',
-              border: '1px solid rgba(175, 96, 96, 0.4)',
-              fontSize: '12px',
-              fontWeight: '600',
-              borderRadius: '8px',
-              boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
-            },
-            success: {
-              iconTheme: {
-                primary: '#34d399',
-                secondary: '#1c1313',
+    <ErrorBoundary>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <Toaster
+            position="top-right"
+            toastOptions={{
+              duration: 3500,
+              style: {
+                background: '#231515',
+                color: '#ffffff',
+                border: '1px solid rgba(175, 96, 96, 0.4)',
+                fontSize: '12px',
+                fontWeight: '600',
+                borderRadius: '8px',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
               },
-            },
-            error: {
-              iconTheme: {
-                primary: '#f87171',
-                secondary: '#1c1313',
+              success: {
+                iconTheme: {
+                  primary: '#34d399',
+                  secondary: '#1c1313',
+                },
               },
-            },
-          }}
-        />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} />
-            <Route path="/unauthorized" element={<UnauthorizedPage />} />
+              error: {
+                iconTheme: {
+                  primary: '#f87171',
+                  secondary: '#1c1313',
+                },
+              },
+            }}
+          />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-            {/* Protected Portal Routes */}
-            <Route element={<Layout />}>
-              <Route path="/" element={<Navigate to="/dashboard" replace />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/students" element={<Students />} />
-              <Route path="/companies" element={<Companies />} />
-              <Route path="/drives" element={<PlacementDrives />} />
-              <Route path="/drives/:driveId/ats" element={<AtsCandidates />} />
-              <Route path="/offers" element={<Offers />} />
-              <Route path="/reports" element={<Reports />} />
+              {/* Protected Portal Routes */}
+              <Route element={<Layout />}>
+                <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/students" element={<Students />} />
+                <Route path="/companies" element={<Companies />} />
+                <Route path="/drives" element={<PlacementDrives />} />
+                <Route path="/drives/:driveId/ats" element={<AtsCandidates />} />
+                <Route path="/offers" element={<Offers />} />
+                <Route path="/reports" element={<Reports />} />
 
-              {/* Admin & Manager Only */}
-              <Route element={<RoleRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
-                <Route path="/team" element={<PlacementTeam />} />
+                {/* Admin & Manager Only */}
+                <Route element={<RoleRoute allowedRoles={['ADMIN', 'MANAGER']} />}>
+                  <Route path="/team" element={<PlacementTeam />} />
+                </Route>
+
+                {/* Admin Only Paths */}
+                <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
+                  <Route path="/company-approvals" element={<CompanyApprovals />} />
+                  <Route path="/audit-logs" element={<AuditLogs />} />
+                </Route>
               </Route>
 
-              {/* Admin Only Paths */}
-              <Route element={<RoleRoute allowedRoles={['ADMIN']} />}>
-                <Route path="/company-approvals" element={<CompanyApprovals />} />
-                <Route path="/audit-logs" element={<AuditLogs />} />
-              </Route>
-            </Route>
-
-            {/* Fallback */}
-            <Route path="*" element={<Navigate to="/dashboard" replace />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
-    </QueryClientProvider>
+              {/* Fallback */}
+              <Route path="*" element={<Navigate to="/dashboard" replace />} />
+            </Routes>
+          </BrowserRouter>
+        </AuthProvider>
+      </QueryClientProvider>
+    </ErrorBoundary>
   );
 }

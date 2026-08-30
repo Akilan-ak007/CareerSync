@@ -2,9 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import { api } from '../services/api.js';
-import { Bell, Check, MailOpen } from 'lucide-react';
+import { Bell, Check, MailOpen, Menu } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onToggleMobileMenu?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
   const { user } = useAuth();
   const location = useLocation();
   const [notifications, setNotifications] = useState<any[]>([]);
@@ -44,13 +48,11 @@ export const Navbar: React.FC = () => {
   useEffect(() => {
     if (user) {
       fetchNotifications();
-      // Setup periodic poll to fetch new alerts (every 20 seconds)
       const interval = setInterval(fetchNotifications, 20000);
       return () => clearInterval(interval);
     }
   }, [user]);
 
-  // Determine page heading based on router path
   const getPageTitle = () => {
     const path = location.pathname;
     if (path.startsWith('/dashboard')) return 'Analytics Dashboard';
@@ -66,23 +68,32 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="h-16 bg-brand-dark bg-opacity-80 backdrop-blur-md border-b border-brand-cocoa border-opacity-35 px-8 flex items-center justify-between z-40 relative">
-      {/* Page Title */}
-      <div>
-        <h2 className="text-xl font-bold text-white tracking-wide">{getPageTitle()}</h2>
+    <header className="h-16 bg-brand-dark bg-opacity-80 backdrop-blur-md border-b border-brand-cocoa border-opacity-35 px-4 md:px-8 flex items-center justify-between z-40 relative">
+      {/* Left Title & Mobile Menu Toggle */}
+      <div className="flex items-center space-x-3">
+        {onToggleMobileMenu && (
+          <button
+            onClick={onToggleMobileMenu}
+            className="md:hidden p-2 rounded-lg text-gray-300 hover:text-white hover:bg-brand-cocoa/40 transition-all focus:outline-none"
+            aria-label="Toggle Navigation Menu"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+        )}
+        <h2 className="text-lg md:text-xl font-bold text-white tracking-wide truncate">{getPageTitle()}</h2>
       </div>
 
-      {/* Action Center (Notifications & Date) */}
-      <div className="flex items-center space-x-6">
-        <span className="text-xs text-brand-rosy font-medium tracking-wide">
-          {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' })}
+      {/* Action Center */}
+      <div className="flex items-center space-x-4 md:space-x-6">
+        <span className="hidden sm:inline-block text-xs text-brand-rosy font-medium tracking-wide">
+          {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
         </span>
 
-        {/* Notifications Icon with Badge */}
+        {/* Notifications Icon */}
         <div className="relative">
           <button
             onClick={() => setShowDrawer(!showDrawer)}
-            className="p-2 rounded-full hover:bg-brand-cocoa hover:bg-opacity-40 transition-all text-gray-300 hover:text-white"
+            className="p-2 rounded-full hover:bg-brand-cocoa hover:bg-opacity-40 transition-all text-gray-300 hover:text-white relative"
           >
             <Bell className="w-5 h-5" />
             {unreadCount > 0 && (
@@ -92,9 +103,9 @@ export const Navbar: React.FC = () => {
             )}
           </button>
 
-          {/* Notifications Dropdown Panel */}
+          {/* Notifications Dropdown */}
           {showDrawer && (
-            <div className="absolute right-0 mt-3 w-80 bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl shadow-2xl z-50 p-4 animate-fade-in text-gray-300">
+            <div className="absolute right-0 mt-3 w-72 sm:w-80 bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl shadow-2xl z-50 p-4 animate-fade-in text-gray-300">
               <div className="flex items-center justify-between border-b border-brand-cocoa border-opacity-30 pb-2 mb-3">
                 <span className="font-bold text-sm text-white">Notifications ({unreadCount})</span>
                 {unreadCount > 0 && (
@@ -108,7 +119,6 @@ export const Navbar: React.FC = () => {
                 )}
               </div>
 
-              {/* Notification rows */}
               <div className="max-h-64 overflow-y-auto space-y-2.5">
                 {notifications.length === 0 ? (
                   <div className="py-6 text-center text-xs text-brand-rosy font-medium">

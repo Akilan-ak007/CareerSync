@@ -7,15 +7,20 @@ import {
   Building2,
   CheckSquare,
   CalendarDays,
-  ShieldCheck,
   Briefcase,
   FileText,
   History,
   LogOut,
-  UserCheck
+  UserCheck,
+  X
 } from 'lucide-react';
 
-export const Sidebar: React.FC = () => {
+interface SidebarProps {
+  mobileOpen?: boolean;
+  onClose?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onClose }) => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
 
@@ -23,10 +28,10 @@ export const Sidebar: React.FC = () => {
 
   const handleLogout = () => {
     logout();
+    if (onClose) onClose();
     navigate('/login');
   };
 
-  // Define navigation items based on UserRole
   const navItems = [
     {
       label: 'Dashboard',
@@ -50,7 +55,7 @@ export const Sidebar: React.FC = () => {
       label: 'Company Approvals',
       path: '/company-approvals',
       icon: CheckSquare,
-      roles: ['ADMIN'], // Admin only queue
+      roles: ['ADMIN'],
     },
     {
       label: 'Placement Drives',
@@ -62,7 +67,7 @@ export const Sidebar: React.FC = () => {
       label: 'Placement Team',
       path: '/team',
       icon: UserCheck,
-      roles: ['ADMIN', 'MANAGER'], // Admin & Manager can see team details
+      roles: ['ADMIN', 'MANAGER'],
     },
     {
       label: 'Offers Tracking',
@@ -80,32 +85,45 @@ export const Sidebar: React.FC = () => {
       label: 'Audit Logs',
       path: '/audit-logs',
       icon: History,
-      roles: ['ADMIN'], // Admin only
+      roles: ['ADMIN'],
     },
   ];
 
   const filteredItems = navItems.filter((item) => item.roles.includes(user.role));
 
-  return (
+  const sidebarContent = (
     <aside className="w-64 bg-brand-black border-r border-brand-cocoa border-opacity-40 min-h-screen flex flex-col justify-between text-gray-300">
       <div className="flex flex-col">
-        {/* Logo Brand Header */}
-        <div className="p-6 border-b border-brand-cocoa border-opacity-20 flex items-center space-x-3">
-          <div className="w-8 h-8 rounded-lg overflow-hidden bg-brand-dark flex items-center justify-center p-0.5 border border-brand-cocoa border-opacity-25 shadow-md">
-            <img src="/logo.png" alt="CareerSync Logo" className="w-full h-full object-contain filter invert" />
+        {/* Header & Logo */}
+        <div className="p-5 border-b border-brand-cocoa border-opacity-20 flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg overflow-hidden bg-brand-dark flex items-center justify-center p-0.5 border border-brand-cocoa border-opacity-25 shadow-md">
+              <img src="/logo.png" alt="CareerSync Logo" className="w-full h-full object-contain filter invert" />
+            </div>
+            <div>
+              <h1 className="text-white font-bold tracking-wider text-sm uppercase">CareerSync</h1>
+              <p className="text-[10px] text-brand-rosy font-semibold tracking-wider">PORTAL 2.0</p>
+            </div>
           </div>
-          <div>
-            <h1 className="text-white font-bold tracking-wider text-sm uppercase">CareerSync</h1>
-            <p className="text-[10px] text-brand-rosy font-semibold tracking-wider">PORTAL 2.0</p>
-          </div>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-brand-cocoa/40 transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
-        {/* Navigation Links */}
+        {/* Navigation */}
         <nav className="p-4 space-y-1.5 flex-1">
           {filteredItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => {
+                if (onClose) onClose();
+              }}
               className={({ isActive }) =>
                 `flex items-center space-x-3 px-4 py-3 rounded-lg text-sm font-medium tracking-wide transition-all duration-200 ${
                   isActive
@@ -121,7 +139,7 @@ export const Sidebar: React.FC = () => {
         </nav>
       </div>
 
-      {/* Staff profile badge & Logout */}
+      {/* User profile & Logout */}
       <div className="p-4 border-t border-brand-cocoa border-opacity-30">
         <div className="flex items-center space-x-3 p-2 rounded-lg bg-brand-dark bg-opacity-40 mb-3">
           <div className="w-10 h-10 rounded-full bg-brand-cocoa flex items-center justify-center text-white font-bold">
@@ -143,5 +161,27 @@ export const Sidebar: React.FC = () => {
         </button>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Desktop Fixed Sidebar */}
+      <div className="hidden md:flex flex-shrink-0">
+        {sidebarContent}
+      </div>
+
+      {/* Mobile Drawer Overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-50 flex md:hidden">
+          <div
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm transition-opacity"
+            onClick={onClose}
+          />
+          <div className="relative flex-1 flex flex-col max-w-xs w-full bg-brand-black shadow-2xl z-10 animate-fade-in">
+            {sidebarContent}
+          </div>
+        </div>
+      )}
+    </>
   );
 };
