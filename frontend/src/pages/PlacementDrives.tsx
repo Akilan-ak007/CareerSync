@@ -30,7 +30,10 @@ import {
   Building,
   Mail,
   Phone,
-  ExternalLink
+  ExternalLink,
+  Award,
+  CheckCircle2,
+  AlertCircle
 } from 'lucide-react';
 
 const PlacementStudentAvatar: React.FC<{ name: string; photoUrl?: string | null; className?: string }> = ({ name, photoUrl, className = 'w-6 h-6 text-[10px]' }) => {
@@ -694,288 +697,257 @@ export const PlacementDrives: React.FC = () => {
         </div>
       </div>
 
-      {/* Details drawer (slides in on right) */}
+      {/* Details drawer (Floating Backdrop Overlay Modal) */}
       {selectedDrive && (
-        <div className="w-96 bg-white border-l border-slate-200 h-full flex flex-col z-30 animate-fade-in relative shadow-xl">
-          <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
-            <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
-              <Laptop className="w-4.5 h-4.5 text-purple-700" />
-              <span>Drive Overview</span>
-            </h2>
-            <button
-              onClick={() => setSelectedDrive(null)}
-              className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
-            <div className="text-center pb-4 border-b border-slate-100">
-              <h3 className="text-base font-extrabold text-slate-900">{selectedDrive.company?.name}</h3>
-              <p className="text-xs text-purple-800 font-extrabold uppercase tracking-wider mt-1">{selectedDrive.jobRole}</p>
-              <div className="mt-2.5 flex justify-center">{getStatusBadge(selectedDrive.status)}</div>
+        <div
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex justify-end animate-fade-in"
+          onClick={() => setSelectedDrive(null)}
+        >
+          <div
+            className="w-full max-w-lg bg-white h-full shadow-2xl flex flex-col overflow-hidden border-l border-slate-200"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80 shrink-0">
+              <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                <Laptop className="w-4.5 h-4.5 text-purple-700" />
+                <span>Drive Overview & Requirements</span>
+              </h2>
+              <button
+                onClick={() => setSelectedDrive(null)}
+                className="p-1.5 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            {/* Criteria */}
-            <div className="space-y-3">
-              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
-                Eligibility Criteria
-              </h4>
-              <div className="grid grid-cols-2 gap-3 text-slate-600 font-bold">
-                <div>Min CGPA: <span className="text-slate-900 block mt-0.5 font-mono">{selectedDrive.minimumCgpa}</span></div>
-                <div>Max Backlogs: <span className="text-slate-900 block mt-0.5 font-mono">{selectedDrive.maximumBacklogs}</span></div>
-                <div>Drive Type: <span className="text-slate-900 block mt-0.5 uppercase">{selectedDrive.driveType.replace('_', ' ')}</span></div>
-                <div>Package Offer: <span className="text-purple-800 block mt-0.5 font-mono">{selectedDrive.ctc} LPA</span></div>
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
+              <div className="text-center pb-4 border-b border-slate-100">
+                <h3 className="text-base font-extrabold text-slate-900">{selectedDrive.company?.name}</h3>
+                <p className="text-xs text-purple-800 font-extrabold uppercase tracking-wider mt-1">{selectedDrive.jobRole}</p>
+                <div className="mt-2.5 flex justify-center">{getStatusBadge(selectedDrive.status)}</div>
               </div>
-            </div>
 
-            {/* Company Info Card */}
-            {selectedDrive.company && (
-              <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
-                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5 border-b border-slate-200 pb-1.5">
-                  <Building className="w-3.5 h-3.5 text-purple-700" />
-                  <span>Corporate Profile</span>
-                </h4>
-                <div className="space-y-2 text-slate-600 font-semibold">
-                  <div className="flex justify-between">
-                    <span>Industry:</span>
-                    <span className="text-slate-900 font-bold">{selectedDrive.company.industry || 'IT / Software'}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Location:</span>
-                    <span className="text-slate-900 font-bold capitalize">{selectedDrive.company.location}</span>
-                  </div>
-                  {selectedDrive.company.website && (
-                    <div className="flex justify-between">
-                      <span>Website:</span>
-                      <a href={selectedDrive.company.website} target="_blank" rel="noopener noreferrer" className="text-purple-700 font-bold hover:underline flex items-center space-x-0.5">
-                        <span>Visit Site</span>
-                        <ExternalLink className="w-3 h-3" />
-                      </a>
-                    </div>
-                  )}
-                  {selectedDrive.company.companySize && (
-                    <div className="flex justify-between">
-                      <span>Staff Size:</span>
-                      <span className="text-slate-900 font-bold">{selectedDrive.company.companySize}</span>
-                    </div>
-                  )}
-                  {selectedDrive.company.contactPersonName && (
-                    <div className="pt-1.5 border-t border-slate-200 space-y-1">
-                      <div className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wide">Contact Representative</div>
-                      <div className="text-slate-900 font-extrabold">{selectedDrive.company.contactPersonName}</div>
-                      {selectedDrive.company.contactPersonEmail && <div className="text-slate-600 flex items-center space-x-1 font-mono text-[11px]"><Mail className="w-3 h-3 text-slate-400" /> <span>{selectedDrive.company.contactPersonEmail}</span></div>}
-                      {selectedDrive.company.contactPersonPhone && <div className="text-slate-600 flex items-center space-x-1 font-mono text-[11px]"><Phone className="w-3 h-3 text-slate-400" /> <span>{selectedDrive.company.contactPersonPhone}</span></div>}
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-
-            {/* Stats if completed */}
-            {selectedDrive.status === 'COMPLETED' && (
+              {/* Criteria */}
               <div className="space-y-3">
                 <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
-                  Placement Statistics
+                  Eligibility Criteria
                 </h4>
-                
-                {/* Number of Placed Students Highlight Box */}
-                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between shadow-xs">
-                  <div className="flex items-center space-x-2.5">
-                    <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
-                    <div>
-                      <span className="text-emerald-900 font-extrabold text-xs block">Placed Candidates</span>
-                      <span className="text-[10px] text-emerald-700 font-semibold">Confirmed offer letters issued</span>
-                    </div>
-                  </div>
-                  <span className="text-xl font-black font-mono text-emerald-900 bg-white px-3 py-1 rounded-lg border border-emerald-300 shadow-xs">
-                    {selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}
-                  </span>
-                </div>
-
-                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 font-mono text-[11px] text-slate-700">
-                  <div className="flex justify-between">
-                    <span>Total Offers Generated:</span>
-                    <span className="text-slate-900 font-extrabold">{selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}</span>
-                  </div>
-                  {selectedDrive.highestCtc && (
-                    <div className="flex justify-between">
-                      <span>Highest CTC:</span>
-                      <span className="text-purple-800 font-extrabold">{selectedDrive.highestCtc} LPA</span>
-                    </div>
-                  )}
-                  {selectedDrive.averageCtc && (
-                    <div className="flex justify-between">
-                      <span>Average CTC:</span>
-                      <span className="text-slate-900 font-extrabold">{selectedDrive.averageCtc} LPA</span>
-                    </div>
-                  )}
-                  {selectedDrive.lowestCtc && (
-                    <div className="flex justify-between">
-                      <span>Lowest CTC:</span>
-                      <span className="text-slate-600 font-bold">{selectedDrive.lowestCtc} LPA</span>
-                    </div>
-                  )}
-
-                  {/* List of Placed Students */}
-                  {selectedDrive.offers && selectedDrive.offers.length > 0 && (
-                    <div className="pt-2 border-t border-slate-200 space-y-2 font-sans text-left">
-                      <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">Placed Roster ({selectedDrive.offers.length}):</span>
-                      <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
-                        {selectedDrive.offers.map((off: any) => (
-                          <div key={off.id} className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between text-xs shadow-xs">
-                            <div className="flex items-center space-x-2 truncate">
-                              <PlacementStudentAvatar name={off.student?.name || 'Student'} photoUrl={off.student?.photoUrl} className="w-6 h-6 text-[10px]" />
-                              <div className="truncate">
-                                <div className="font-extrabold text-slate-900 truncate">{off.student?.name}</div>
-                                <div className="text-[9px] text-slate-500 font-mono">{off.student?.registerNumber}</div>
-                              </div>
-                            </div>
-                            <span className="text-[9px] font-extrabold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
-                              {off.ctc || selectedDrive.ctc} LPA
-                            </span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <button
-                    onClick={() => exportPlacedStudents(selectedDrive)}
-                    className="w-full mt-3 bg-purple-900 hover:bg-purple-950 text-white py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 shadow-xs text-xs"
-                  >
-                    <Download className="w-3.5 h-3.5" />
-                    <span>Download Placed Roster (.xlsx)</span>
-                  </button>
+                <div className="grid grid-cols-2 gap-3 text-slate-600 font-bold">
+                  <div>Min CGPA: <span className="text-slate-900 block mt-0.5 font-mono">{selectedDrive.minimumCgpa}</span></div>
+                  <div>Max Backlogs: <span className="text-slate-900 block mt-0.5 font-mono">{selectedDrive.maximumBacklogs}</span></div>
+                  <div>Drive Type: <span className="text-slate-900 block mt-0.5 uppercase">{selectedDrive.driveType.replace('_', ' ')}</span></div>
+                  <div>Package Offer: <span className="text-purple-800 block mt-0.5 font-mono">{selectedDrive.ctc} LPA</span></div>
                 </div>
               </div>
-            )}
 
-            {/* Job Description & AI Matching section */}
-            <div className="space-y-3 pt-4 border-t border-slate-200">
-              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1 flex items-center space-x-1.5">
-                <FileText className="w-4 h-4 text-purple-700" />
-                <span>Job Description & AI Matching</span>
-              </h4>
-
-              {(() => {
-                const effectiveJdUrl = selectedDrive.jdFileUrl || selectedDrive.company?.sampleResumeUrl;
-                const effectiveJdFileName = selectedDrive.jdFileName || (selectedDrive.company?.sampleResumeUrl ? `${selectedDrive.company.name}_JD_Document` : null);
-
-                if (!effectiveJdUrl) {
-                  return (
-                    <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-center">
-                      <p className="text-[11px] text-slate-600 font-medium">No Job Description PDF attached yet.</p>
-                      {(isAdmin || isTeam) ? (
-                        <div className="space-y-2 pt-1">
-                          <label className="bg-purple-900 hover:bg-purple-950 text-white px-3 py-1.5 rounded-lg cursor-pointer transition-all inline-block font-extrabold shadow-xs text-xs">
-                            <span>Upload JD PDF</span>
-                            <input
-                              type="file"
-                              accept=".pdf"
-                              onChange={handleJdUpload}
-                              className="hidden"
-                            />
-                          </label>
-                          {uploadStatus && <p className="text-[10px] text-purple-800 font-mono mt-1">{uploadStatus}</p>}
-                        </div>
-                      ) : (
-                        <p className="text-[10px] text-purple-800 font-extrabold">Recruiter/Officer action required</p>
-                      )}
+              {/* Company Info Card */}
+              {selectedDrive.company && (
+                <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5 border-b border-slate-200 pb-1.5">
+                    <Building className="w-3.5 h-3.5 text-purple-700" />
+                    <span>Corporate Profile</span>
+                  </h4>
+                  <div className="space-y-2 text-slate-600 font-semibold">
+                    <div className="flex justify-between">
+                      <span>Industry:</span>
+                      <span className="text-slate-900 font-bold">{selectedDrive.company.industry || 'IT / Software'}</span>
                     </div>
-                  );
-                }
-
-                return (
-                  <div className="space-y-3">
-                    <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
-                      <div className="flex justify-between items-center text-xs">
-                        <span className="font-bold text-slate-900 truncate max-w-[180px]">
-                          {effectiveJdFileName}
-                        </span>
-                        <span className="text-purple-800 font-mono text-[9px] bg-purple-50 px-2 py-0.5 rounded border border-purple-200 font-bold">
-                          {selectedDrive.jdFileUrl ? 'PDF Document' : 'Drive Link'}
-                        </span>
-                      </div>
-
-                      <div className="flex space-x-2 pt-1">
-                        <button
-                          onClick={() => {
-                            if (selectedDrive.jdFileUrl) {
-                              setShowPdfViewer(true);
-                            } else if (effectiveJdUrl) {
-                              window.open(effectiveJdUrl, '_blank', 'noopener,noreferrer');
-                            }
-                          }}
-                          className="bg-purple-900 hover:bg-purple-950 text-white px-2.5 py-1.5 rounded-lg flex-1 text-center font-extrabold flex items-center justify-center space-x-1 transition-all text-xs shadow-xs"
-                        >
-                          <ExternalLink className="w-3.5 h-3.5" />
-                          <span>View Document</span>
-                        </button>
-
-                        {(isAdmin || isTeam) && (
-                          <label className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 px-2.5 py-1.5 rounded-lg flex-1 text-center font-bold cursor-pointer flex items-center justify-center text-xs shadow-xs">
-                            <span>{selectedDrive.jdFileUrl ? 'Replace' : 'Upload PDF'}</span>
-                            <input
-                              type="file"
-                              accept=".pdf"
-                              onChange={handleJdUpload}
-                              className="hidden"
-                            />
-                          </label>
-                        )}
-                      </div>
+                    <div className="flex justify-between">
+                      <span>Location:</span>
+                      <span className="text-slate-900 font-bold capitalize">{selectedDrive.company.location}</span>
                     </div>
-
-                    {uploadStatus && <p className="text-[10px] text-purple-800 font-mono my-1 text-center animate-pulse">{uploadStatus}</p>}
-
-                    {/* AI Extraction segment */}
-                    {!selectedDrive.jdExtracted ? (
-                      <div className="space-y-2">
-                        {(isAdmin || isTeam) ? (
-                          <button
-                            disabled={isExtracting}
-                            onClick={handleJdExtraction}
-                            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-2.5 rounded-xl font-extrabold transition-all flex items-center justify-center space-x-1.5 shadow-xs text-xs"
-                          >
-                            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
-                            <span>{isExtracting ? 'Extracting Requirements...' : 'Extract AI Requirements & Match ATS'}</span>
-                          </button>
-                        ) : (
-                          <p className="text-[10px] text-slate-500 italic text-center">Extraction details pending...</p>
-                        )}
+                    {selectedDrive.company.website && (
+                      <div className="flex justify-between">
+                        <span>Website:</span>
+                        <a
+                          href={selectedDrive.company.website.startsWith('http') ? selectedDrive.company.website : `https://${selectedDrive.company.website}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-purple-800 font-bold hover:underline flex items-center space-x-1"
+                        >
+                          <span>Visit Site</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
                       </div>
-                    ) : (
-                      /* If extracted, display options */
-                      <div className="space-y-2">
-                        <button
-                          onClick={() => {
-                            setEditedJdInfo(selectedDrive.jdExtractedInfo);
-                            setShowJdEditor(true);
-                          }}
-                          className="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 text-xs shadow-xs"
-                        >
-                          <Sparkles className="w-3.5 h-3.5 text-purple-700" />
-                          <span>Review Requirements (AI)</span>
-                        </button>
-
-                        {/* Go to ATS Candidates matching screen */}
-                        <button
-                          onClick={() => {
-                            setSelectedDrive(null);
-                            navigate(`/drives/${selectedDrive.id}/ats`);
-                          }}
-                          className="w-full bg-purple-900 hover:bg-purple-950 text-white py-2.5 rounded-xl font-extrabold transition-all flex items-center justify-center space-x-1.5 shadow-md text-xs"
-                        >
-                          <UserCheck className="w-3.5 h-3.5" />
-                          <span>View ATS Candidate Matching</span>
-                        </button>
+                    )}
+                    {selectedDrive.company.companySize && (
+                      <div className="flex justify-between">
+                        <span>Staff Size:</span>
+                        <span className="text-slate-900 font-bold">{selectedDrive.company.companySize}</span>
+                      </div>
+                    )}
+                    {selectedDrive.company.contactPersonName && (
+                      <div className="pt-2 border-t border-slate-200">
+                        <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">Contact Representative</div>
+                        <div className="text-slate-900 font-extrabold mt-0.5">{selectedDrive.company.contactPersonName}</div>
+                        {selectedDrive.company.contactPersonEmail && (
+                          <div className="text-[10px] text-slate-600 flex items-center space-x-1 mt-0.5 font-mono">
+                            <Mail className="w-3 h-3 text-purple-700" />
+                            <span>{selectedDrive.company.contactPersonEmail}</span>
+                          </div>
+                        )}
+                        {selectedDrive.company.contactPersonPhone && (
+                          <div className="text-[10px] text-slate-600 flex items-center space-x-1 mt-0.5 font-mono">
+                            <Phone className="w-3 h-3 text-purple-700" />
+                            <span>{selectedDrive.company.contactPersonPhone}</span>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
-                );
-              })()}
+                </div>
+              )}
+
+              {/* Offer Generation & Placed Students Panel */}
+              {selectedDrive.offersCount > 0 && (
+                <div className="space-y-3 bg-purple-50/50 p-4 rounded-xl border border-purple-200">
+                  <h4 className="font-extrabold text-purple-900 uppercase tracking-wider flex items-center justify-between border-b border-purple-200 pb-1.5">
+                    <div className="flex items-center space-x-1.5">
+                      <Award className="w-4 h-4 text-purple-800" />
+                      <span>Hiring Offers ({selectedDrive.offersCount})</span>
+                    </div>
+                    <span className="text-[10px] font-mono bg-purple-100 text-purple-900 px-2 py-0.5 rounded-full border border-purple-300 font-black">
+                      VERIFIED OFFERS
+                    </span>
+                  </h4>
+
+                  <div className="space-y-2">
+                    <div className="text-slate-700 font-bold flex justify-between items-center text-xs">
+                      <span>Official Offers Issued:</span>
+                      <span className="font-mono font-black text-purple-900 text-sm">{selectedDrive.offersCount}</span>
+                    </div>
+
+                    {selectedDrive.offers && selectedDrive.offers.length > 0 && (
+                      <div className="mt-3 space-y-2">
+                        <div className="text-[10px] uppercase font-extrabold text-slate-500 tracking-wider">Placed Candidates Roster:</div>
+                        <div className="max-h-36 overflow-y-auto space-y-1.5 pr-1">
+                          {selectedDrive.offers.map((off: any) => (
+                            <div key={off.id} className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between text-xs">
+                              <div className="flex items-center space-x-2 truncate">
+                                <div className="w-6 h-6 rounded-full bg-purple-100 text-purple-900 font-black flex items-center justify-center text-[10px]">
+                                  {off.student?.name?.[0]}
+                                </div>
+                                <div className="truncate">
+                                  <div className="font-extrabold text-slate-900 truncate">{off.student?.name}</div>
+                                  <div className="text-[9px] text-slate-500 font-mono">{off.student?.registerNumber}</div>
+                                </div>
+                              </div>
+                              <span className="text-[9px] font-extrabold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
+                                {off.ctc || selectedDrive.ctc} LPA
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    
+                    <button
+                      onClick={() => exportPlacedStudents(selectedDrive)}
+                      className="w-full mt-3 bg-purple-900 hover:bg-purple-950 text-white py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 shadow-xs text-xs"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Download Placed Roster (.xlsx)</span>
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Job Description & AI Matching section */}
+              <div className="space-y-3 pt-4 border-t border-slate-200">
+                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1 flex items-center space-x-1.5">
+                  <FileText className="w-4 h-4 text-purple-700" />
+                  <span>Job Description & AI Matching</span>
+                </h4>
+
+                {(() => {
+                  return (
+                    <div className="space-y-3">
+                      {/* JD File Attachment */}
+                      {selectedDrive.jobDescriptionUrl ? (
+                        <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
+                          <div className="flex items-center space-x-2.5 truncate">
+                            <FileText className="w-5 h-5 text-purple-700 shrink-0" />
+                            <div className="truncate">
+                              <div className="font-extrabold text-slate-900 truncate">Job Description Document</div>
+                              <div className="text-[10px] text-emerald-700 font-bold flex items-center space-x-1 mt-0.5">
+                                <CheckCircle2 className="w-3 h-3" />
+                                <span>Document Uploaded</span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <a
+                            href={selectedDrive.jobDescriptionUrl}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="bg-white hover:bg-slate-100 text-purple-900 border border-slate-300 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition-all shrink-0 shadow-xs"
+                          >
+                            <span>View JD</span>
+                            <ExternalLink className="w-3 h-3" />
+                          </a>
+                        </div>
+                      ) : (
+                        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] font-medium flex items-center space-x-2">
+                          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                          <span>No Job Description PDF attached yet. Upload a JD to enable AI ATS matching.</span>
+                        </div>
+                      )}
+
+                      {/* AI Extraction state */}
+                      {!selectedDrive.jdExtracted ? (
+                        <div className="p-3.5 bg-purple-50 border border-purple-200 rounded-xl space-y-2">
+                          <div className="flex items-center space-x-2">
+                            <Sparkles className="w-4 h-4 text-purple-700" />
+                            <span className="font-extrabold text-purple-900 text-xs">Automated AI Requirements Extractor</span>
+                          </div>
+                          <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
+                            Extract required skills, keywords, experience, and candidate criteria automatically from the uploaded JD document using AI.
+                          </p>
+
+                          {isAdmin ? (
+                            <button
+                              onClick={() => handleJdExtraction()}
+                              disabled={isExtracting}
+                              className="w-full bg-purple-900 hover:bg-purple-950 text-white py-2.5 rounded-xl font-extrabold transition-all flex items-center justify-center space-x-1.5 shadow-xs text-xs"
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                              <span>{isExtracting ? 'Extracting Requirements...' : 'Extract AI Requirements & Match ATS'}</span>
+                            </button>
+                          ) : (
+                            <p className="text-[10px] text-slate-500 italic text-center">Extraction details pending...</p>
+                          )}
+                        </div>
+                      ) : (
+                        /* If extracted, display options */
+                        <div className="space-y-2">
+                          <button
+                            onClick={() => {
+                              setEditedJdInfo(selectedDrive.jdExtractedInfo);
+                              setShowJdEditor(true);
+                            }}
+                            className="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 text-xs shadow-xs"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-purple-700" />
+                            <span>Review Requirements (AI)</span>
+                          </button>
+
+                          {/* Go to ATS Candidates matching screen */}
+                          <button
+                            onClick={() => {
+                              setSelectedDrive(null);
+                              navigate(`/drives/${selectedDrive.id}/ats`);
+                            }}
+                            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-2.5 rounded-xl font-extrabold transition-all flex items-center justify-center space-x-1.5 shadow-md text-xs"
+                          >
+                            <UserCheck className="w-3.5 h-3.5" />
+                            <span>View ATS Candidate Matching</span>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+              </div>
             </div>
           </div>
         </div>
