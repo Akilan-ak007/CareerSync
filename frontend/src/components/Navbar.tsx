@@ -104,11 +104,6 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
 
       {/* Right: Actions, Notifications, User Profile & Logout */}
       <div className="flex items-center justify-end space-x-2 md:space-x-4 w-1/3">
-        <span className="hidden xl:inline-flex items-center space-x-1.5 text-[10px] text-slate-600 font-extrabold bg-slate-100 px-2.5 py-1 rounded-full border border-slate-200">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>LIVE</span>
-        </span>
-
         {/* Notifications Icon */}
         <div className="relative">
           <button
