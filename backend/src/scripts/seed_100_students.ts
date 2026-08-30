@@ -237,9 +237,8 @@ async function main() {
     const linkedinUrl = linkedinIdOrUrl.startsWith('http') ? linkedinIdOrUrl : `https://www.linkedin.com/in/${linkedinIdOrUrl}`;
     const linkedinId = extractUsername(linkedinIdOrUrl);
 
-    const placementStatus = (placementStatusStr === 'PLACED' || placementStatusStr === 'MULTIPLE_OFFERS')
-      ? PlacementStatus.PLACED
-      : PlacementStatus.NOT_PLACED;
+    // Calculate placement status dynamically from offers or keep NOT_PLACED as initial state
+    const placementStatus = PlacementStatus.NOT_PLACED;
 
     const graduationDate = gradDateStr ? new Date(gradDateStr) : new Date('2027-05-31');
 

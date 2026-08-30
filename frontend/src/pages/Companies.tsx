@@ -25,7 +25,9 @@ import {
   HelpCircle,
   RefreshCw,
   FileText,
-  Download
+  Download,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 
 export const Companies: React.FC = () => {
@@ -42,7 +44,8 @@ export const Companies: React.FC = () => {
   const [deleteTargetId, setDeleteTargetId] = useState<string | null>(null);
   const [deleteTargetName, setDeleteTargetName] = useState('');
   const [deletePermanent, setDeletePermanent] = useState(false);
-  const [pagination, setPagination] = useState<any>({ totalCount: 0, totalPages: 1, currentPage: 1, limit: 10 });
+  const [limit, setLimit] = useState(24);
+  const [pagination, setPagination] = useState<any>({ totalCount: 0, totalPages: 1, currentPage: 1, limit: 24 });
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [page, setPage] = useState(1);
@@ -93,7 +96,7 @@ export const Companies: React.FC = () => {
           search,
           status: statusFilter,
           page,
-          limit: 10
+          limit
         });
         if (res.success) {
           setCompanies(res.data.companies);
@@ -109,7 +112,7 @@ export const Companies: React.FC = () => {
 
   useEffect(() => {
     loadCompanies();
-  }, [search, statusFilter, page, viewDeleted]);
+  }, [search, statusFilter, page, limit, viewDeleted]);
 
   // Form open handlers
   const handleOpenCreate = () => {
@@ -398,6 +401,19 @@ export const Companies: React.FC = () => {
               </select>
             </div>
           )}
+
+          <div>
+            <select
+              value={limit}
+              onChange={(e) => { setLimit(Number(e.target.value)); setPage(1); }}
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-bold focus:outline-none focus:border-purple-700 transition-all"
+            >
+              <option value={12}>12 per page</option>
+              <option value={24}>24 per page</option>
+              <option value={50}>50 per page</option>
+              <option value={100}>100 per page</option>
+            </select>
+          </div>
         </div>
 
         {loading ? (
@@ -515,6 +531,55 @@ export const Companies: React.FC = () => {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {/* Pagination Controls */}
+        {!viewDeleted && pagination.totalCount > 0 && (
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 pb-2 border-t border-slate-200 text-xs text-slate-600 font-medium">
+            <div className="font-semibold text-slate-700">
+              Showing <span className="font-extrabold text-purple-900">{((pagination.currentPage - 1) * limit) + 1}</span> to{' '}
+              <span className="font-extrabold text-purple-900">{Math.min(pagination.currentPage * limit, pagination.totalCount)}</span> of{' '}
+              <span className="font-extrabold text-purple-900">{pagination.totalCount}</span> Corporate Partners
+            </div>
+
+            {pagination.totalPages > 1 && (
+              <div className="flex items-center space-x-2">
+                <button
+                  disabled={page <= 1}
+                  onClick={() => setPage(p => Math.max(1, p - 1))}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl disabled:opacity-40 font-bold text-slate-700 shadow-xs flex items-center space-x-1 transition-all"
+                >
+                  <ChevronLeft className="w-3.5 h-3.5" />
+                  <span>Previous</span>
+                </button>
+
+                <div className="flex space-x-1">
+                  {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+                    <button
+                      key={pageNum}
+                      onClick={() => setPage(pageNum)}
+                      className={`w-8 h-8 rounded-xl font-bold transition-all text-xs flex items-center justify-center ${
+                        page === pageNum
+                          ? 'bg-purple-900 text-white shadow-sm'
+                          : 'bg-white hover:bg-slate-100 border border-slate-200 text-slate-700'
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  ))}
+                </div>
+
+                <button
+                  disabled={page >= pagination.totalPages}
+                  onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                  className="px-3 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl disabled:opacity-40 font-bold text-slate-700 shadow-xs flex items-center space-x-1 transition-all"
+                >
+                  <span>Next</span>
+                  <ChevronRight className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -6,7 +6,7 @@ import { CompanyStatus } from '@prisma/client';
 // 1. Get companies list with role-based restrictions
 export async function getCompanies(req: Request, res: Response, next: NextFunction) {
   try {
-    const { search, status, page = '1', limit = '10', sortBy = 'name', sortOrder = 'asc' } = req.query;
+    const { search, status, page = '1', limit = '50', sortBy = 'name', sortOrder = 'asc' } = req.query;
     const pageNum = parseInt(page as string, 10);
     const limitNum = parseInt(limit as string, 10);
     const offset = (pageNum - 1) * limitNum;
