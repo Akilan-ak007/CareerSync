@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "postinstall": "prisma generate --schema=./backend/prisma/schema.prisma",
-    "build": "prisma generate --schema=./backend/prisma/schema.prisma && npm --prefix frontend run build",
+    "build": "prisma generate --schema=./backend/prisma/schema.prisma && npm --prefix frontend run build && cp -r frontend/dist ./dist",
     "dev": "npm --prefix frontend run dev",
     "dev:frontend": "npm --prefix frontend run dev",
     "dev:backend": "npm --prefix backend run dev"
@@ -29,6 +29,7 @@
     "@types/morgan": "^1.9.9",
     "@types/multer": "^2.2.0",
     "@types/node": "^20.11.24",
+    "playwright": "^1.50.0",
     "prisma": "^5.10.2",
     "tsx": "^4.7.1",
     "typescript": "^5.3.3"
