@@ -4,12 +4,9 @@ import { api } from '../services/api.js';
 import {
   Users,
   Building,
-  CalendarCheck,
   TrendingUp,
-  Award,
   CircleDollarSign,
-  AlertCircle,
-  Briefcase
+  AlertCircle
 } from 'lucide-react';
 import {
   ResponsiveContainer,
@@ -21,7 +18,6 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Legend,
   CartesianGrid
 } from 'recharts';
 
@@ -42,7 +38,7 @@ export const Dashboard: React.FC = () => {
   const [loading, setLoading] = useState(!stats);
   const [error, setError] = useState<string | null>(null);
 
-  const COLORS = ['#988686', '#5C4E4E', '#D1D0D0', '#000000'];
+  const COLORS = ['#800000', '#0F172A', '#E11D48', '#2563EB'];
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -75,7 +71,7 @@ export const Dashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex-1 flex items-center justify-center p-8">
-        <span className="w-10 h-10 border-4 border-brand-rosy border-t-transparent rounded-full animate-spin" />
+        <span className="w-10 h-10 border-4 border-red-800 border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -83,8 +79,8 @@ export const Dashboard: React.FC = () => {
   if (error || !stats) {
     return (
       <div className="flex-1 p-8">
-        <div className="p-4 bg-red-950 bg-opacity-30 border border-red-900 rounded-lg text-red-300 text-sm flex items-center space-x-2">
-          <AlertCircle className="w-5 h-5" />
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 text-xs flex items-center space-x-2">
+          <AlertCircle className="w-5 h-5 text-rose-600" />
           <span>{error || 'Dashboard loading failed.'}</span>
         </div>
       </div>
@@ -94,226 +90,109 @@ export const Dashboard: React.FC = () => {
   const { cards, charts } = stats;
 
   return (
-    <div className="flex-1 p-8 space-y-8 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in">
+    <div className="flex-1 p-4 md:p-8 space-y-6 md:space-y-8 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-700">
       {/* 1. Dashboard Metrics Summary Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="glass-card p-5 flex items-center justify-between">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+        <div className="glass-card p-5 flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Students</p>
-            <h3 className="text-2xl font-black text-white mt-1">{cards.totalStudents}</h3>
-            <p className="text-[10px] text-gray-400 mt-2 font-medium">Enrolled in 2026 Batch</p>
+            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Total Students</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{cards.totalStudents}</h3>
+            <p className="text-[10px] text-slate-400 mt-1 font-semibold">Enrolled in 2026 Batch</p>
           </div>
-          <div className="p-3 bg-brand-cocoa bg-opacity-20 rounded-xl text-brand-rosy">
+          <div className="p-3 bg-red-50 rounded-xl text-red-800 border border-red-100">
             <Users className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card p-5 flex items-center justify-between">
+        <div className="glass-card p-5 flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Approved Companies</p>
-            <h3 className="text-2xl font-black text-white mt-1">{cards.totalCompanies}</h3>
-            <p className="text-[10px] text-brand-rosy mt-2 font-semibold">Active in Recruitment</p>
+            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Approved Companies</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{cards.totalCompanies}</h3>
+            <p className="text-[10px] text-red-800 mt-1 font-bold">Active in Recruitment</p>
           </div>
-          <div className="p-3 bg-brand-cocoa bg-opacity-20 rounded-xl text-brand-rosy">
+          <div className="p-3 bg-red-50 rounded-xl text-red-800 border border-red-100">
             <Building className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card p-5 flex items-center justify-between">
+        <div className="glass-card p-5 flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Placement Rate</p>
-            <h3 className="text-2xl font-black text-white mt-1">{cards.placementPercentage}%</h3>
-            <p className="text-[10px] text-gray-400 mt-2 font-medium">Placed: {cards.studentsPlaced} / {cards.totalStudents}</p>
+            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Placement Rate</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{cards.placementPercentage}%</h3>
+            <p className="text-[10px] text-slate-400 mt-1 font-semibold">Placed: {cards.studentsPlaced} / {cards.totalStudents}</p>
           </div>
-          <div className="p-3 bg-brand-cocoa bg-opacity-20 rounded-xl text-brand-rosy">
+          <div className="p-3 bg-red-50 rounded-xl text-red-800 border border-red-100">
             <TrendingUp className="w-6 h-6" />
           </div>
         </div>
 
-        <div className="glass-card p-5 flex items-center justify-between">
+        <div className="glass-card p-5 flex items-center justify-between shadow-xs">
           <div>
-            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider">Average Package</p>
-            <h3 className="text-2xl font-black text-white mt-1">{cards.averagePackage} LPA</h3>
-            <p className="text-[10px] text-brand-rosy mt-2 font-semibold">Highest: {cards.highestPackage} LPA</p>
+            <p className="text-[11px] text-slate-500 font-bold uppercase tracking-wider">Average Package</p>
+            <h3 className="text-2xl font-black text-slate-900 mt-1">{cards.averagePackage} LPA</h3>
+            <p className="text-[10px] text-red-800 mt-1 font-bold">Highest: {cards.highestPackage} LPA</p>
           </div>
-          <div className="p-3 bg-brand-cocoa bg-opacity-20 rounded-xl text-brand-rosy">
+          <div className="p-3 bg-red-50 rounded-xl text-red-800 border border-red-100">
             <CircleDollarSign className="w-6 h-6" />
           </div>
         </div>
       </div>
 
       {/* 2. Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
         {/* Placement Rate (Placed vs Not Placed) */}
-        <div className="glass-panel p-6">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-6">Placement Distribution</h4>
+        <div className="glass-panel p-6 shadow-xs">
+          <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-6">Placement Distribution</h4>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={charts.placementStats}
+                  data={charts.placementDistribution}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
-                  outerRadius={80}
+                  outerRadius={85}
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {charts.placementStats.map((entry: any, index: number) => (
+                  {charts.placementDistribution.map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip contentStyle={{ backgroundColor: '#1C1717', borderColor: '#5C4E4E', borderRadius: '8px' }} />
-                <Legend formatter={(value) => <span className="text-xs text-gray-400 font-medium">{value}</span>} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '8px', color: '#0F172A', fontSize: '11px', fontWeight: 'bold' }}
+                />
               </PieChart>
             </ResponsiveContainer>
           </div>
+          <div className="flex items-center justify-center space-x-6 mt-4">
+            {charts.placementDistribution.map((entry: any, index: number) => (
+              <div key={entry.name} className="flex items-center space-x-2">
+                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
+                <span className="text-xs font-bold text-slate-700">{entry.name}: {entry.value}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
-        {/* Package brackets distribution */}
-        <div className="glass-panel p-6">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-6">Package Distribution (CTC LPA)</h4>
+        {/* Department Placement Breakdown */}
+        <div className="glass-panel p-6 shadow-xs">
+          <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider mb-6">Department Placement Ratios</h4>
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={charts.packageStats.distribution}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#5C4E4E" opacity={0.2} />
-                <XAxis dataKey="name" stroke="#988686" fontSize={11} />
-                <YAxis stroke="#988686" fontSize={11} />
-                <Tooltip contentStyle={{ backgroundColor: '#1C1717', borderColor: '#5C4E4E', borderRadius: '8px' }} />
-                <Bar dataKey="count" fill="#988686" radius={[4, 4, 0, 0]} />
+              <BarChart data={charts.departmentStats}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F0" />
+                <XAxis dataKey="code" stroke="#64748B" fontSize={11} tickLine={false} />
+                <YAxis stroke="#64748B" fontSize={11} tickLine={false} />
+                <Tooltip
+                  contentStyle={{ backgroundColor: '#FFFFFF', borderColor: '#E2E8F0', borderRadius: '8px', color: '#0F172A', fontSize: '11px', fontWeight: 'bold' }}
+                />
+                <Bar dataKey="placed" name="Placed Students" fill="#800000" radius={[4, 4, 0, 0]} />
+                <Bar dataKey="total" name="Total Students" fill="#CBD5E1" radius={[4, 4, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
-
-        {/* Department placement percentages */}
-        <div className="glass-panel p-6">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-6">Department-wise Placements (%)</h4>
-          <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={charts.deptStats}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#5C4E4E" opacity={0.2} />
-                <XAxis dataKey="department" stroke="#988686" fontSize={11} />
-                <YAxis stroke="#988686" fontSize={11} unit="%" />
-                <Tooltip contentStyle={{ backgroundColor: '#1C1717', borderColor: '#5C4E4E', borderRadius: '8px' }} />
-                <Bar dataKey="percentage" name="Placement %" fill="#5C4E4E" radius={[4, 4, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </div>
-
-        {/* Top companies by offers */}
-        <div className="glass-panel p-6">
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-6">Top Companies by Offers</h4>
-          <div className="h-64">
-            {charts.companyOffers.length === 0 ? (
-              <div className="h-full flex items-center justify-center text-xs text-brand-rosy">
-                No offers recorded yet.
-              </div>
-            ) : (
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={charts.companyOffers} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" stroke="#5C4E4E" opacity={0.2} />
-                  <XAxis type="number" stroke="#988686" fontSize={11} />
-                  <YAxis dataKey="name" type="category" stroke="#988686" fontSize={11} width={80} />
-                  <Tooltip contentStyle={{ backgroundColor: '#1C1717', borderColor: '#5C4E4E', borderRadius: '8px' }} />
-                  <Bar dataKey="offers" fill="#D1D0D0" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* 3. Role-specific Information Sections */}
-      <div className="grid grid-cols-1 gap-6">
-        {/* Admin Dashboard additions: approval queue and audit log summaries */}
-        {user?.role === 'ADMIN' && (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <div className="glass-panel p-6">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Cold Approvals Queue</h4>
-              {stats.recentPending?.length === 0 ? (
-                <div className="py-6 text-center text-xs text-brand-rosy font-medium bg-brand-dark bg-opacity-20 rounded-lg">
-                  All company submissions have been reviewed.
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {stats.recentPending?.map((item: any) => (
-                    <div key={item.id} className="p-3 bg-brand-card rounded-lg flex items-center justify-between border border-brand-cocoa border-opacity-35">
-                      <div>
-                        <span className="text-xs font-bold text-white">{item.name}</span>
-                        <div className="text-[10px] text-gray-500 mt-1">Submitted by: {item.createdBy?.name}</div>
-                      </div>
-                      <span className="px-2.5 py-0.5 rounded bg-amber-950 text-amber-200 border border-amber-800 text-[9px] font-bold uppercase tracking-wider">
-                        Cold
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-
-            <div className="glass-panel p-6">
-              <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Recent Audit Actions</h4>
-              <div className="space-y-3">
-                {stats.recentLogs?.map((log: any) => (
-                  <div key={log.id} className="text-xs p-3 bg-brand-dark bg-opacity-30 rounded-lg flex items-center justify-between border border-brand-cocoa border-opacity-15">
-                    <div>
-                      <span className="font-semibold text-white">{log.action}</span>
-                      <span className="text-gray-500"> on {log.entity}</span>
-                    </div>
-                    <span className="text-[9px] text-brand-rosy font-mono">
-                      {new Date(log.createdAt).toLocaleDateString([], { hour: '2-digit', minute: '2-digit' } as any)}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Manager Dashboard additions: display Placement Team Members count/activity */}
-        {user?.role === 'MANAGER' && (
-          <div className="glass-panel p-6">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Placement Officer Activity</h4>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {stats.teamActivity?.map((officer: any) => (
-                <div key={officer.id} className="p-4 bg-brand-card rounded-lg border border-brand-cocoa border-opacity-30">
-                  <div className="text-xs font-bold text-white">{officer.name}</div>
-                  <div className="text-[10px] text-brand-rosy mt-0.5">{officer.email}</div>
-                  <div className="mt-4 pt-3 border-t border-brand-cocoa border-opacity-20 flex justify-between items-center text-[10px] text-gray-400">
-                    <span>Submitted Companies</span>
-                    <span className="font-bold text-white">{officer.createdCompanies?.length}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Placement Team Dashboard additions: Upcoming drives */}
-        {user?.role === 'PLACEMENT_TEAM' && (
-          <div className="glass-panel p-6">
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-4">Drives Under Schedule</h4>
-            {stats.upcomingMyDrives?.length === 0 ? (
-              <div className="py-6 text-center text-xs text-brand-rosy bg-brand-dark bg-opacity-20 rounded-lg">
-                No upcoming placement drives are currently scheduled.
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {stats.upcomingMyDrives?.map((drive: any) => (
-                  <div key={drive.id} className="p-4 bg-brand-card rounded-lg border border-brand-cocoa border-opacity-30">
-                    <div className="text-xs font-bold text-white">{drive.company?.name}</div>
-                    <div className="text-[10px] text-brand-rosy mt-0.5">{drive.jobRole}</div>
-                    <div className="mt-4 text-[10px] text-gray-500">
-                      Date: <span className="text-gray-300 font-semibold">{new Date(drive.driveDate).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
       </div>
     </div>
   );
