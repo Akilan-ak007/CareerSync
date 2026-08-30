@@ -5,22 +5,20 @@ import { useAuth } from '../context/AuthContext.js';
 import {
   Award,
   Search,
-  Sliders,
   CheckCircle,
-  FileCheck,
   Eye,
   AlertCircle,
-  TrendingUp,
   Briefcase,
   X,
   XCircle,
-  MapPin,
   ExternalLink,
-  ChevronRight,
   Sparkles,
   RefreshCw,
   FolderOpen,
-  Clock
+  Clock,
+  ChevronLeft,
+  ChevronRight,
+  UserCheck
 } from 'lucide-react';
 
 interface Candidate {
@@ -139,7 +137,7 @@ export const AtsCandidates: React.FC = () => {
 
       for (const st of states) {
         setMatchingState(st);
-        await new Promise((r) => setTimeout(r, 100));
+        await new Promise((r) => setTimeout(r, 150));
       }
 
       const res = await matchPromise;
@@ -195,22 +193,25 @@ export const AtsCandidates: React.FC = () => {
     }
   };
 
-  const getAtsColorClass = (score: number) => {
-    if (score >= 85) return 'text-green-400 border-green-800';
-    if (score >= 70) return 'text-amber-400 border-amber-800';
-    return 'text-red-400 border-red-800';
-  };
-
   return (
     <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center space-x-2">
-            <Sparkles className="w-5 h-5 text-purple-700 animate-pulse" />
-            <span>AI Resume Matching & ATS Rankings</span>
-          </h1>
-          <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => navigate('/drives')}
+              className="text-slate-500 hover:text-purple-900 p-1 rounded-lg hover:bg-slate-100 transition-all mr-1"
+              title="Back to Drives"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center space-x-2">
+              <Sparkles className="w-5 h-5 text-purple-700 animate-pulse" />
+              <span>AI Resume Matching & ATS Rankings</span>
+            </h1>
+          </div>
+          <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5 ml-8">
             {drive ? `${drive.company.name} • ${drive.jobRole}` : 'Analyzing Placement Drive Credentials'}
           </p>
         </div>
@@ -227,18 +228,18 @@ export const AtsCandidates: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-950 bg-opacity-35 border border-red-900 rounded-lg text-red-300 flex items-center space-x-2">
-          <AlertCircle className="w-4 h-4" />
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 font-medium flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Progress / Loading Modal Overlay */}
       {matchingState && (
-        <div className="p-8 glass-panel border border-brand-rosy border-opacity-40 text-center space-y-4 max-w-md mx-auto">
-          <div className="w-12 h-12 border-3 border-brand-rosy border-t-transparent rounded-full animate-spin mx-auto" />
-          <h4 className="text-sm font-bold text-white uppercase tracking-wider">AI Matching in Progress</h4>
-          <p className="text-xs text-brand-rosy font-mono animate-pulse">{matchingState}</p>
+        <div className="p-10 bg-white border border-purple-200 shadow-xl rounded-2xl text-center space-y-4 max-w-md mx-auto animate-fade-in">
+          <div className="w-12 h-12 border-3 border-purple-800 border-t-transparent rounded-full animate-spin mx-auto" />
+          <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">AI Matching in Progress</h4>
+          <p className="text-xs text-purple-800 font-mono font-bold animate-pulse">{matchingState}</p>
         </div>
       )}
 
@@ -246,36 +247,38 @@ export const AtsCandidates: React.FC = () => {
         <>
           {/* If JD not uploaded/extracted yet */}
           {drive && !drive.jdExtracted ? (
-            <div className="p-12 glass-panel border border-brand-cocoa border-opacity-35 text-center space-y-5 max-w-xl mx-auto">
-              <FolderOpen className="w-12 h-12 text-brand-rosy mx-auto opacity-75" />
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">Job Description Not Analyzed</h3>
-              <p className="text-[11px] text-gray-500 leading-relaxed max-w-sm mx-auto">
+            <div className="p-12 bg-white border border-slate-200 shadow-xl rounded-2xl text-center space-y-5 max-w-xl mx-auto">
+              <FolderOpen className="w-12 h-12 text-purple-700 mx-auto opacity-75" />
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Job Description Not Analyzed</h3>
+              <p className="text-xs text-slate-500 leading-relaxed max-w-sm mx-auto font-medium">
                 ATS Matching requires a Job Description. Please return to the Placement Drive page, upload the JD PDF, and trigger the AI Info Extraction first.
               </p>
               <button
                 onClick={() => navigate('/drives')}
-                className="bg-brand-cocoa text-white hover:bg-brand-rosy hover:text-brand-black py-2 px-5 rounded-lg font-bold transition-all"
+                className="bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-6 rounded-xl font-extrabold transition-all shadow-md text-xs"
               >
                 Go to Placement Drives
               </button>
             </div>
           ) : candidates.length === 0 && !loading ? (
             /* Match trigger starting screen */
-            <div className="p-12 glass-panel border border-brand-cocoa border-opacity-35 text-center space-y-5 max-w-xl mx-auto">
-              <Sparkles className="w-12 h-12 text-brand-rosy mx-auto animate-pulse" />
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">AI Resume Analysis Required</h3>
-              <p className="text-[11px] text-gray-500 leading-relaxed max-w-sm mx-auto">
+            <div className="p-12 bg-white border border-slate-200 shadow-xl rounded-2xl text-center space-y-5 max-w-xl mx-auto">
+              <Sparkles className="w-12 h-12 text-purple-700 mx-auto animate-pulse" />
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">AI Resume Analysis Required</h3>
+              <p className="text-xs text-slate-600 leading-relaxed max-w-md mx-auto font-medium">
                 Analyze student resumes against the extracted Job Description parameters to calculate ATS matching ranks, compatibility, and keyword matches.
               </p>
               {isAuthorized ? (
                 <button
+                  type="button"
                   onClick={handleTriggerAtsMatching}
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2.5 px-6 rounded-lg font-bold transition-all shadow-md"
+                  className="bg-purple-900 hover:bg-purple-950 text-white py-3 px-8 rounded-xl font-black transition-all shadow-lg text-xs flex items-center space-x-2 mx-auto cursor-pointer"
                 >
-                  Trigger Resume ATS Matching
+                  <Sparkles className="w-4 h-4 text-amber-300" />
+                  <span>Trigger Resume ATS Matching</span>
                 </button>
               ) : (
-                <div className="p-3 bg-brand-dark bg-opacity-40 rounded-lg text-xs text-brand-rosy font-medium">
+                <div className="p-3 bg-purple-50 border border-purple-200 rounded-xl text-xs text-purple-900 font-bold">
                   Awaiting Placement Officer to run AI Matching analysis.
                 </div>
               )}
@@ -284,29 +287,29 @@ export const AtsCandidates: React.FC = () => {
             /* Main Ranked Candidates Dashboard */
             <div className="space-y-6">
               {/* Filter Row */}
-              <div className="p-5 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-25 rounded-xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+              <div className="p-5 bg-white border border-slate-200 shadow-xs rounded-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                 {/* Search bar */}
                 <div>
-                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1.5">Search Candidate</label>
+                  <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block mb-1.5">Search Candidate</label>
                   <div className="relative">
                     <input
                       type="text"
                       placeholder="Name or roll no..."
                       value={search}
                       onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                      className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded-lg py-2 px-3 pl-9 text-xs text-white placeholder-gray-600 focus:outline-none focus:border-brand-rosy transition-all"
+                      className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 pl-9 text-xs text-slate-900 placeholder:text-slate-400 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 focus:border-purple-600 transition-all"
                     />
-                    <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3 top-2.5" />
+                    <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-2.5" />
                   </div>
                 </div>
 
                 {/* Department filter */}
                 <div>
-                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1.5">Department</label>
+                  <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block mb-1.5">Department</label>
                   <select
                     value={selectedDept}
                     onChange={(e) => { setSelectedDept(e.target.value); setPage(1); }}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                   >
                     <option value="">All Departments</option>
                     {departments.map((d) => (
@@ -317,8 +320,8 @@ export const AtsCandidates: React.FC = () => {
 
                 {/* Minimum ATS slider */}
                 <div>
-                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1">
-                    Min ATS Score: <span className="text-white font-mono">{minScore}%</span>
+                  <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block mb-1">
+                    Min ATS Score: <span className="text-purple-900 font-mono font-black">{minScore}%</span>
                   </label>
                   <input
                     type="range"
@@ -326,17 +329,17 @@ export const AtsCandidates: React.FC = () => {
                     max="100"
                     value={minScore}
                     onChange={(e) => { setMinScore(parseInt(e.target.value, 10)); setPage(1); }}
-                    className="w-full h-1 bg-brand-darker rounded-lg appearance-none cursor-pointer accent-brand-rosy mt-3"
+                    className="w-full h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-purple-800 mt-3"
                   />
                 </div>
 
                 {/* Shortlist Filter */}
                 <div>
-                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1.5">Shortlist Status</label>
+                  <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block mb-1.5">Shortlist Status</label>
                   <select
                     value={shortlistFilter}
                     onChange={(e) => { setShortlistFilter(e.target.value); setPage(1); }}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                   >
                     <option value="">All Statuses</option>
                     <option value="shortlisted">Shortlisted</option>
@@ -346,11 +349,11 @@ export const AtsCandidates: React.FC = () => {
 
                 {/* Eligibility Filter */}
                 <div>
-                  <label className="text-[10px] text-gray-500 font-bold uppercase tracking-wider block mb-1.5">Academic Eligibility</label>
+                  <label className="text-[10px] text-slate-500 font-black uppercase tracking-wider block mb-1.5">Academic Eligibility</label>
                   <select
                     value={eligibleFilter}
                     onChange={(e) => { setEligibleFilter(e.target.value); setPage(1); }}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-xs text-slate-900 font-medium focus:outline-none focus:ring-2 focus:ring-purple-600 transition-all"
                   >
                     <option value="">All Candidates</option>
                     <option value="eligible">Eligible Only (CGPA &gt;= Cutoff)</option>
@@ -360,10 +363,10 @@ export const AtsCandidates: React.FC = () => {
               </div>
 
               {/* Table Rankings */}
-              <div className="glass-panel overflow-x-auto min-w-full shadow-sm rounded-xl">
+              <div className="bg-white border border-slate-200 shadow-sm rounded-2xl overflow-hidden">
                 {loading ? (
                   <div className="py-20 text-center">
-                    <span className="w-8 h-8 border-3 border-red-800 border-t-transparent rounded-full inline-block animate-spin" />
+                    <span className="w-8 h-8 border-3 border-purple-800 border-t-transparent rounded-full inline-block animate-spin" />
                   </div>
                 ) : candidates.length === 0 ? (
                   <div className="py-12 text-center text-slate-500 font-medium">
@@ -373,7 +376,7 @@ export const AtsCandidates: React.FC = () => {
                   <div className="overflow-x-auto w-full">
                     <table className="w-full min-w-[1100px] text-left border-collapse text-xs">
                       <thead>
-                        <tr className="bg-slate-100/80 text-slate-700 border-b border-slate-200 uppercase tracking-wider font-bold text-[10px] whitespace-nowrap">
+                        <tr className="bg-slate-50 text-slate-700 border-b border-slate-200 uppercase tracking-wider font-extrabold text-[10px] whitespace-nowrap">
                           <th className="p-3.5 text-center w-14">Rank</th>
                           <th className="p-3.5">Student</th>
                           <th className="p-3.5">Department</th>
@@ -389,16 +392,16 @@ export const AtsCandidates: React.FC = () => {
                       <tbody className="divide-y divide-slate-100 text-slate-700">
                         {candidates.map((c) => (
                           <tr key={c.id} className="hover:bg-slate-50 transition-colors">
-                            <td className="p-3.5 text-center font-extrabold text-sm text-red-900 font-mono">#{c.rank}</td>
+                            <td className="p-3.5 text-center font-black text-sm text-purple-900 font-mono">#{c.rank}</td>
                             <td className="p-3.5 whitespace-nowrap">
                               <span className="font-bold text-slate-900 block">{c.name}</span>
                               <span className="text-[10px] text-slate-400 font-mono">{c.registerNumber}</span>
                             </td>
                             <td className="p-3.5 font-semibold text-slate-600 whitespace-nowrap">{c.department} ({c.deptCode})</td>
                             <td className="p-3.5 text-center whitespace-nowrap">
-                              <span className={`px-2.5 py-1 rounded-md font-mono font-extrabold text-xs shadow-xs ${
+                              <span className={`px-2.5 py-1 rounded-lg font-mono font-black text-xs shadow-xs ${
                                 c.atsScore >= 90 ? 'bg-emerald-100 text-emerald-800 border border-emerald-300' :
-                                c.atsScore >= 75 ? 'bg-blue-100 text-blue-800 border border-blue-300' :
+                                c.atsScore >= 75 ? 'bg-purple-100 text-purple-900 border border-purple-300' :
                                 'bg-amber-100 text-amber-800 border border-amber-300'
                               }`}>
                                 {c.atsScore}%
@@ -413,7 +416,7 @@ export const AtsCandidates: React.FC = () => {
                                 {c.educationMatch}
                               </span>
                             </td>
-                            <td className="p-3.5 text-center font-semibold text-red-800 whitespace-nowrap">
+                            <td className="p-3.5 text-center font-semibold text-purple-900 whitespace-nowrap">
                               {c.missingSkillsCount > 0 ? `${c.missingSkillsCount} missing` : 'Fully Matched'}
                             </td>
                             <td className="p-3.5 text-center whitespace-nowrap">
@@ -438,7 +441,7 @@ export const AtsCandidates: React.FC = () => {
                                   className="bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 px-2.5 py-1 rounded-lg flex items-center space-x-1.5 transition-all font-semibold shadow-xs text-xs"
                                   title="Side-by-Side Comparison"
                                 >
-                                  <Eye className="w-3.5 h-3.5 text-red-800" />
+                                  <Eye className="w-3.5 h-3.5 text-purple-700" />
                                   <span>Inspect Match</span>
                                 </button>
 
@@ -447,7 +450,7 @@ export const AtsCandidates: React.FC = () => {
                                     {c.status !== 'Shortlisted' ? (
                                       <button
                                         onClick={() => handleUpdateStatus(c.studentId, 'Shortlisted')}
-                                        className="bg-red-800 hover:bg-red-900 text-white px-2.5 py-1 rounded-lg transition-all font-bold text-xs shadow-xs"
+                                        className="bg-purple-900 hover:bg-purple-950 text-white px-2.5 py-1 rounded-lg transition-all font-bold text-xs shadow-xs"
                                       >
                                         Shortlist
                                       </button>
@@ -474,20 +477,20 @@ export const AtsCandidates: React.FC = () => {
 
               {/* Pagination */}
               {pagination.totalPages > 1 && (
-                <div className="flex items-center justify-between text-xs text-gray-500">
+                <div className="flex items-center justify-between text-xs text-slate-600">
                   <span>Showing Page {pagination.currentPage} of {pagination.totalPages} ({pagination.totalCount} Candidates)</span>
                   <div className="flex space-x-2">
                     <button
                       disabled={page === 1}
                       onClick={() => setPage(page - 1)}
-                      className="px-3 py-1.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 rounded-lg disabled:opacity-40 font-semibold"
+                      className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-lg disabled:opacity-40 font-bold text-xs shadow-xs transition-all"
                     >
                       Previous
                     </button>
                     <button
                       disabled={page === pagination.totalPages}
                       onClick={() => setPage(page + 1)}
-                      className="px-3 py-1.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 rounded-lg disabled:opacity-40 font-semibold"
+                      className="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 rounded-lg disabled:opacity-40 font-bold text-xs shadow-xs transition-all"
                     >
                       Next
                     </button>
@@ -501,45 +504,45 @@ export const AtsCandidates: React.FC = () => {
 
       {/* Side-by-Side ATS Comparison Modal Detail Overlay */}
       {selectedStudentId && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-75 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-5xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-6 text-xs text-gray-300 h-[90vh] flex flex-col justify-between">
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-5xl bg-white border border-slate-200 shadow-2xl rounded-2xl p-6 text-xs text-slate-800 h-[90vh] flex flex-col justify-between">
             {/* Modal Header */}
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-4">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                  <Sparkles className="w-4 h-4 text-brand-rosy animate-pulse" />
+                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4 text-purple-700 animate-pulse" />
                   <span>ATS Match Analysis & Side-by-Side Comparison</span>
                 </h3>
-                <p className="text-[10px] text-gray-500 font-medium mt-0.5">
+                <p className="text-[10px] text-slate-500 font-medium mt-0.5">
                   {detailData ? `${detailData.student.name} • ${detailData.student.registerNumber}` : 'Evaluating profiles...'}
                 </p>
               </div>
-              <button onClick={() => setSelectedStudentId(null)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setSelectedStudentId(null)} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {detailLoading || !detailData ? (
               <div className="flex-1 flex items-center justify-center py-20">
-                <span className="w-10 h-10 border-3 border-brand-rosy border-t-transparent rounded-full animate-spin" />
+                <span className="w-10 h-10 border-3 border-purple-800 border-t-transparent rounded-full animate-spin" />
               </div>
             ) : (
               <div className="flex-1 overflow-y-auto space-y-6 pr-1 my-2">
                 {/* 1. Score Summary Header Panel */}
-                <div className="p-5 bg-brand-dark bg-opacity-50 rounded-xl border border-brand-cocoa border-opacity-25 flex flex-col md:flex-row items-center md:items-start justify-between gap-6">
+                <div className="p-5 bg-slate-50 rounded-2xl border border-slate-200 flex flex-col md:flex-row items-center md:items-start justify-between gap-6 shadow-xs">
                   <div className="flex items-center space-x-5">
                     {/* Circular Score progress ring */}
                     <div className="relative w-20 h-20">
                       <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
                         <path
-                          className="text-brand-darker"
+                          className="text-slate-200"
                           strokeWidth="3.5"
                           stroke="currentColor"
                           fill="none"
                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         />
                         <path
-                          className="text-brand-rosy"
+                          className="text-purple-700"
                           strokeWidth="3.5"
                           strokeDasharray={`${detailData.matchStats.atsScore}, 100`}
                           strokeLinecap="round"
@@ -548,35 +551,35 @@ export const AtsCandidates: React.FC = () => {
                           d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                         />
                       </svg>
-                      <div className="absolute inset-0 flex items-center justify-center font-black text-white text-base font-mono">
+                      <div className="absolute inset-0 flex items-center justify-center font-black text-purple-900 text-base font-mono">
                         {detailData.matchStats.atsScore}%
                       </div>
                     </div>
 
                     <div className="space-y-1">
-                      <h4 className="text-sm font-extrabold text-white">Overall ATS Score</h4>
-                      <p className="text-[10px] text-gray-500 font-medium max-w-md leading-relaxed">
-                        This score determines the candidate's alignment based on required skills matching, academic cgpa cutoffs, education requirements, and keyword strength.
+                      <h4 className="text-sm font-extrabold text-slate-900">Overall ATS Match Score</h4>
+                      <p className="text-[10px] text-slate-500 font-medium max-w-md leading-relaxed">
+                        Calculated from candidate required skills alignment, CGPA cutoff eligibility, department compatibility, and resume keywords strength.
                       </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 w-full md:w-auto text-center font-mono">
-                    <div className="p-3 bg-brand-card rounded-lg border border-brand-cocoa border-opacity-15">
-                      <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Skills Match</div>
-                      <div className="text-white text-sm font-black">{detailData.matchStats.skillsMatch}%</div>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 w-full md:w-auto text-center font-mono">
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Skills Match</div>
+                      <div className="text-purple-900 text-sm font-black">{detailData.matchStats.skillsMatch}%</div>
                     </div>
-                    <div className="p-3 bg-brand-card rounded-lg border border-brand-cocoa border-opacity-15">
-                      <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Keywords</div>
-                      <div className="text-white text-sm font-black">{detailData.matchStats.keywordMatch}%</div>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Keywords</div>
+                      <div className="text-purple-900 text-sm font-black">{detailData.matchStats.keywordMatch}%</div>
                     </div>
-                    <div className="p-3 bg-brand-card rounded-lg border border-brand-cocoa border-opacity-15">
-                      <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Resume strength</div>
-                      <div className="text-white text-sm font-black">{detailData.matchStats.resumeStrength}%</div>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Resume strength</div>
+                      <div className="text-purple-900 text-sm font-black">{detailData.matchStats.resumeStrength}%</div>
                     </div>
-                    <div className="p-3 bg-brand-card rounded-lg border border-brand-cocoa border-opacity-15">
-                      <div className="text-[9px] text-gray-500 uppercase font-bold mb-1">Status</div>
-                      <div className="text-brand-rosy text-[10px] font-black uppercase mt-0.5">{detailData.matchStats.status}</div>
+                    <div className="p-3 bg-white rounded-xl border border-slate-200 shadow-2xs">
+                      <div className="text-[9px] text-slate-500 uppercase font-black mb-1">Status</div>
+                      <div className="text-purple-900 text-[10px] font-black uppercase mt-0.5">{detailData.matchStats.status}</div>
                     </div>
                   </div>
                 </div>
@@ -584,17 +587,17 @@ export const AtsCandidates: React.FC = () => {
                 {/* 2. Side-by-Side Comparison Box */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Left Column: Job Description details */}
-                  <div className="glass-panel p-5 space-y-4 border border-brand-cocoa border-opacity-35">
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-20 pb-2 flex items-center space-x-1.5">
-                      <Briefcase className="w-4 h-4 text-brand-rosy" />
+                  <div className="p-5 space-y-4 border border-slate-200 bg-white rounded-2xl shadow-xs">
+                    <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center space-x-1.5">
+                      <Briefcase className="w-4 h-4 text-purple-700" />
                       <span>Job Requirements (JD)</span>
                     </h4>
                     
                     <div className="space-y-3">
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-0.5">Role & Company</span>
-                        <div className="text-white font-bold">{detailData.drive.jobRole}</div>
-                        <div className="text-brand-rosy font-medium mt-0.5">{detailData.drive.companyName}</div>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">Role & Company</span>
+                        <div className="text-slate-900 font-extrabold text-sm">{detailData.drive.jobRole}</div>
+                        <div className="text-purple-800 font-bold mt-0.5">{detailData.drive.companyName}</div>
                       </div>
 
                       <div>
@@ -614,12 +617,12 @@ export const AtsCandidates: React.FC = () => {
                         <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5">Primary Skill Requirements</span>
                         <div className="flex flex-wrap gap-1.5">
                           {(detailData.drive.jdExtractedInfo?.requiredSkills || []).map((sk: string, i: number) => (
-                            <span key={i} className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-medium text-xs">
+                            <span key={i} className="px-2 py-0.5 rounded-md bg-purple-100 border border-purple-200 text-purple-900 font-bold text-xs">
                               {sk}
                             </span>
                           ))}
                           {(detailData.drive.jdExtractedInfo?.preferredSkills || []).map((sk: string, i: number) => (
-                            <span key={i} className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 font-medium text-xs">
+                            <span key={i} className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700 font-medium text-xs">
                               {sk}
                             </span>
                           ))}
@@ -629,16 +632,16 @@ export const AtsCandidates: React.FC = () => {
                   </div>
 
                   {/* Right Column: Student Profile details */}
-                  <div className="glass-panel p-5 space-y-4 border border-slate-200 shadow-xs bg-white rounded-xl">
-                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center space-x-1.5">
-                      <Award className="w-4 h-4 text-red-800" />
+                  <div className="p-5 space-y-4 border border-slate-200 shadow-xs bg-white rounded-2xl">
+                    <h4 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center space-x-1.5">
+                      <Award className="w-4 h-4 text-purple-700" />
                       <span>Student Roster Profile</span>
                     </h4>
                     
                     <div className="space-y-3">
                       <div>
                         <span className="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">Name & Register Number</span>
-                        <div className="text-slate-900 font-bold">{detailData.student.name}</div>
+                        <div className="text-slate-900 font-extrabold text-sm">{detailData.student.name}</div>
                         <div className="text-slate-500 mt-0.5 font-mono">{detailData.student.registerNumber}</div>
                       </div>
 
@@ -652,7 +655,7 @@ export const AtsCandidates: React.FC = () => {
 
                       <div>
                         <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Resume Document Reference</span>
-                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
+                        <div className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200">
                           <span className="text-slate-600 truncate max-w-[200px] font-mono text-xs">
                             {detailData.student.resumeUrl ? detailData.student.resumeUrl.split('/').pop() : 'No resume document linked'}
                           </span>
@@ -661,7 +664,7 @@ export const AtsCandidates: React.FC = () => {
                               href={detailData.student.resumeUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-red-800 hover:text-red-900 flex items-center space-x-1 font-bold text-xs"
+                              className="text-purple-800 hover:text-purple-950 flex items-center space-x-1 font-bold text-xs"
                             >
                               <span>Review File</span>
                               <ExternalLink className="w-3.5 h-3.5" />
@@ -703,8 +706,8 @@ export const AtsCandidates: React.FC = () => {
                 {/* 3. Skill & Keywords Matrices Comparison */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Matching/Missing Skills lists */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4 shadow-xs">
-                    <span className="font-bold text-slate-900 block mb-2 uppercase tracking-wide text-[10px]">Skills Compatibility Match Matrix</span>
+                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4 shadow-xs">
+                    <span className="font-extrabold text-slate-900 block mb-2 uppercase tracking-wide text-[10px]">Skills Compatibility Match Matrix</span>
                     
                     <div className="space-y-3">
                       <div>
@@ -714,7 +717,7 @@ export const AtsCandidates: React.FC = () => {
                             <span className="text-slate-400 italic text-xs">No direct skills matched.</span>
                           ) : (
                             (detailData.matchStats?.matchingSkills || []).map((sk: string, i: number) => (
-                              <span key={i} className="px-2 py-0.5 rounded bg-emerald-100 border border-emerald-200 text-emerald-800 font-medium text-xs">
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-emerald-100 border border-emerald-200 text-emerald-800 font-bold text-xs">
                                 {sk}
                               </span>
                             ))
@@ -729,7 +732,7 @@ export const AtsCandidates: React.FC = () => {
                             <span className="text-emerald-700 font-semibold text-xs">All technical requirements matched!</span>
                           ) : (
                             (detailData.matchStats?.missingSkills || []).map((sk: string, i: number) => (
-                              <span key={i} className="px-2 py-0.5 rounded bg-rose-100 border border-rose-200 text-rose-800 font-medium text-xs">
+                              <span key={i} className="px-2 py-0.5 rounded-md bg-rose-100 border border-rose-200 text-rose-800 font-bold text-xs">
                                 {sk}
                               </span>
                             ))
@@ -740,8 +743,8 @@ export const AtsCandidates: React.FC = () => {
                   </div>
 
                   {/* Matching/Missing Keywords and Recommendations */}
-                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4 shadow-xs">
-                    <span className="font-bold text-slate-900 block mb-2 uppercase tracking-wide text-[10px]">AI Matching Evaluation Feedbacks</span>
+                  <div className="p-5 bg-slate-50 border border-slate-200 rounded-2xl space-y-4 shadow-xs">
+                    <span className="font-extrabold text-slate-900 block mb-2 uppercase tracking-wide text-[10px]">AI Matching Evaluation Feedbacks</span>
                     
                     <div className="space-y-3">
                       <div>
@@ -760,8 +763,8 @@ export const AtsCandidates: React.FC = () => {
                         <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5">Placement Recommendations Checklist</span>
                         <ul className="space-y-1.5">
                           {(detailData.matchStats?.recommendations || []).map((rec: string, i: number) => (
-                            <li key={i} className="flex items-start space-x-2 text-slate-600 leading-normal text-xs">
-                              <Sparkles className="w-3.5 h-3.5 text-red-800 mt-0.5 shrink-0" />
+                            <li key={i} className="flex items-start space-x-2 text-slate-600 leading-normal text-xs font-medium">
+                              <Sparkles className="w-3.5 h-3.5 text-purple-700 mt-0.5 shrink-0" />
                               <span>{rec}</span>
                             </li>
                           ))}
@@ -774,17 +777,17 @@ export const AtsCandidates: React.FC = () => {
             )}
 
             {/* Modal Actions Footer */}
-            <div className="flex flex-col md:flex-row justify-between items-center border-t border-brand-cocoa border-opacity-25 pt-4 mt-4 gap-4">
-              <div className="text-gray-500 text-[10px] font-mono">
+            <div className="flex flex-col md:flex-row justify-between items-center border-t border-slate-100 pt-4 mt-4 gap-4">
+              <div className="text-slate-500 text-[10px] font-mono">
                 Candidate ID: {selectedStudentId}
               </div>
 
               <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
                 <button
                   onClick={() => setSelectedStudentId(null)}
-                  className="bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center shadow-xs text-xs"
+                  className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-5 py-2.5 rounded-xl font-bold transition-all w-full md:w-auto text-center shadow-xs text-xs"
                 >
-                  Done
+                  Close
                 </button>
 
                 {isAuthorized && detailData && (
@@ -792,7 +795,7 @@ export const AtsCandidates: React.FC = () => {
                     {detailData?.matchStats?.status !== 'Shortlisted' ? (
                       <button
                         onClick={() => handleUpdateStatus(detailData.student.id, 'Shortlisted')}
-                        className="bg-red-800 text-white hover:bg-red-900 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5 shadow-xs text-xs"
+                        className="bg-purple-900 text-white hover:bg-purple-950 px-5 py-2.5 rounded-xl font-extrabold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5 shadow-md text-xs"
                       >
                         <CheckCircle className="w-4 h-4" />
                         <span>Shortlist Candidate</span>
@@ -800,7 +803,7 @@ export const AtsCandidates: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => handleUpdateStatus(detailData.student.id, 'Review')}
-                        className="bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5 shadow-xs text-xs"
+                        className="bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 px-5 py-2.5 rounded-xl font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5 shadow-xs text-xs"
                       >
                         <XCircle className="w-4 h-4" />
                         <span>Remove from Shortlist</span>
