@@ -147,7 +147,7 @@ export const Dashboard: React.FC = () => {
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
                 <Pie
-                  data={charts.placementDistribution}
+                  data={charts?.placementDistribution || []}
                   cx="50%"
                   cy="50%"
                   innerRadius={60}
@@ -155,7 +155,7 @@ export const Dashboard: React.FC = () => {
                   paddingAngle={5}
                   dataKey="value"
                 >
-                  {charts.placementDistribution.map((entry: any, index: number) => (
+                  {(charts?.placementDistribution || []).map((entry: any, index: number) => (
                     <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                   ))}
                 </Pie>
@@ -166,7 +166,7 @@ export const Dashboard: React.FC = () => {
             </ResponsiveContainer>
           </div>
           <div className="flex items-center justify-center space-x-6 mt-4">
-            {charts.placementDistribution.map((entry: any, index: number) => (
+            {(charts?.placementDistribution || []).map((entry: any, index: number) => (
               <div key={entry.name} className="flex items-center space-x-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }} />
                 <span className="text-xs font-bold text-slate-700">{entry.name}: {entry.value}</span>

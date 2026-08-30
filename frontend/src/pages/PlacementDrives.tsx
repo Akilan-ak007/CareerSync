@@ -639,7 +639,7 @@ export const PlacementDrives: React.FC = () => {
                         <span className="font-semibold text-white">CGPA: {drive.minimumCgpa}+</span>
                       </div>
                       <div className="flex flex-wrap gap-1 mt-1.5">
-                        {drive.eligibleDepartments.map((code: string) => (
+                        {(drive.eligibleDepartments || []).map((code: string) => (
                           <span key={code} className="bg-brand-dark px-1.5 py-0.5 rounded text-[8px] text-gray-500 font-bold border border-brand-cocoa border-opacity-10">
                             {code}
                           </span>
@@ -1239,7 +1239,7 @@ export const PlacementDrives: React.FC = () => {
                         className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg h-9 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
                       >
                         <option value="">All Departments</option>
-                        {Array.from(new Set(completingDrive.students.map((item: any) => item.student?.department?.code).filter(Boolean))).map((deptCode: any) => (
+                        {Array.from(new Set((completingDrive.students || []).map((item: any) => item.student?.department?.code).filter(Boolean))).map((deptCode: any) => (
                           <option key={deptCode} value={deptCode}>{deptCode}</option>
                         ))}
                       </select>

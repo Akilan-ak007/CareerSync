@@ -152,7 +152,7 @@ export const AuditLogs: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 text-slate-700">
-                {logs.map((log) => (
+                {(logs || []).map((log) => (
                   <tr key={log.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-3.5 whitespace-nowrap">
                       <span className="font-bold text-slate-900 block">{log.user?.name || 'System Auto'}</span>
