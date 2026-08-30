@@ -422,9 +422,9 @@ export const Students: React.FC = () => {
             <select
               value={selectedDept}
               onChange={(e) => { setSelectedDept(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-purple-700 transition-all"
             >
-              <option value="">All Departments</option>
+              <option value="">All Streams / Departments</option>
               {departments.map((d) => (
                 <option key={d.id} value={d.id}>{d.name} ({d.code})</option>
               ))}
@@ -435,7 +435,7 @@ export const Students: React.FC = () => {
             <select
               value={selectedType}
               onChange={(e) => { setSelectedType(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-purple-700 transition-all"
             >
               <option value="">All Student Types</option>
               <option value="HOSTEL">Hostel Scholar</option>
@@ -447,7 +447,7 @@ export const Students: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-purple-700 transition-all"
             >
               <option value="">All Placement Statuses</option>
               <option value="NOT_PLACED">Not Placed</option>
@@ -462,15 +462,15 @@ export const Students: React.FC = () => {
         <div className="glass-panel overflow-hidden">
           {loading ? (
             <div className="py-20 text-center">
-              <span className="w-8 h-8 border-3 border-brand-rosy border-t-transparent rounded-full inline-block animate-spin" />
+              <span className="w-8 h-8 border-3 border-purple-800 border-t-transparent rounded-full inline-block animate-spin" />
             </div>
           ) : students.length === 0 ? (
             <div className="py-20 text-center space-y-3">
-              <p className="text-sm text-gray-400">No student records found.</p>
+              <p className="text-sm text-slate-500 font-medium">No student records found.</p>
               {isAdmin && (
                 <button
                   onClick={handleOpenCreate}
-                  className="bg-brand-cocoa text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-brand-rosy hover:text-brand-black transition-all"
+                  className="bg-purple-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-purple-950 transition-all shadow-xs"
                 >
                   Create manual entry
                 </button>
@@ -479,17 +479,17 @@ export const Students: React.FC = () => {
           ) : (
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-brand-card text-gray-400 border-b border-brand-cocoa border-opacity-30 uppercase tracking-wider font-semibold text-[10px]">
-                  <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort('name')}>
+                <tr className="bg-slate-100/80 text-slate-700 border-b border-slate-200 uppercase tracking-wider font-extrabold text-[10px]">
+                  <th className="p-4 cursor-pointer hover:text-slate-900" onClick={() => handleSort('name')}>
                     <span className="flex items-center space-x-1">
                       <span>Name</span>
-                      <ArrowUpDown className="w-3.5 h-3.5" />
+                      <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
                     </span>
                   </th>
-                  <th className="p-4 cursor-pointer hover:text-white" onClick={() => handleSort('registerNumber')}>
+                  <th className="p-4 cursor-pointer hover:text-slate-900" onClick={() => handleSort('registerNumber')}>
                     <span className="flex items-center space-x-1">
                       <span>Reg. Number</span>
-                      <ArrowUpDown className="w-3.5 h-3.5" />
+                      <ArrowUpDown className="w-3.5 h-3.5 text-slate-400" />
                     </span>
                   </th>
                   <th className="p-4">Department</th>
@@ -499,38 +499,38 @@ export const Students: React.FC = () => {
                   <th className="p-4 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-brand-cocoa divide-opacity-20 text-gray-300">
+              <tbody className="divide-y divide-slate-100 text-slate-800 font-medium">
                 {students.map((student) => (
                   <tr
                     key={student.id}
                     onClick={() => setSelectedStudent(student)}
-                    className="hover:bg-brand-card hover:bg-opacity-40 cursor-pointer transition-colors"
+                    className="hover:bg-slate-50 cursor-pointer transition-colors"
                   >
-                    <td className="p-4 font-bold text-white flex items-center space-x-3">
-                      <StudentAvatar name={student.name} photoUrl={student.photoUrl} className="w-8 h-8 text-xs" />
+                    <td className="p-4 font-extrabold text-slate-900 flex items-center space-x-3">
+                      <StudentAvatar name={student.name} photoUrl={student.photoUrl} className="w-8 h-8 text-xs shrink-0" />
                       <div>
-                        <div>{student.name}</div>
+                        <div className="font-extrabold text-slate-900">{student.name}</div>
                         {student.graduationDate && !isNaN(new Date(student.graduationDate).getTime()) && new Date(student.graduationDate).getFullYear() > 1970 && (
-                          <div className="text-[10px] text-gray-500 font-normal">
+                          <div className="text-[10px] text-slate-500 font-normal">
                             Grad: {new Date(student.graduationDate).toLocaleDateString([], { month: 'short', year: 'numeric' })}
                           </div>
                         )}
                       </div>
                     </td>
-                    <td className="p-4 font-mono">{student.registerNumber}</td>
-                    <td className="p-4">{student.department?.code}</td>
-                    <td className="p-4 font-mono">{student.email}</td>
-                    <td className="p-4">{student.phoneNumber}</td>
+                    <td className="p-4 font-mono font-bold text-slate-900">{student.registerNumber}</td>
+                    <td className="p-4 font-extrabold text-slate-800">{student.department?.code}</td>
+                    <td className="p-4 font-mono text-slate-700">{student.email}</td>
+                    <td className="p-4 text-slate-700 font-mono">{student.phoneNumber}</td>
                     <td className="p-4">
                       <span
-                        className={`px-2.5 py-0.5 rounded text-[10px] font-bold border uppercase tracking-wider ${
+                        className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold border uppercase tracking-wider ${
                           student.placementStatus === 'TERMINATED' || student.isTerminated
-                            ? 'bg-red-950 text-red-300 border-red-800'
+                            ? 'bg-rose-50 text-rose-800 border-rose-200'
                             : student.placementStatus === 'PLACED'
-                            ? 'bg-emerald-950 text-emerald-300 border-emerald-800'
+                            ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
                             : student.placementStatus === 'MULTIPLE_OFFERS'
-                            ? 'bg-blue-950 text-blue-300 border-blue-800'
-                            : 'bg-zinc-900 text-zinc-400 border-zinc-700'
+                            ? 'bg-sky-50 text-sky-800 border-sky-200'
+                            : 'bg-slate-100 text-slate-700 border-slate-300'
                         }`}
                       >
                         {student.isTerminated ? 'TERMINATED' : student.placementStatus.replace('_', ' ')}
@@ -540,7 +540,7 @@ export const Students: React.FC = () => {
                       <div className="flex items-center justify-center space-x-3">
                         <button
                           onClick={() => setSelectedStudent(student)}
-                          className="text-gray-400 hover:text-white transition-colors"
+                          className="text-slate-400 hover:text-slate-900 transition-colors p-1 hover:bg-slate-100 rounded"
                           title="View Details"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -551,21 +551,21 @@ export const Students: React.FC = () => {
                               <>
                                 <button
                                   onClick={() => handleOpenEdit(student)}
-                                  className="text-gray-400 hover:text-brand-rosy transition-colors"
+                                  className="text-slate-400 hover:text-purple-800 transition-colors p-1 hover:bg-slate-100 rounded"
                                   title="Edit"
                                 >
                                   <Edit2 className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleOpenTerminate(student)}
-                                  className="text-amber-500 hover:text-red-400 transition-colors"
+                                  className="text-amber-600 hover:text-rose-600 transition-colors p-1 hover:bg-slate-100 rounded"
                                   title="Terminate Student"
                                 >
                                   <UserX className="w-4 h-4" />
                                 </button>
                                 <button
                                   onClick={() => handleDelete(student.id)}
-                                  className="text-gray-500 hover:text-red-400 transition-colors"
+                                  className="text-slate-400 hover:text-rose-600 transition-colors p-1 hover:bg-slate-100 rounded"
                                   title="Delete"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -574,7 +574,7 @@ export const Students: React.FC = () => {
                             ) : (
                               <button
                                 onClick={() => handleRestoreStudent(student.id)}
-                                className="bg-emerald-950 hover:bg-emerald-800 text-emerald-300 px-2.5 py-1 rounded text-[10px] font-bold border border-emerald-800 flex items-center space-x-1 transition-all"
+                                className="bg-emerald-50 hover:bg-emerald-100 text-emerald-800 px-2.5 py-1 rounded-lg text-[10px] font-extrabold border border-emerald-200 flex items-center space-x-1 transition-all shadow-xs"
                                 title="Re-instate / Restore Student"
                               >
                                 <RotateCcw className="w-3 h-3" />
@@ -594,20 +594,20 @@ export const Students: React.FC = () => {
 
         {/* Pagination Controls */}
         {pagination.totalPages > 1 && (
-          <div className="flex items-center justify-between text-xs text-gray-500">
+          <div className="flex items-center justify-between text-xs text-slate-500 font-medium">
             <span>Showing Page {pagination.currentPage} of {pagination.totalPages} ({pagination.totalCount} Students)</span>
             <div className="flex space-x-2">
               <button
                 disabled={page === 1}
                 onClick={() => setPage(page - 1)}
-                className="px-3.5 py-1.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 rounded-lg disabled:opacity-40 font-semibold"
+                className="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl disabled:opacity-40 font-bold text-slate-700 shadow-xs"
               >
                 Previous
               </button>
               <button
                 disabled={page === pagination.totalPages}
                 onClick={() => setPage(page + 1)}
-                className="px-3.5 py-1.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 rounded-lg disabled:opacity-40 font-semibold"
+                className="px-3.5 py-1.5 bg-white hover:bg-slate-50 border border-slate-300 rounded-xl disabled:opacity-40 font-bold text-slate-700 shadow-xs"
               >
                 Next
               </button>
@@ -618,47 +618,47 @@ export const Students: React.FC = () => {
 
       {/* 4. Student profile detail view drawer (Slides in on right side) */}
       {selectedStudent && (
-        <div className="w-96 bg-brand-card border-l border-brand-cocoa border-opacity-45 h-full flex flex-col z-30 animate-fade-in relative">
-          <div className="p-6 border-b border-brand-cocoa border-opacity-35 flex items-center justify-between bg-brand-black">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-              <User className="w-4.5 h-4.5 text-brand-rosy" />
+        <div className="w-96 bg-white border-l border-slate-200 h-full flex flex-col z-30 animate-fade-in relative shadow-xl">
+          <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+              <User className="w-4.5 h-4.5 text-purple-700" />
               <span>Student Profile</span>
             </h2>
             <button
               onClick={() => setSelectedStudent(null)}
-              className="p-1 rounded hover:bg-brand-cocoa text-gray-400 hover:text-white"
+              className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-900"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs">
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
             {/* Header info card */}
-            <div className="text-center pb-4 border-b border-brand-cocoa border-opacity-20">
-              <StudentAvatar name={selectedStudent.name} photoUrl={selectedStudent.photoUrl} className="w-20 h-20 text-3xl mx-auto mb-3 shadow-lg" />
-              <h3 className="text-base font-bold text-white">{selectedStudent.name}</h3>
-              <p className="text-gray-500 font-mono mt-0.5">{selectedStudent.registerNumber}</p>
-              <p className="text-[10px] text-brand-rosy font-semibold uppercase tracking-wider mt-1">{selectedStudent.studentType.replace('_', ' ')}</p>
+            <div className="text-center pb-4 border-b border-slate-100">
+              <StudentAvatar name={selectedStudent.name} photoUrl={selectedStudent.photoUrl} className="w-20 h-20 text-3xl mx-auto mb-3 shadow-md border-2 border-white" />
+              <h3 className="text-base font-extrabold text-slate-900">{selectedStudent.name}</h3>
+              <p className="text-slate-500 font-mono mt-0.5 font-bold">{selectedStudent.registerNumber}</p>
+              <p className="text-xs text-purple-800 font-extrabold uppercase tracking-wider mt-1">{selectedStudent.studentType.replace('_', ' ')}</p>
               {selectedStudent.isTerminated && (
-                <div className="mt-3 p-3 bg-red-950 bg-opacity-60 border border-red-800 rounded-lg text-left space-y-1">
-                  <div className="flex items-center space-x-1.5 text-red-300 font-bold text-xs uppercase tracking-wider">
+                <div className="mt-3 p-3 bg-rose-50 border border-rose-200 rounded-xl text-left space-y-1">
+                  <div className="flex items-center space-x-1.5 text-rose-800 font-extrabold text-xs uppercase tracking-wider">
                     <ShieldAlert className="w-4 h-4" />
                     <span>TERMINATED STUDENT RECORD</span>
                   </div>
                   {selectedStudent.terminatedAt && (
-                    <div className="text-[10px] text-red-400 font-mono">
+                    <div className="text-[10px] text-rose-700 font-mono font-bold">
                       Terminated on: {new Date(selectedStudent.terminatedAt).toLocaleDateString()}
                     </div>
                   )}
                   {selectedStudent.terminationReason && (
-                    <div className="text-[11px] text-gray-300 italic pt-1 border-t border-red-900 border-opacity-40">
+                    <div className="text-xs text-rose-800 italic pt-1 border-t border-rose-200 font-medium">
                       "{selectedStudent.terminationReason}"
                     </div>
                   )}
                   {isAdmin && (
                     <button
                       onClick={() => handleRestoreStudent(selectedStudent.id)}
-                      className="mt-2 w-full bg-emerald-950 hover:bg-emerald-800 text-emerald-300 py-1.5 rounded text-xs font-bold border border-emerald-800 flex items-center justify-center space-x-1.5 transition-all"
+                      className="mt-2 w-full bg-emerald-700 hover:bg-emerald-800 text-white py-1.5 rounded-xl text-xs font-extrabold flex items-center justify-center space-x-1.5 transition-all shadow-xs"
                     >
                       <RotateCcw className="w-3.5 h-3.5" />
                       <span>Re-instate / Restore Student</span>
@@ -669,20 +669,20 @@ export const Students: React.FC = () => {
             </div>
 
             {/* Email & Contact Info */}
-            <div className="space-y-2 p-3 bg-brand-dark bg-opacity-30 rounded-lg border border-brand-cocoa border-opacity-20">
-              <div className="flex items-center space-x-2 text-gray-300">
-                <Mail className="w-4 h-4 text-brand-rosy shrink-0" />
+            <div className="space-y-2 p-3.5 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="flex items-center space-x-2 text-slate-800">
+                <Mail className="w-4 h-4 text-purple-700 shrink-0" />
                 <div className="truncate">
-                  <span className="text-[10px] text-gray-500 block uppercase font-bold">College Email</span>
-                  <span className="font-mono text-white">{selectedStudent.collegeEmail || selectedStudent.email}</span>
+                  <span className="text-[10px] text-slate-500 block uppercase font-extrabold">College Email</span>
+                  <span className="font-mono text-slate-900 font-bold">{selectedStudent.collegeEmail || selectedStudent.email}</span>
                 </div>
               </div>
               {selectedStudent.personalEmail && (
-                <div className="flex items-center space-x-2 text-gray-300 pt-1 border-t border-brand-cocoa border-opacity-15">
-                  <Mail className="w-4 h-4 text-gray-400 shrink-0" />
+                <div className="flex items-center space-x-2 text-slate-800 pt-1.5 border-t border-slate-200">
+                  <Mail className="w-4 h-4 text-slate-400 shrink-0" />
                   <div className="truncate">
-                    <span className="text-[10px] text-gray-500 block uppercase font-bold">Personal Email</span>
-                    <span className="font-mono text-white">{selectedStudent.personalEmail}</span>
+                    <span className="text-[10px] text-slate-500 block uppercase font-extrabold">Personal Email</span>
+                    <span className="font-mono text-slate-900 font-bold">{selectedStudent.personalEmail}</span>
                   </div>
                 </div>
               )}
@@ -695,13 +695,13 @@ export const Students: React.FC = () => {
                   href={selectedStudent.githubUrl || `https://github.com/${selectedStudent.githubId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                  className="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-bold transition-colors"
                 >
                   <span className="flex items-center space-x-2">
                     <GithubIcon />
-                    <span>GitHub: <span className="font-mono text-brand-rosy">{selectedStudent.githubId || 'Profile'}</span></span>
+                    <span>GitHub: <span className="font-mono text-purple-800">{selectedStudent.githubId || 'Profile'}</span></span>
                   </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                 </a>
               ) : null}
 
@@ -710,13 +710,13 @@ export const Students: React.FC = () => {
                   href={selectedStudent.linkedinUrl || `https://linkedin.com/in/${selectedStudent.linkedinId}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                  className="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-bold transition-colors"
                 >
                   <span className="flex items-center space-x-2">
                     <LinkedinIcon />
-                    <span>LinkedIn: <span className="font-mono text-blue-300">{selectedStudent.linkedinId || 'Profile'}</span></span>
+                    <span>LinkedIn: <span className="font-mono text-sky-800">{selectedStudent.linkedinId || 'Profile'}</span></span>
                   </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                 </a>
               ) : null}
 
@@ -725,54 +725,54 @@ export const Students: React.FC = () => {
                   href={selectedStudent.portfolioUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-between p-2.5 bg-brand-dark hover:bg-brand-cocoa border border-brand-cocoa border-opacity-30 rounded-lg text-white font-medium transition-colors"
+                  className="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-bold transition-colors"
                 >
                   <span className="flex items-center space-x-2">
-                    <Globe className="w-4 h-4 text-emerald-400" />
+                    <Globe className="w-4 h-4 text-emerald-600" />
                     <span>Portfolio Website</span>
                   </span>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-400" />
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                 </a>
               ) : null}
             </div>
 
             {/* Academic Section */}
             <div className="space-y-3">
-              <h4 className="font-bold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-brand-cocoa border-opacity-25 pb-1">
-                <GraduationCap className="w-4 h-4 text-brand-rosy" />
+              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2 border-b border-slate-100 pb-1">
+                <GraduationCap className="w-4 h-4 text-purple-700" />
                 <span>Academic Record</span>
               </h4>
-              <div className="grid grid-cols-2 gap-3 text-gray-400">
-                <div>Department: <span className="text-white block mt-0.5 font-semibold">{selectedStudent.department?.name}</span></div>
-                <div>UG CGPA: <span className="text-white block mt-0.5 font-semibold">{selectedStudent.ugPercentage}</span></div>
-                <div>SSLC Marks: <span className="text-white block mt-0.5 font-semibold">{selectedStudent.sslcPercentage}%</span></div>
-                <div>HSC Marks: <span className="text-white block mt-0.5 font-semibold">{selectedStudent.hscPercentage}%</span></div>
+              <div className="grid grid-cols-2 gap-3 text-slate-600 font-bold">
+                <div>Department: <span className="text-slate-900 block mt-0.5 font-extrabold">{selectedStudent.department?.name}</span></div>
+                <div>UG CGPA: <span className="text-slate-900 block mt-0.5 font-mono font-extrabold">{selectedStudent.ugPercentage}</span></div>
+                <div>SSLC Marks: <span className="text-slate-900 block mt-0.5 font-mono">{selectedStudent.sslcPercentage}%</span></div>
+                <div>HSC Marks: <span className="text-slate-900 block mt-0.5 font-mono">{selectedStudent.hscPercentage}%</span></div>
                 {selectedStudent.pgPercentage && (
-                  <div>PG CGPA: <span className="text-white block mt-0.5 font-semibold">{selectedStudent.pgPercentage}</span></div>
+                  <div>PG CGPA: <span className="text-slate-900 block mt-0.5 font-mono">{selectedStudent.pgPercentage}</span></div>
                 )}
               </div>
             </div>
 
             {/* Placement and Offers History */}
             <div className="space-y-3">
-              <h4 className="font-bold text-white uppercase tracking-wider flex items-center space-x-2 border-b border-brand-cocoa border-opacity-25 pb-1">
-                <Briefcase className="w-4 h-4 text-brand-rosy" />
+              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2 border-b border-slate-100 pb-1">
+                <Briefcase className="w-4 h-4 text-purple-700" />
                 <span>Recruitment History</span>
               </h4>
               {selectedStudent.offers?.length === 0 ? (
-                <div className="text-gray-500 italic p-3 bg-brand-dark bg-opacity-35 rounded-lg text-center">
+                <div className="text-slate-500 italic p-3 bg-slate-50 border border-slate-200 rounded-xl text-center font-medium">
                   No placement offers logged yet.
                 </div>
               ) : (
                 <div className="space-y-2.5">
                   {selectedStudent.offers?.map((offer: any) => (
-                    <div key={offer.id} className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-30 rounded-lg">
+                    <div key={offer.id} className="p-3 bg-slate-50 border border-slate-200 rounded-xl">
                       <div className="flex justify-between items-start">
-                        <span className="font-bold text-white">{offer.company?.name}</span>
-                        <span className="px-2 py-0.5 rounded bg-brand-rosy text-brand-black text-[9px] font-black">{offer.ctc} LPA</span>
+                        <span className="font-extrabold text-slate-900">{offer.company?.name}</span>
+                        <span className="px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-900 text-[10px] font-black">{offer.ctc} LPA</span>
                       </div>
-                      <div className="text-[10px] text-gray-400 mt-1">{offer.jobRole}</div>
-                      <div className="text-[9px] text-gray-500 text-right mt-2">
+                      <div className="text-xs text-purple-800 font-bold mt-1">{offer.jobRole}</div>
+                      <div className="text-[10px] text-slate-500 font-mono text-right mt-2">
                         Offer Date: {new Date(offer.offerDate).toLocaleDateString()}
                       </div>
                     </div>
@@ -812,13 +812,13 @@ export const Students: React.FC = () => {
 
       {/* 5. Add / Edit manual form modal (Admin only) */}
       {showFormModal && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl shadow-2xl p-6 overflow-y-auto max-h-[90vh] text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-5">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 overflow-y-auto max-h-[90vh] text-xs text-slate-800">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                 {editingStudentId ? 'Edit Student Details' : 'Manual New Student Entry'}
               </h3>
-              <button onClick={() => setShowFormModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowFormModal(false)} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -826,31 +826,31 @@ export const Students: React.FC = () => {
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Full Name *</label>
+                  <label className="text-slate-700 font-extrabold">Full Name *</label>
                   <input
                     type="text"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Register Number *</label>
+                  <label className="text-slate-700 font-extrabold">Register Number *</label>
                   <input
                     type="text"
                     required
                     value={formData.registerNumber}
                     onChange={(e) => setFormData({ ...formData, registerNumber: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono font-bold focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Department *</label>
+                  <label className="text-slate-700 font-extrabold">Department *</label>
                   <select
                     value={formData.departmentId}
                     onChange={(e) => setFormData({ ...formData, departmentId: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-extrabold focus:outline-none focus:border-purple-700"
                   >
                     {departments.map((d) => (
                       <option key={d.id} value={d.id}>{d.name} ({d.code})</option>
@@ -858,62 +858,62 @@ export const Students: React.FC = () => {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Student Type *</label>
+                  <label className="text-slate-700 font-extrabold">Student Type *</label>
                   <select
                     value={formData.studentType}
                     onChange={(e) => setFormData({ ...formData, studentType: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-extrabold focus:outline-none focus:border-purple-700"
                   >
                     <option value="DAY_SCHOLAR">Day Scholar</option>
                     <option value="HOSTEL">Hostel</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">College Email ID *</label>
+                  <label className="text-slate-700 font-extrabold">College Email ID *</label>
                   <input
                     type="email"
                     required
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value, collegeEmail: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono text-xs focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Personal Email ID</label>
+                  <label className="text-slate-700 font-extrabold">Personal Email ID</label>
                   <input
                     type="email"
                     value={formData.personalEmail}
                     onChange={(e) => setFormData({ ...formData, personalEmail: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono text-xs focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Phone Number *</label>
+                  <label className="text-slate-700 font-extrabold">Phone Number *</label>
                   <input
                     type="text"
                     required
                     value={formData.phoneNumber}
                     onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono text-xs focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Graduation Date</label>
+                  <label className="text-slate-700 font-extrabold">Graduation Date</label>
                   <input
                     type="date"
                     value={formData.graduationDate}
                     onChange={(e) => setFormData({ ...formData, graduationDate: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
               </div>
 
               {/* Student Photo Section */}
-              <div className="space-y-2 border-t border-brand-cocoa border-opacity-20 pt-4">
-                <label className="text-gray-400 font-semibold flex items-center justify-between">
+              <div className="space-y-2 border-t border-slate-100 pt-4">
+                <label className="text-slate-700 font-extrabold flex items-center justify-between">
                   <span>Student Photo (Google Drive Link / Image URL)</span>
                   {formData.photoUrl && (
-                    <span className="text-[10px] text-brand-rosy">Auto-converts Google Drive Share Links</span>
+                    <span className="text-[10px] text-purple-800 font-extrabold">Auto-converts Google Drive Share Links</span>
                   )}
                 </label>
                 <div className="flex items-center space-x-3">
@@ -922,13 +922,13 @@ export const Students: React.FC = () => {
                     placeholder="https://drive.google.com/file/d/FILE_ID/view?usp=sharing"
                     value={formData.photoUrl}
                     onChange={(e) => setFormData({ ...formData, photoUrl: e.target.value })}
-                    className="flex-1 bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="flex-1 bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                   {formData.photoUrl && (
                     <img
                       src={getGoogleDriveImageUrl(formData.photoUrl) || ''}
                       alt="Preview"
-                      className="w-9 h-9 rounded-full object-cover border border-brand-rosy shrink-0"
+                      className="w-9 h-9 rounded-full object-cover border border-purple-400 shrink-0"
                       onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
                     />
                   )}
@@ -936,117 +936,117 @@ export const Students: React.FC = () => {
               </div>
 
               {/* GitHub, LinkedIn, Portfolio Links & IDs */}
-              <div className="grid grid-cols-2 gap-4 border-t border-brand-cocoa border-opacity-20 pt-4">
+              <div className="grid grid-cols-2 gap-4 border-t border-slate-100 pt-4">
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">GitHub ID / Username</label>
+                  <label className="text-slate-700 font-extrabold">GitHub ID / Username</label>
                   <input
                     type="text"
                     placeholder="e.g. akilan-dev"
                     value={formData.githubId}
                     onChange={(e) => setFormData({ ...formData, githubId: e.target.value, githubUrl: e.target.value ? `https://github.com/${e.target.value}` : formData.githubUrl })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono text-xs focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">LinkedIn ID / Username</label>
+                  <label className="text-slate-700 font-extrabold">LinkedIn ID / Username</label>
                   <input
                     type="text"
                     placeholder="e.g. akilan-profile"
                     value={formData.linkedinId}
                     onChange={(e) => setFormData({ ...formData, linkedinId: e.target.value, linkedinUrl: e.target.value ? `https://linkedin.com/in/${e.target.value}` : formData.linkedinUrl })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono text-xs focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1 col-span-2">
-                  <label className="text-gray-400 font-semibold">Portfolio Website Link</label>
+                  <label className="text-slate-700 font-extrabold">Portfolio Website Link</label>
                   <input
                     type="url"
                     placeholder="https://akilan.dev"
                     value={formData.portfolioUrl}
                     onChange={(e) => setFormData({ ...formData, portfolioUrl: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4 border-t border-brand-cocoa border-opacity-20 pt-4">
+              <div className="grid grid-cols-4 gap-4 border-t border-slate-100 pt-4 font-extrabold">
                 <div className="space-y-1">
-                  <label className="text-gray-400">SSLC (%) *</label>
+                  <label className="text-slate-700">SSLC (%) *</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.sslcPercentage}
                     onChange={(e) => setFormData({ ...formData, sslcPercentage: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400">HSC (%) *</label>
+                  <label className="text-slate-700">HSC (%) *</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.hscPercentage}
                     onChange={(e) => setFormData({ ...formData, hscPercentage: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400">UG (CGPA) *</label>
+                  <label className="text-slate-700">UG (CGPA) *</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.ugPercentage}
                     onChange={(e) => setFormData({ ...formData, ugPercentage: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400">PG (CGPA)</label>
+                  <label className="text-slate-700">PG (CGPA)</label>
                   <input
                     type="number"
                     step="0.01"
                     value={formData.pgPercentage}
                     onChange={(e) => setFormData({ ...formData, pgPercentage: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none"
                   />
                 </div>
               </div>
 
-              <div className="space-y-3 border-t border-brand-cocoa border-opacity-20 pt-4">
+              <div className="space-y-3 border-t border-slate-100 pt-4">
                 <div className="space-y-1">
-                  <label className="text-gray-400">Resume Link (Google Drive)</label>
+                  <label className="text-slate-700 font-extrabold">Resume Link (Google Drive)</label>
                   <input
                     type="url"
                     value={formData.resumeUrl}
                     onChange={(e) => setFormData({ ...formData, resumeUrl: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400">Self Introduction Video Link</label>
+                  <label className="text-slate-700 font-extrabold">Self Introduction Video Link</label>
                   <input
                     type="url"
                     value={formData.selfIntroUrl}
                     onChange={(e) => setFormData({ ...formData, selfIntroUrl: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowFormModal(false)}
-                  className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2 rounded-lg font-semibold"
+                  className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2 rounded-lg font-bold"
+                  className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2.5 rounded-xl font-extrabold shadow-md"
                 >
                   Save Entry
                 </button>
@@ -1058,11 +1058,11 @@ export const Students: React.FC = () => {
 
       {/* 6. Excel import modal (Admin only) */}
       {showImportModal && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-80 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl shadow-2xl p-6 overflow-y-auto max-h-[90vh] text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-5">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                <FileSpreadsheet className="w-5 h-5 text-brand-rosy" />
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 overflow-y-auto max-h-[90vh] text-xs text-slate-800">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                <FileSpreadsheet className="w-5 h-5 text-purple-700" />
                 <span>Bulk Excel Student Import</span>
               </h3>
               <button
@@ -1071,7 +1071,7 @@ export const Students: React.FC = () => {
                   setExcelFile(null);
                   setImportPreview(null);
                 }}
-                className="text-gray-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1079,11 +1079,11 @@ export const Students: React.FC = () => {
 
             {/* Drag & drop upload area */}
             {!importPreview && (
-              <div className="flex flex-col items-center justify-center border-2 border-dashed border-brand-cocoa border-opacity-40 rounded-xl py-12 px-6 bg-brand-dark bg-opacity-20 text-center hover:border-brand-rosy transition-all">
-                <UploadCloud className="w-12 h-12 text-brand-rosy mb-4" />
-                <p className="text-sm font-bold text-white">Upload your Excel student roster</p>
-                <p className="text-[10px] text-gray-400 mt-2 max-w-lg leading-relaxed">
-                  Supported Headings: <span className="font-mono text-brand-rosy">name, register_number, department, student_type, email, college_email, personal_email, phone_number, sslc_percentage, hsc_percentage, ug_percentage, photo_url (Google Drive), graduation_date, github_id, linkedin_id, portfolio_url</span>
+              <div className="flex flex-col items-center justify-center border-2 border-dashed border-purple-200 rounded-2xl py-12 px-6 bg-purple-50/50 text-center hover:border-purple-400 transition-all">
+                <UploadCloud className="w-12 h-12 text-purple-700 mb-4" />
+                <p className="text-sm font-extrabold text-slate-900">Upload your Excel student roster</p>
+                <p className="text-xs text-slate-500 mt-2 max-w-lg leading-relaxed font-medium">
+                  Supported Headings: <span className="font-mono text-purple-800 font-bold">name, register_number, department, student_type, email, college_email, personal_email, phone_number, sslc_percentage, hsc_percentage, ug_percentage, photo_url (Google Drive), graduation_date, github_id, linkedin_id, portfolio_url</span>
                 </p>
                 <input
                   type="file"
@@ -1094,7 +1094,7 @@ export const Students: React.FC = () => {
                 />
                 <label
                   htmlFor="excel-file-uploader"
-                  className="mt-6 bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2 rounded-lg font-bold cursor-pointer transition-all shadow-md"
+                  className="mt-6 bg-purple-900 hover:bg-purple-950 text-white px-5 py-2.5 rounded-xl font-extrabold cursor-pointer transition-all shadow-md"
                 >
                   Select File
                 </label>
@@ -1103,11 +1103,11 @@ export const Students: React.FC = () => {
 
             {/* Error file warning */}
             {importError && (
-              <div className="mt-4 p-4 bg-red-950 bg-opacity-30 border border-red-900 rounded-lg text-red-200 flex items-center space-x-3">
-                <AlertCircle className="w-5 h-5 text-red-400 shrink-0" />
+              <div className="mt-4 p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 flex items-center space-x-3 text-xs">
+                <AlertCircle className="w-5 h-5 text-rose-600 shrink-0" />
                 <div>
-                  <h4 className="font-bold">File Parsing Error</h4>
-                  <p className="text-[10px] text-gray-400 mt-0.5">{importError}</p>
+                  <h4 className="font-extrabold">File Parsing Error</h4>
+                  <p className="text-xs text-slate-600 mt-0.5 font-medium">{importError}</p>
                 </div>
               </div>
             )}
@@ -1117,36 +1117,36 @@ export const Students: React.FC = () => {
               <div className="space-y-6">
                 {/* Summary boxes */}
                 <div className="grid grid-cols-3 gap-4">
-                  <div className="bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 p-4 rounded-lg text-center">
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Total Sheet Rows</span>
-                    <h4 className="text-2xl font-black text-white mt-1">{importPreview.totalRows}</h4>
+                  <div className="bg-slate-50 border border-slate-200 p-4 rounded-xl text-center">
+                    <span className="text-[10px] text-slate-500 uppercase tracking-wider font-extrabold">Total Sheet Rows</span>
+                    <h4 className="text-2xl font-black text-slate-900 mt-1">{importPreview.totalRows}</h4>
                   </div>
-                  <div className="bg-emerald-950 bg-opacity-20 border border-emerald-900 p-4 rounded-lg text-center">
-                    <span className="text-[10px] text-emerald-500 uppercase tracking-widest font-bold">Valid & Ready</span>
-                    <h4 className="text-2xl font-black text-emerald-400 mt-1">{importPreview.validCount}</h4>
+                  <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-xl text-center">
+                    <span className="text-[10px] text-emerald-800 uppercase tracking-wider font-extrabold">Valid & Ready</span>
+                    <h4 className="text-2xl font-black text-emerald-800 mt-1">{importPreview.validCount}</h4>
                   </div>
-                  <div className="bg-red-950 bg-opacity-20 border border-red-900 p-4 rounded-lg text-center">
-                    <span className="text-[10px] text-red-500 uppercase tracking-widest font-bold">Invalid / Errors</span>
-                    <h4 className="text-2xl font-black text-red-400 mt-1">{importPreview.invalidCount}</h4>
+                  <div className="bg-rose-50 border border-rose-200 p-4 rounded-xl text-center">
+                    <span className="text-[10px] text-rose-800 uppercase tracking-wider font-extrabold">Invalid / Errors</span>
+                    <h4 className="text-2xl font-black text-rose-800 mt-1">{importPreview.invalidCount}</h4>
                   </div>
                 </div>
 
                 {/* Detailed Errors Roster (if any) */}
                 {importPreview.invalidRows.length > 0 && (
                   <div className="space-y-3">
-                    <h4 className="font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
-                      <AlertCircle className="w-4 h-4 text-red-400" />
+                    <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                      <AlertCircle className="w-4 h-4 text-rose-600" />
                       <span>Identified Row Failures ({importPreview.invalidCount})</span>
                     </h4>
-                    <div className="max-h-60 overflow-y-auto border border-brand-cocoa border-opacity-30 rounded-lg divide-y divide-brand-cocoa divide-opacity-20 bg-brand-dark bg-opacity-10">
+                    <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-xl divide-y divide-slate-100 bg-white">
                       {importPreview.invalidRows.map((row: any) => (
                         <div key={row.rowNumber} className="p-3 flex justify-between items-start">
                           <div>
-                            <span className="font-bold text-white font-mono">Row {row.rowNumber}</span>
-                            <span className="text-gray-500 ml-2">({row.data?.name || 'Empty Name'} - {row.data?.registerNumber || 'Empty Register'})</span>
+                            <span className="font-extrabold text-slate-900 font-mono">Row {row.rowNumber}</span>
+                            <span className="text-slate-600 ml-2 font-medium">({row.data?.name || 'Empty Name'} - {row.data?.registerNumber || 'Empty Register'})</span>
                             <div className="flex flex-wrap gap-1.5 mt-2">
                               {row.errors.map((err: string, i: number) => (
-                                <span key={i} className="bg-red-950 text-red-300 px-2 py-0.5 rounded text-[9px] border border-red-900">
+                                <span key={i} className="bg-rose-50 text-rose-800 px-2 py-0.5 rounded text-[9px] border border-rose-200 font-bold">
                                   {err}
                                 </span>
                               ))}
@@ -1161,13 +1161,13 @@ export const Students: React.FC = () => {
                 {/* Valid Preview details */}
                 {importPreview.validCount > 0 && (
                   <div className="space-y-3">
-                    <h4 className="font-bold text-white uppercase tracking-wider flex items-center space-x-1.5">
-                      <FileCheck className="w-4 h-4 text-emerald-400" />
+                    <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5">
+                      <FileCheck className="w-4 h-4 text-emerald-600" />
                       <span>Valid Students Preview ({importPreview.validCount})</span>
                     </h4>
-                    <div className="max-h-48 overflow-y-auto border border-brand-cocoa border-opacity-35 rounded-lg bg-brand-dark bg-opacity-15 font-mono text-[10px]">
+                    <div className="max-h-48 overflow-y-auto border border-slate-200 rounded-xl bg-white font-mono text-xs">
                       <table className="w-full text-left">
-                        <thead className="bg-brand-dark bg-opacity-60 text-gray-500 border-b border-brand-cocoa border-opacity-30">
+                        <thead className="bg-slate-100 text-slate-700 font-bold border-b border-slate-200">
                           <tr>
                             <th className="p-2">Name</th>
                             <th className="p-2">Register</th>
@@ -1175,18 +1175,18 @@ export const Students: React.FC = () => {
                             <th className="p-2">UG CGPA</th>
                           </tr>
                         </thead>
-                        <tbody className="divide-y divide-brand-cocoa divide-opacity-10 text-gray-400">
+                        <tbody className="divide-y divide-slate-100 text-slate-800">
                           {importPreview.validRows.slice(0, 10).map((row: any) => (
                             <tr key={row.rowNumber}>
-                              <td className="p-2 text-white font-bold">{row.data.name}</td>
-                              <td className="p-2">{row.data.registerNumber}</td>
-                              <td className="p-2">{row.data.department}</td>
-                              <td className="p-2 text-brand-rosy">{row.data.ugPercentage}</td>
+                              <td className="p-2 font-extrabold text-slate-900">{row.data.name}</td>
+                              <td className="p-2 font-bold">{row.data.registerNumber}</td>
+                              <td className="p-2 font-bold">{row.data.department}</td>
+                              <td className="p-2 text-purple-800 font-extrabold">{row.data.ugPercentage}</td>
                             </tr>
                           ))}
                           {importPreview.validCount > 10 && (
                             <tr>
-                              <td colSpan={4} className="p-2 text-center text-gray-600 italic">
+                              <td colSpan={4} className="p-2 text-center text-slate-500 italic">
                                 ...and {importPreview.validCount - 10} more rows
                               </td>
                             </tr>
@@ -1198,20 +1198,20 @@ export const Students: React.FC = () => {
                 )}
 
                 {/* Actions */}
-                <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+                <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
                   <button
                     onClick={() => {
                       setExcelFile(null);
                       setImportPreview(null);
                     }}
-                    className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2.5 rounded-lg font-bold"
+                    className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-xs"
                   >
                     Reset & Upload Again
                   </button>
                   <button
                     onClick={handleConfirmImport}
                     disabled={importPreview.validCount === 0 || importing}
-                    className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-6 py-2.5 rounded-lg font-black transition-all flex items-center space-x-2 disabled:opacity-50 shadow-lg"
+                    className="bg-purple-900 hover:bg-purple-950 text-white px-6 py-2.5 rounded-xl font-extrabold transition-all flex items-center space-x-2 disabled:opacity-50 shadow-md"
                   >
                     {importing ? (
                       <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1231,44 +1231,44 @@ export const Students: React.FC = () => {
 
       {/* Terminate Student Modal */}
       {showTerminateModal && studentToTerminate && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-80 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-brand-card border border-red-900 border-opacity-50 rounded-xl shadow-2xl p-6 space-y-5 text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-red-900 border-opacity-30 pb-3">
-              <div className="flex items-center space-x-2 text-red-400 font-bold text-sm">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl shadow-2xl p-6 space-y-5 text-xs text-slate-800">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3">
+              <div className="flex items-center space-x-2 text-rose-700 font-extrabold text-sm">
                 <ShieldAlert className="w-5 h-5" />
                 <span>Terminate Student Profile</span>
               </div>
-              <button onClick={() => setShowTerminateModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowTerminateModal(false)} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3">
-              <p className="text-gray-300">
-                Are you sure you want to terminate <strong className="text-white">{studentToTerminate.name}</strong> ({studentToTerminate.registerNumber})?
+              <p className="text-slate-700 font-medium">
+                Are you sure you want to terminate <strong className="text-slate-900 font-extrabold">{studentToTerminate.name}</strong> ({studentToTerminate.registerNumber})?
               </p>
-              <p className="text-[11px] text-gray-400 leading-relaxed">
-                Terminating a student will move their record out of active placement repository to the <strong className="text-red-300">Terminated Students List</strong> and set their placement status to <span className="text-red-400 font-bold font-mono">TERMINATED</span>.
+              <p className="text-xs text-slate-500 leading-relaxed font-medium">
+                Terminating a student will move their record out of active placement repository to the <strong className="text-rose-700 font-bold">Terminated Students List</strong> and set their placement status to <span className="text-rose-700 font-extrabold font-mono">TERMINATED</span>.
               </p>
 
-              <div className="space-y-1 pt-2">
-                <label className="text-gray-400 font-semibold block">Termination Reason *</label>
+              <div className="space-y-1.5 pt-2">
+                <label className="text-slate-700 font-extrabold block">Termination Reason *</label>
                 <textarea
                   rows={3}
                   required
                   placeholder="e.g. Disciplinary action, policy breach, academic drop out..."
                   value={terminationReason}
                   onChange={(e) => setTerminationReason(e.target.value)}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none focus:border-red-500 resize-none text-xs"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-medium focus:outline-none focus:border-rose-500 resize-none text-xs"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-3 border-t border-brand-cocoa border-opacity-20">
+            <div className="flex justify-end space-x-3 pt-3 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setShowTerminateModal(false)}
-                className="bg-brand-dark hover:bg-brand-cocoa text-gray-300 px-4 py-2 rounded-lg font-semibold"
+                className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2 rounded-xl font-bold"
               >
                 Cancel
               </button>
@@ -1276,7 +1276,7 @@ export const Students: React.FC = () => {
                 type="button"
                 disabled={terminating || !terminationReason.trim()}
                 onClick={handleConfirmTerminate}
-                className="bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 px-5 py-2 rounded-lg font-bold transition-all disabled:opacity-50 flex items-center space-x-1.5 shadow-md"
+                className="bg-rose-700 hover:bg-rose-800 text-white px-5 py-2 rounded-xl font-extrabold transition-all disabled:opacity-50 flex items-center space-x-1.5 shadow-md"
               >
                 <UserX className="w-4 h-4" />
                 <span>{terminating ? 'Terminating...' : 'Confirm Termination'}</span>

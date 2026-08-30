@@ -69,27 +69,40 @@ export const Navbar: React.FC<NavbarProps> = ({ onToggleMobileMenu }) => {
 
   return (
     <header className="h-16 bg-white border-b border-slate-200 px-4 md:px-8 flex items-center justify-between z-40 relative shadow-xs">
+      <div className="rgu-gradient-bar w-full absolute top-0 left-0 z-50"></div>
+      
       {/* Left Title & Mobile Menu Toggle */}
       <div className="flex items-center space-x-3">
         {onToggleMobileMenu && (
           <button
             onClick={onToggleMobileMenu}
-            className="md:hidden p-2 rounded-lg text-slate-600 hover:text-red-900 hover:bg-slate-100 transition-all focus:outline-none"
+            className="md:hidden p-2 rounded-lg text-slate-700 hover:text-red-900 hover:bg-slate-100 transition-all focus:outline-none"
             aria-label="Toggle Navigation Menu"
           >
             <Menu className="w-5 h-5" />
           </button>
         )}
-        <div className="flex items-center space-x-2">
-          <GraduationCap className="w-5 h-5 text-red-800 hidden sm:inline-block" />
-          <h2 className="text-base md:text-lg font-bold text-slate-800 tracking-wide truncate">{getPageTitle()}</h2>
+        
+        {/* RGU Logo Banner & Page Title */}
+        <div className="flex items-center space-x-3">
+          <img 
+            src="/rgu-banner-logo.png" 
+            alt="Rathinam Global University" 
+            className="h-7 md:h-8 object-contain hidden sm:block border-r border-slate-200 pr-3"
+            onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
+          />
+          <div className="flex items-center space-x-2">
+            <GraduationCap className="w-5 h-5 text-purple-700 sm:hidden" />
+            <h2 className="text-sm md:text-base font-extrabold text-slate-900 tracking-tight truncate">{getPageTitle()}</h2>
+          </div>
         </div>
       </div>
 
       {/* Action Center */}
       <div className="flex items-center space-x-4 md:space-x-6">
-        <span className="hidden sm:inline-block text-xs text-slate-500 font-semibold tracking-wide">
-          {new Date().toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'short', day: 'numeric' })}
+        <span className="hidden lg:inline-flex items-center space-x-1.5 text-xs text-slate-600 font-bold bg-slate-100 px-3 py-1 rounded-full border border-slate-200">
+          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+          <span>RGU LIVE PORTAL</span>
         </span>
 
         {/* Notifications Icon */}

@@ -168,18 +168,18 @@ export const Offers: React.FC = () => {
               placeholder="Search student, job role..."
               value={search}
               onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 pl-9 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 pl-9 text-xs text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:border-purple-700 transition-all"
             />
-            <Search className="w-4 h-4 text-gray-500 absolute left-3 top-2.5" />
+            <Search className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
           </div>
 
           <div>
             <select
               value={selectedCompany}
               onChange={(e) => { setSelectedCompany(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-purple-700 transition-all"
             >
-              <option value="">All Companies</option>
+              <option value="">All Corporate Partners</option>
               {companies.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -190,9 +190,9 @@ export const Offers: React.FC = () => {
             <select
               value={selectedDept}
               onChange={(e) => { setSelectedDept(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-purple-700 transition-all"
             >
-              <option value="">All Departments</option>
+              <option value="">All Streams / Departments</option>
               {departments.map((d) => (
                 <option key={d.id} value={d.id}>{d.name} ({d.code})</option>
               ))}
@@ -203,7 +203,7 @@ export const Offers: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-extrabold focus:outline-none focus:border-purple-700 transition-all"
             >
               <option value="">All Offer Statuses</option>
               <option value="OFFERED">Offered Only</option>
@@ -218,48 +218,48 @@ export const Offers: React.FC = () => {
         <div className="glass-panel overflow-hidden">
           {loading ? (
             <div className="py-20 text-center">
-              <span className="w-8 h-8 border-3 border-brand-rosy border-t-transparent rounded-full inline-block animate-spin" />
+              <span className="w-8 h-8 border-3 border-purple-800 border-t-transparent rounded-full inline-block animate-spin" />
             </div>
           ) : offers.length === 0 ? (
             <div className="py-20 text-center">
-              <p className="text-sm text-gray-400">No recruitment offers logged yet.</p>
+              <p className="text-sm text-slate-500 font-medium">No recruitment offers logged yet.</p>
             </div>
           ) : (
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-brand-card text-gray-400 border-b border-brand-cocoa border-opacity-30 uppercase tracking-wider font-semibold text-[10px]">
-                  <th className="p-4">Student Details</th>
-                  <th className="p-4">Company Name</th>
-                  <th className="p-4">Job Role</th>
-                  <th className="p-4">Package</th>
+                <tr className="bg-slate-100/80 text-slate-700 border-b border-slate-200 uppercase tracking-wider font-extrabold text-[10px]">
+                  <th className="p-4">Student Candidate</th>
+                  <th className="p-4">Corporate Partner</th>
+                  <th className="p-4">Job Role Title</th>
+                  <th className="p-4">Offered Package</th>
                   <th className="p-4">Offer Date</th>
-                  <th className="p-4">Status</th>
+                  <th className="p-4">Status Clearance</th>
                   {!isManager && <th className="p-4 text-center">Actions</th>}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-brand-cocoa divide-opacity-20 text-gray-300">
+              <tbody className="divide-y divide-slate-100 text-slate-800 font-medium">
                 {offers.map((offer) => (
-                  <tr key={offer.id} className="hover:bg-brand-card hover:bg-opacity-25 transition-colors">
+                  <tr key={offer.id} className="hover:bg-slate-50 transition-colors">
                     <td className="p-4">
-                      <div className="font-bold text-white">{offer.student?.name}</div>
-                      <div className="text-[10px] text-gray-500 font-mono mt-0.5">{offer.student?.registerNumber}</div>
+                      <div className="font-extrabold text-slate-900">{offer.student?.name}</div>
+                      <div className="text-[10px] text-slate-500 font-mono font-bold mt-0.5">{offer.student?.registerNumber}</div>
                     </td>
-                    <td className="p-4 font-bold text-white">
+                    <td className="p-4 font-extrabold text-slate-900">
                       <div className="flex items-center space-x-1.5">
-                        <Building className="w-3.5 h-3.5 text-brand-rosy" />
+                        <Building className="w-3.5 h-3.5 text-purple-700 shrink-0" />
                         <span>{offer.company?.name}</span>
                       </div>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 font-bold text-slate-800">
                       <div className="flex items-center space-x-1.5">
-                        <Briefcase className="w-3.5 h-3.5 text-brand-rosy" />
+                        <Briefcase className="w-3.5 h-3.5 text-purple-700 shrink-0" />
                         <span>{offer.jobRole}</span>
                       </div>
                     </td>
-                    <td className="p-4 font-bold text-brand-rosy font-mono">{offer.ctc} LPA</td>
-                    <td className="p-4 font-mono">
-                      <div className="flex items-center space-x-1">
-                        <Calendar className="w-3.5 h-3.5 text-gray-500" />
+                    <td className="p-4 font-extrabold text-purple-800 font-mono text-sm">{offer.ctc} LPA</td>
+                    <td className="p-4 font-mono font-bold text-slate-700">
+                      <div className="flex items-center space-x-1.5">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
                         <span>{new Date(offer.offerDate).toLocaleDateString()}</span>
                       </div>
                     </td>
@@ -269,7 +269,7 @@ export const Offers: React.FC = () => {
                         <div className="flex items-center justify-center space-x-3">
                           <button
                             onClick={() => handleOpenEdit(offer)}
-                            className="p-1 hover:text-brand-rosy text-gray-500 transition-all"
+                            className="p-1 hover:text-purple-800 text-slate-400 transition-all hover:bg-slate-100 rounded"
                             title="Edit details"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -277,7 +277,7 @@ export const Offers: React.FC = () => {
                           {isAdmin && (
                             <button
                               onClick={() => handleDelete(offer.id)}
-                              className="p-1 hover:text-red-400 text-gray-500 transition-all"
+                              className="p-1 hover:text-rose-600 text-slate-400 transition-all hover:bg-slate-100 rounded"
                               title="Delete record"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -296,47 +296,47 @@ export const Offers: React.FC = () => {
 
       {/* Edit Offer Modal */}
       {editingOffer && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-6 text-xs text-gray-300 animate-fade-in">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-5">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
-                Modify Offer details
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-6 text-xs text-slate-800 shadow-2xl animate-fade-in">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
+                Modify Offer Details
               </h3>
-              <button onClick={() => setEditingOffer(null)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setEditingOffer(null)} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleEditSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">Job Title Role</label>
+                <label className="text-slate-700 font-extrabold">Job Title Role</label>
                 <input
                   type="text"
                   required
                   value={editForm.jobRole}
                   onChange={(e) => setEditForm({ ...editForm, jobRole: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">Package CTC (LPA)</label>
+                <label className="text-slate-700 font-extrabold">Package CTC (LPA)</label>
                 <input
                   type="number"
                   step="0.1"
                   required
                   value={editForm.ctc}
                   onChange={(e) => setEditForm({ ...editForm, ctc: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono font-bold focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">Offer Status Clearance</label>
+                <label className="text-slate-700 font-extrabold">Offer Status Clearance</label>
                 <select
                   value={editForm.status}
                   onChange={(e) => setEditForm({ ...editForm, status: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-extrabold focus:outline-none focus:border-purple-700"
                 >
                   <option value="OFFERED">OFFERED</option>
                   <option value="ACCEPTED">ACCEPTED</option>
@@ -345,17 +345,17 @@ export const Offers: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setEditingOffer(null)}
-                  className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2.5 rounded-lg font-semibold"
+                  className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2.5 rounded-lg font-bold shadow-lg"
+                  className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2.5 rounded-xl font-extrabold shadow-md"
                 >
                   Update Offer
                 </button>

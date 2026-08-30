@@ -501,20 +501,20 @@ export const PlacementDrives: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex relative overflow-hidden text-xs text-gray-300">
+    <div className="h-full flex relative overflow-hidden text-xs text-slate-800">
       {/* Table grid pane */}
       <div className="flex-1 p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)]">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-extrabold text-white">Placement Drives</h1>
-            <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">Schedule and track recruitment sessions</p>
+            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Placement Drives</h1>
+            <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">Schedule and track recruitment sessions</p>
           </div>
 
           {!isManager && (
             <button
               onClick={handleOpenCreate}
-              className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider flex items-center space-x-2 transition-all shadow-md"
+              className="bg-purple-900 hover:bg-purple-950 text-white px-4 py-2.5 rounded-xl text-xs font-extrabold tracking-wider flex items-center space-x-2 transition-all shadow-sm"
             >
               <Plus className="w-4.5 h-4.5" />
               <span>Schedule Drive</span>
@@ -523,14 +523,14 @@ export const PlacementDrives: React.FC = () => {
         </div>
 
         {/* Toolbar Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-30 rounded-xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
           <div>
             <select
               value={selectedCompany}
               onChange={(e) => { setSelectedCompany(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-purple-700 transition-all"
             >
-              <option value="">All Companies</option>
+              <option value="">All Corporate Partners</option>
               {companies.map((c) => (
                 <option key={c.id} value={c.id}>{c.name}</option>
               ))}
@@ -541,9 +541,9 @@ export const PlacementDrives: React.FC = () => {
             <select
               value={selectedDept}
               onChange={(e) => { setSelectedDept(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-purple-700 transition-all"
             >
-              <option value="">All Eligible Departments</option>
+              <option value="">All Eligible Streams</option>
               {departments.map((d) => (
                 <option key={d.id} value={d.code}>{d.name} ({d.code})</option>
               ))}
@@ -554,13 +554,13 @@ export const PlacementDrives: React.FC = () => {
             <select
               value={selectedStatus}
               onChange={(e) => { setSelectedStatus(e.target.value); setPage(1); }}
-              className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg py-2 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+              className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-xs text-slate-800 font-semibold focus:outline-none focus:border-purple-700 transition-all"
             >
               <option value="">All Drive Statuses</option>
-              <option value="UPCOMING">Warm Only</option>
-              <option value="ONGOING">Hot Only</option>
-              <option value="COMPLETED">Completed Only</option>
-              <option value="CANCELLED">Cancelled Only</option>
+              <option value="UPCOMING">Upcoming Drives</option>
+              <option value="ONGOING">Ongoing Drives</option>
+              <option value="COMPLETED">Completed Drives</option>
+              <option value="CANCELLED">Cancelled Drives</option>
             </select>
           </div>
         </div>
@@ -569,15 +569,15 @@ export const PlacementDrives: React.FC = () => {
         <div className="glass-panel overflow-hidden">
           {loading ? (
             <div className="py-20 text-center">
-              <span className="w-8 h-8 border-3 border-brand-rosy border-t-transparent rounded-full inline-block animate-spin" />
+              <span className="w-8 h-8 border-3 border-purple-800 border-t-transparent rounded-full inline-block animate-spin" />
             </div>
           ) : drives.length === 0 ? (
             <div className="py-20 text-center space-y-3">
-              <p className="text-sm text-gray-400">No placement drives found.</p>
+              <p className="text-sm text-slate-500 font-medium">No placement drives found.</p>
               {!isManager && (
                 <button
                   onClick={handleOpenCreate}
-                  className="bg-brand-cocoa text-white px-4 py-2 rounded-lg text-xs font-semibold hover:bg-brand-rosy hover:text-brand-black transition-all"
+                  className="bg-purple-900 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-purple-950 transition-all shadow-xs"
                 >
                   Schedule a Recruitment Drive
                 </button>
@@ -586,7 +586,7 @@ export const PlacementDrives: React.FC = () => {
           ) : (
             <table className="w-full text-left border-collapse text-xs">
               <thead>
-                <tr className="bg-brand-card text-gray-400 border-b border-brand-cocoa border-opacity-30 uppercase tracking-wider font-semibold text-[10px]">
+                <tr className="bg-slate-100/80 text-slate-700 border-b border-slate-200 uppercase tracking-wider font-extrabold text-[10px]">
                   <th className="p-4">Company</th>
                   <th className="p-4">Role & Package</th>
                   <th className="p-4">Drive Date</th>
@@ -596,51 +596,51 @@ export const PlacementDrives: React.FC = () => {
                   <th className="p-4 text-center">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-brand-cocoa divide-opacity-20 text-gray-300">
+              <tbody className="divide-y divide-slate-100 text-slate-800 font-medium">
                 {drives.map((drive) => (
                   <tr
                     key={drive.id}
                     onClick={() => handleSelectDrive(drive)}
-                    className="hover:bg-brand-card hover:bg-opacity-30 cursor-pointer transition-colors"
+                    className="hover:bg-slate-50 cursor-pointer transition-colors"
                   >
-                    <td className="p-4 font-bold text-white">
+                    <td className="p-4 font-bold text-slate-900">
                       <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 rounded bg-brand-cocoa bg-opacity-10 border border-brand-cocoa border-opacity-20 flex items-center justify-center text-brand-rosy font-bold">
+                        <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-900 border border-purple-200 flex items-center justify-center font-extrabold">
                           {drive.company?.name.charAt(0)}
                         </div>
                         <div>
-                          <div className="font-bold text-white">{drive.company?.name}</div>
-                          <div className="text-[9px] text-gray-500 font-mono mt-0.5">{drive.company?.location}</div>
+                          <div className="font-extrabold text-slate-900 text-sm">{drive.company?.name}</div>
+                          <div className="text-[10px] text-slate-500 font-mono mt-0.5">{drive.company?.location}</div>
                         </div>
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="font-bold text-white">{drive.jobRole}</div>
-                      <div className="text-[10px] text-brand-rosy font-semibold mt-0.5">{drive.ctc} LPA</div>
+                      <div className="font-extrabold text-slate-900">{drive.jobRole}</div>
+                      <div className="text-xs text-purple-800 font-extrabold mt-0.5">{drive.ctc} LPA</div>
                     </td>
                     <td className="p-4 font-mono">
-                      <div className="flex items-center space-x-1 text-gray-300">
-                        <Calendar className="w-3.5 h-3.5 text-gray-500" />
-                        <span>{new Date(drive.driveDate).toLocaleDateString()}</span>
+                      <div className="flex items-center space-x-1.5 text-slate-700">
+                        <Calendar className="w-3.5 h-3.5 text-slate-400" />
+                        <span className="font-bold">{new Date(drive.driveDate).toLocaleDateString()}</span>
                       </div>
                     </td>
                     <td className="p-4">
-                      <div className="flex items-center space-x-1.5">
-                        <MapPin className="w-3.5 h-3.5 text-brand-rosy" />
+                      <div className="flex items-center space-x-1.5 text-slate-800 font-bold">
+                        <MapPin className="w-3.5 h-3.5 text-purple-700" />
                         <span>{drive.driveLocation}</span>
                       </div>
-                      <span className="text-[9px] text-gray-500 block mt-1 uppercase font-semibold tracking-wider">
+                      <span className="text-[9px] text-slate-500 block mt-1 uppercase font-extrabold tracking-wider">
                         {drive.driveType.replace('_', ' ')}
                       </span>
                     </td>
                     <td className="p-4">
-                      <div className="flex items-center space-x-1 text-gray-400">
-                        <GraduationCap className="w-4 h-4 text-brand-rosy" />
-                        <span className="font-semibold text-white">CGPA: {drive.minimumCgpa}+</span>
+                      <div className="flex items-center space-x-1 text-slate-700">
+                        <GraduationCap className="w-4 h-4 text-purple-700" />
+                        <span className="font-bold text-slate-900">CGPA: {drive.minimumCgpa}+</span>
                       </div>
                       <div className="flex flex-wrap gap-1 mt-1.5">
                         {(drive.eligibleDepartments || []).map((code: string) => (
-                          <span key={code} className="bg-brand-dark px-1.5 py-0.5 rounded text-[8px] text-gray-500 font-bold border border-brand-cocoa border-opacity-10">
+                          <span key={code} className="bg-slate-100 px-1.5 py-0.5 rounded text-[9px] text-slate-800 font-extrabold border border-slate-200">
                             {code}
                           </span>
                         ))}
@@ -651,7 +651,7 @@ export const PlacementDrives: React.FC = () => {
                       <div className="flex items-center justify-center space-x-3">
                         <button
                           onClick={() => handleSelectDrive(drive)}
-                          className="text-gray-400 hover:text-white transition-all"
+                          className="text-slate-500 hover:text-slate-900 transition-all p-1 hover:bg-slate-100 rounded"
                           title="Inspect Details"
                         >
                           <Eye className="w-4 h-4" />
@@ -659,7 +659,7 @@ export const PlacementDrives: React.FC = () => {
                         {!isManager && drive.status !== 'COMPLETED' && (
                           <button
                             onClick={() => handleOpenComplete(drive)}
-                            className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-2.5 py-1 rounded text-[10px] font-bold flex items-center space-x-1 transition-all"
+                            className="bg-emerald-700 hover:bg-emerald-800 text-white px-2.5 py-1 rounded-lg text-[10px] font-extrabold flex items-center space-x-1 transition-all shadow-xs"
                             title="Complete Drive"
                           >
                             <FileCheck className="w-3.5 h-3.5" />
@@ -669,7 +669,7 @@ export const PlacementDrives: React.FC = () => {
                         {!isManager && drive.status !== 'COMPLETED' && (
                           <button
                             onClick={() => handleOpenEdit(drive)}
-                            className="text-gray-400 hover:text-brand-rosy transition-all"
+                            className="text-slate-500 hover:text-purple-800 transition-all p-1 hover:bg-slate-100 rounded"
                             title="Edit"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -678,7 +678,7 @@ export const PlacementDrives: React.FC = () => {
                         {isAdmin && (
                           <button
                             onClick={() => handleDelete(drive.id)}
-                            className="text-gray-500 hover:text-red-400 transition-all"
+                            className="text-slate-400 hover:text-rose-600 transition-all p-1 hover:bg-slate-100 rounded"
                             title="Delete"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -696,60 +696,60 @@ export const PlacementDrives: React.FC = () => {
 
       {/* Details drawer (slides in on right) */}
       {selectedDrive && (
-        <div className="w-96 bg-brand-card border-l border-brand-cocoa border-opacity-45 h-full flex flex-col z-30 animate-fade-in relative">
-          <div className="p-6 border-b border-brand-cocoa border-opacity-35 flex items-center justify-between bg-brand-black">
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-              <Laptop className="w-4.5 h-4.5 text-brand-rosy" />
-              <span>Drive Details</span>
+        <div className="w-96 bg-white border-l border-slate-200 h-full flex flex-col z-30 animate-fade-in relative shadow-xl">
+          <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50/80">
+            <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+              <Laptop className="w-4.5 h-4.5 text-purple-700" />
+              <span>Drive Overview</span>
             </h2>
             <button
               onClick={() => setSelectedDrive(null)}
-              className="p-1 rounded hover:bg-brand-cocoa text-gray-400 hover:text-white"
+              className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all"
             >
               <X className="w-5 h-5" />
             </button>
           </div>
 
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-gray-400">
-            <div className="text-center pb-4 border-b border-brand-cocoa border-opacity-20">
-              <h3 className="text-base font-bold text-white">{selectedDrive.company?.name}</h3>
-              <p className="text-[10px] text-brand-rosy font-semibold uppercase tracking-wider mt-1">{selectedDrive.jobRole}</p>
+          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
+            <div className="text-center pb-4 border-b border-slate-100">
+              <h3 className="text-base font-extrabold text-slate-900">{selectedDrive.company?.name}</h3>
+              <p className="text-xs text-purple-800 font-extrabold uppercase tracking-wider mt-1">{selectedDrive.jobRole}</p>
               <div className="mt-2.5 flex justify-center">{getStatusBadge(selectedDrive.status)}</div>
             </div>
 
             {/* Criteria */}
             <div className="space-y-3">
-              <h4 className="font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-25 pb-1">
+              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
                 Eligibility Criteria
               </h4>
-              <div className="grid grid-cols-2 gap-3 text-gray-500 font-medium">
-                <div>Min CGPA: <span className="text-white block mt-0.5">{selectedDrive.minimumCgpa}</span></div>
-                <div>Max Backlogs: <span className="text-white block mt-0.5">{selectedDrive.maximumBacklogs}</span></div>
-                <div>Drive Type: <span className="text-white block mt-0.5 uppercase">{selectedDrive.driveType.replace('_', ' ')}</span></div>
-                <div>Package Offer: <span className="text-brand-rosy block mt-0.5 font-bold">{selectedDrive.ctc} LPA</span></div>
+              <div className="grid grid-cols-2 gap-3 text-slate-600 font-bold">
+                <div>Min CGPA: <span className="text-slate-900 block mt-0.5 font-mono">{selectedDrive.minimumCgpa}</span></div>
+                <div>Max Backlogs: <span className="text-slate-900 block mt-0.5 font-mono">{selectedDrive.maximumBacklogs}</span></div>
+                <div>Drive Type: <span className="text-slate-900 block mt-0.5 uppercase">{selectedDrive.driveType.replace('_', ' ')}</span></div>
+                <div>Package Offer: <span className="text-purple-800 block mt-0.5 font-mono">{selectedDrive.ctc} LPA</span></div>
               </div>
             </div>
 
             {/* Company Info Card */}
             {selectedDrive.company && (
-              <div className="space-y-3 bg-brand-dark bg-opacity-35 p-4 rounded-xl border border-brand-cocoa border-opacity-15">
-                <h4 className="font-bold text-white uppercase tracking-wider flex items-center space-x-1.5 border-b border-brand-cocoa border-opacity-20 pb-1.5">
-                  <Building className="w-3.5 h-3.5 text-brand-rosy" />
-                  <span>Company Profile</span>
+              <div className="space-y-3 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5 border-b border-slate-200 pb-1.5">
+                  <Building className="w-3.5 h-3.5 text-purple-700" />
+                  <span>Corporate Profile</span>
                 </h4>
-                <div className="space-y-2 text-gray-500 font-medium">
+                <div className="space-y-2 text-slate-600 font-semibold">
                   <div className="flex justify-between">
                     <span>Industry:</span>
-                    <span className="text-white">{selectedDrive.company.industry || 'IT / Software'}</span>
+                    <span className="text-slate-900 font-bold">{selectedDrive.company.industry || 'IT / Software'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Location:</span>
-                    <span className="text-white capitalize">{selectedDrive.company.location}</span>
+                    <span className="text-slate-900 font-bold capitalize">{selectedDrive.company.location}</span>
                   </div>
                   {selectedDrive.company.website && (
                     <div className="flex justify-between">
                       <span>Website:</span>
-                      <a href={selectedDrive.company.website} target="_blank" rel="noopener noreferrer" className="text-brand-rosy hover:underline flex items-center space-x-0.5">
+                      <a href={selectedDrive.company.website} target="_blank" rel="noopener noreferrer" className="text-purple-700 font-bold hover:underline flex items-center space-x-0.5">
                         <span>Visit Site</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
@@ -758,15 +758,15 @@ export const PlacementDrives: React.FC = () => {
                   {selectedDrive.company.companySize && (
                     <div className="flex justify-between">
                       <span>Staff Size:</span>
-                      <span className="text-white">{selectedDrive.company.companySize}</span>
+                      <span className="text-slate-900 font-bold">{selectedDrive.company.companySize}</span>
                     </div>
                   )}
                   {selectedDrive.company.contactPersonName && (
-                    <div className="pt-1.5 border-t border-brand-cocoa border-opacity-10 space-y-1">
-                      <div className="text-[10px] text-gray-500 uppercase tracking-wide">Contact Person</div>
-                      <div className="text-white font-bold">{selectedDrive.company.contactPersonName}</div>
-                      {selectedDrive.company.contactPersonEmail && <div className="text-gray-400 flex items-center space-x-1"><Mail className="w-3 h-3" /> <span>{selectedDrive.company.contactPersonEmail}</span></div>}
-                      {selectedDrive.company.contactPersonPhone && <div className="text-gray-400 flex items-center space-x-1"><Phone className="w-3 h-3" /> <span>{selectedDrive.company.contactPersonPhone}</span></div>}
+                    <div className="pt-1.5 border-t border-slate-200 space-y-1">
+                      <div className="text-[10px] text-slate-500 uppercase font-extrabold tracking-wide">Contact Representative</div>
+                      <div className="text-slate-900 font-extrabold">{selectedDrive.company.contactPersonName}</div>
+                      {selectedDrive.company.contactPersonEmail && <div className="text-slate-600 flex items-center space-x-1 font-mono text-[11px]"><Mail className="w-3 h-3 text-slate-400" /> <span>{selectedDrive.company.contactPersonEmail}</span></div>}
+                      {selectedDrive.company.contactPersonPhone && <div className="text-slate-600 flex items-center space-x-1 font-mono text-[11px]"><Phone className="w-3 h-3 text-slate-400" /> <span>{selectedDrive.company.contactPersonPhone}</span></div>}
                     </div>
                   )}
                 </div>
@@ -776,63 +776,63 @@ export const PlacementDrives: React.FC = () => {
             {/* Stats if completed */}
             {selectedDrive.status === 'COMPLETED' && (
               <div className="space-y-3">
-                <h4 className="font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-25 pb-1">
+                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
                   Placement Statistics
                 </h4>
                 
                 {/* Number of Placed Students Highlight Box */}
-                <div className="p-3 bg-emerald-950 bg-opacity-40 border border-emerald-800 border-opacity-60 rounded-lg flex items-center justify-between shadow-inner">
-                  <div className="flex items-center space-x-2">
-                    <CheckCircle className="w-5 h-5 text-emerald-400" />
+                <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl flex items-center justify-between shadow-xs">
+                  <div className="flex items-center space-x-2.5">
+                    <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
                     <div>
-                      <span className="text-emerald-300 font-bold text-xs block">No. of Placed Students</span>
-                      <span className="text-[10px] text-emerald-400 opacity-80">Confirmed offer letters issued</span>
+                      <span className="text-emerald-900 font-extrabold text-xs block">Placed Candidates</span>
+                      <span className="text-[10px] text-emerald-700 font-semibold">Confirmed offer letters issued</span>
                     </div>
                   </div>
-                  <span className="text-xl font-black font-mono text-white bg-emerald-900 bg-opacity-60 px-3 py-1 rounded border border-emerald-700">
+                  <span className="text-xl font-black font-mono text-emerald-900 bg-white px-3 py-1 rounded-lg border border-emerald-300 shadow-xs">
                     {selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}
                   </span>
                 </div>
 
-                <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-25 rounded-lg space-y-2 font-mono text-[10px]">
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 font-mono text-[11px] text-slate-700">
                   <div className="flex justify-between">
                     <span>Total Offers Generated:</span>
-                    <span className="text-white font-bold">{selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}</span>
+                    <span className="text-slate-900 font-extrabold">{selectedDrive.offersCount ?? selectedDrive.offers?.length ?? 0}</span>
                   </div>
                   {selectedDrive.highestCtc && (
                     <div className="flex justify-between">
                       <span>Highest CTC:</span>
-                      <span className="text-brand-rosy font-bold">{selectedDrive.highestCtc} LPA</span>
+                      <span className="text-purple-800 font-extrabold">{selectedDrive.highestCtc} LPA</span>
                     </div>
                   )}
                   {selectedDrive.averageCtc && (
                     <div className="flex justify-between">
                       <span>Average CTC:</span>
-                      <span className="text-gray-300 font-bold">{selectedDrive.averageCtc} LPA</span>
+                      <span className="text-slate-900 font-extrabold">{selectedDrive.averageCtc} LPA</span>
                     </div>
                   )}
                   {selectedDrive.lowestCtc && (
                     <div className="flex justify-between">
                       <span>Lowest CTC:</span>
-                      <span className="text-gray-400 font-bold">{selectedDrive.lowestCtc} LPA</span>
+                      <span className="text-slate-600 font-bold">{selectedDrive.lowestCtc} LPA</span>
                     </div>
                   )}
 
                   {/* List of Placed Students */}
                   {selectedDrive.offers && selectedDrive.offers.length > 0 && (
-                    <div className="pt-2 border-t border-brand-cocoa border-opacity-20 space-y-2 font-sans text-left">
-                      <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">Placed Candidates ({selectedDrive.offers.length}):</span>
+                    <div className="pt-2 border-t border-slate-200 space-y-2 font-sans text-left">
+                      <span className="text-[10px] text-slate-500 font-extrabold uppercase tracking-wider block">Placed Roster ({selectedDrive.offers.length}):</span>
                       <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                         {selectedDrive.offers.map((off: any) => (
-                          <div key={off.id} className="p-2 bg-brand-dark bg-opacity-60 rounded border border-brand-cocoa border-opacity-20 flex items-center justify-between text-xs">
+                          <div key={off.id} className="p-2 bg-white rounded-lg border border-slate-200 flex items-center justify-between text-xs shadow-xs">
                             <div className="flex items-center space-x-2 truncate">
                               <PlacementStudentAvatar name={off.student?.name || 'Student'} photoUrl={off.student?.photoUrl} className="w-6 h-6 text-[10px]" />
                               <div className="truncate">
-                                <div className="font-bold text-white truncate">{off.student?.name}</div>
-                                <div className="text-[9px] text-gray-400 font-mono">{off.student?.registerNumber}</div>
+                                <div className="font-extrabold text-slate-900 truncate">{off.student?.name}</div>
+                                <div className="text-[9px] text-slate-500 font-mono">{off.student?.registerNumber}</div>
                               </div>
                             </div>
-                            <span className="text-[9px] font-bold text-emerald-400 bg-emerald-950 px-1.5 py-0.5 rounded border border-emerald-900 shrink-0">
+                            <span className="text-[9px] font-extrabold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 shrink-0">
                               {off.ctc || selectedDrive.ctc} LPA
                             </span>
                           </div>
@@ -843,26 +843,19 @@ export const PlacementDrives: React.FC = () => {
                   
                   <button
                     onClick={() => exportPlacedStudents(selectedDrive)}
-                    className="w-full mt-3 bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5 shadow"
+                    className="w-full mt-3 bg-purple-900 hover:bg-purple-950 text-white py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 shadow-xs text-xs"
                   >
                     <Download className="w-3.5 h-3.5" />
-                    <span>Download Placed List (.xlsx)</span>
+                    <span>Download Placed Roster (.xlsx)</span>
                   </button>
                 </div>
               </div>
             )}
 
             {/* Job Description & AI Matching section */}
-            <div className="space-y-3 pt-4 border-t border-brand-cocoa border-opacity-20">
-              <h4 className="font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-25 pb-1 flex items-center space-x-1.5">
-                <FileText className="w-4 h-4 text-brand-rosy" />
-                <span>Job Description & AI Matching</span>
-              </h4>
-
-            {/* Job Description & AI Matching section */}
-            <div className="space-y-3 pt-4 border-t border-brand-cocoa border-opacity-20">
-              <h4 className="font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-25 pb-1 flex items-center space-x-1.5">
-                <FileText className="w-4 h-4 text-brand-rosy" />
+            <div className="space-y-3 pt-4 border-t border-slate-200">
+              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1 flex items-center space-x-1.5">
+                <FileText className="w-4 h-4 text-purple-700" />
                 <span>Job Description & AI Matching</span>
               </h4>
 
@@ -872,11 +865,11 @@ export const PlacementDrives: React.FC = () => {
 
                 if (!effectiveJdUrl) {
                   return (
-                    <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg space-y-2 text-center">
-                      <p className="text-[10px] text-gray-500">No Job Description PDF or Google Drive link attached yet.</p>
+                    <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-center">
+                      <p className="text-[11px] text-slate-600 font-medium">No Job Description PDF attached yet.</p>
                       {(isAdmin || isTeam) ? (
                         <div className="space-y-2 pt-1">
-                          <label className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-3 py-1.5 rounded cursor-pointer transition-all inline-block font-bold">
+                          <label className="bg-purple-900 hover:bg-purple-950 text-white px-3 py-1.5 rounded-lg cursor-pointer transition-all inline-block font-extrabold shadow-xs text-xs">
                             <span>Upload JD PDF</span>
                             <input
                               type="file"
@@ -885,10 +878,10 @@ export const PlacementDrives: React.FC = () => {
                               className="hidden"
                             />
                           </label>
-                          {uploadStatus && <p className="text-[9px] text-brand-rosy font-mono mt-1">{uploadStatus}</p>}
+                          {uploadStatus && <p className="text-[10px] text-purple-800 font-mono mt-1">{uploadStatus}</p>}
                         </div>
                       ) : (
-                        <p className="text-[10px] text-brand-rosy font-semibold">Recruiter/Officer action required</p>
+                        <p className="text-[10px] text-purple-800 font-extrabold">Recruiter/Officer action required</p>
                       )}
                     </div>
                   );
@@ -896,17 +889,17 @@ export const PlacementDrives: React.FC = () => {
 
                 return (
                   <div className="space-y-3">
-                    <div className="p-3 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-lg space-y-2">
-                      <div className="flex justify-between items-center text-[10px]">
-                        <span className="font-semibold text-gray-300 truncate max-w-[180px]">
+                    <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2">
+                      <div className="flex justify-between items-center text-xs">
+                        <span className="font-bold text-slate-900 truncate max-w-[180px]">
                           {effectiveJdFileName}
                         </span>
-                        <span className="text-brand-rosy font-mono text-[9px] bg-brand-cocoa bg-opacity-20 px-1.5 py-0.5 rounded border border-brand-cocoa border-opacity-30">
-                          {selectedDrive.jdFileUrl ? 'PDF File' : 'Google Drive Link'}
+                        <span className="text-purple-800 font-mono text-[9px] bg-purple-50 px-2 py-0.5 rounded border border-purple-200 font-bold">
+                          {selectedDrive.jdFileUrl ? 'PDF Document' : 'Drive Link'}
                         </span>
                       </div>
 
-                      <div className="flex space-x-1.5 pt-1">
+                      <div className="flex space-x-2 pt-1">
                         <button
                           onClick={() => {
                             if (selectedDrive.jdFileUrl) {
@@ -915,15 +908,15 @@ export const PlacementDrives: React.FC = () => {
                               window.open(effectiveJdUrl, '_blank', 'noopener,noreferrer');
                             }
                           }}
-                          className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-2 py-1.5 rounded flex-1 text-center font-bold flex items-center justify-center space-x-1 transition-all"
+                          className="bg-purple-900 hover:bg-purple-950 text-white px-2.5 py-1.5 rounded-lg flex-1 text-center font-extrabold flex items-center justify-center space-x-1 transition-all text-xs shadow-xs"
                         >
-                          <ExternalLink className="w-3 h-3" />
-                          <span>View Job Description</span>
+                          <ExternalLink className="w-3.5 h-3.5" />
+                          <span>View Document</span>
                         </button>
 
                         {(isAdmin || isTeam) && (
-                          <label className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-2 py-1.5 rounded flex-1 text-center font-bold cursor-pointer flex items-center justify-center">
-                            <span>{selectedDrive.jdFileUrl ? 'Replace' : 'Upload Local PDF'}</span>
+                          <label className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-800 px-2.5 py-1.5 rounded-lg flex-1 text-center font-bold cursor-pointer flex items-center justify-center text-xs shadow-xs">
+                            <span>{selectedDrive.jdFileUrl ? 'Replace' : 'Upload PDF'}</span>
                             <input
                               type="file"
                               accept=".pdf"
@@ -935,7 +928,7 @@ export const PlacementDrives: React.FC = () => {
                       </div>
                     </div>
 
-                    {uploadStatus && <p className="text-[9px] text-brand-rosy font-mono my-1 text-center animate-pulse">{uploadStatus}</p>}
+                    {uploadStatus && <p className="text-[10px] text-purple-800 font-mono my-1 text-center animate-pulse">{uploadStatus}</p>}
 
                     {/* AI Extraction segment */}
                     {!selectedDrive.jdExtracted ? (
@@ -944,13 +937,13 @@ export const PlacementDrives: React.FC = () => {
                           <button
                             disabled={isExtracting}
                             onClick={handleJdExtraction}
-                            className="w-full bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5 shadow"
+                            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-2.5 rounded-xl font-extrabold transition-all flex items-center justify-center space-x-1.5 shadow-xs text-xs"
                           >
-                            <Sparkles className="w-3.5 h-3.5" />
-                            <span>{isExtracting ? 'Extracting AI Requirements...' : 'Extract AI Requirements & Match ATS'}</span>
+                            <Sparkles className="w-3.5 h-3.5 text-amber-300" />
+                            <span>{isExtracting ? 'Extracting Requirements...' : 'Extract AI Requirements & Match ATS'}</span>
                           </button>
                         ) : (
-                          <p className="text-[10px] text-gray-500 italic text-center">Extraction details pending...</p>
+                          <p className="text-[10px] text-slate-500 italic text-center">Extraction details pending...</p>
                         )}
                       </div>
                     ) : (
@@ -961,9 +954,9 @@ export const PlacementDrives: React.FC = () => {
                             setEditedJdInfo(selectedDrive.jdExtractedInfo);
                             setShowJdEditor(true);
                           }}
-                          className="w-full bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5"
+                          className="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 text-xs shadow-xs"
                         >
-                          <Sparkles className="w-3.5 h-3.5 text-brand-rosy" />
+                          <Sparkles className="w-3.5 h-3.5 text-purple-700" />
                           <span>Review Requirements (AI)</span>
                         </button>
 
@@ -973,7 +966,7 @@ export const PlacementDrives: React.FC = () => {
                             setSelectedDrive(null);
                             navigate(`/drives/${selectedDrive.id}/ats`);
                           }}
-                          className="w-full bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 rounded-lg font-bold transition-all flex items-center justify-center space-x-1.5 shadow"
+                          className="w-full bg-purple-900 hover:bg-purple-950 text-white py-2.5 rounded-xl font-extrabold transition-all flex items-center justify-center space-x-1.5 shadow-md text-xs"
                         >
                           <UserCheck className="w-3.5 h-3.5" />
                           <span>View ATS Candidate Matching</span>
@@ -984,20 +977,19 @@ export const PlacementDrives: React.FC = () => {
                 );
               })()}
             </div>
-            </div>
           </div>
         </div>
       )}
 
       {/* Create / Edit Form Modal */}
       {showFormModal && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-6 text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-5">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-xl bg-white border border-slate-200 rounded-2xl p-6 text-xs text-slate-800 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                 {editingDriveId ? 'Update Drive Details' : 'Schedule Recruitment Drive'}
               </h3>
-              <button onClick={() => setShowFormModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowFormModal(false)} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -1005,12 +997,12 @@ export const PlacementDrives: React.FC = () => {
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Select Company *</label>
+                  <label className="text-slate-700 font-extrabold">Select Corporate Partner *</label>
                   <select
                     disabled={!!editingDriveId}
                     value={formData.companyId}
                     onChange={(e) => setFormData({ ...formData, companyId: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   >
                     {companies.map((c) => (
                       <option key={c.id} value={c.id}>{c.name}</option>
@@ -1018,43 +1010,43 @@ export const PlacementDrives: React.FC = () => {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Job Role Title *</label>
+                  <label className="text-slate-700 font-extrabold">Job Role Title *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Graduate Engineer Trainee"
+                    placeholder="e.g. Graduate Trainee Engineer"
                     value={formData.jobRole}
                     onChange={(e) => setFormData({ ...formData, jobRole: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Drive Date *</label>
+                  <label className="text-slate-700 font-extrabold">Drive Date *</label>
                   <input
                     type="date"
                     required
                     value={formData.driveDate}
                     onChange={(e) => setFormData({ ...formData, driveDate: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Drive Location / Hall *</label>
+                  <label className="text-slate-700 font-extrabold">Drive Location / Hall *</label>
                   <input
                     type="text"
                     required
-                    placeholder="e.g. MBA Seminar Hall"
+                    placeholder="e.g. RGU Seminar Hall A"
                     value={formData.driveLocation}
                     onChange={(e) => setFormData({ ...formData, driveLocation: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Recruitment Type *</label>
+                  <label className="text-slate-700 font-extrabold">Recruitment Type *</label>
                   <select
                     value={formData.driveType}
                     onChange={(e) => setFormData({ ...formData, driveType: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   >
                     <option value="ON_CAMPUS">On Campus Recruitment</option>
                     <option value="OFF_CAMPUS">Off Campus Recruitment</option>
@@ -1062,63 +1054,63 @@ export const PlacementDrives: React.FC = () => {
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Drive Status *</label>
+                  <label className="text-slate-700 font-extrabold">Drive Status *</label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                   >
-                    <option value="UPCOMING">Warm (Upcoming)</option>
-                    <option value="ONGOING">Hot (Ongoing)</option>
+                    <option value="UPCOMING">Upcoming</option>
+                    <option value="ONGOING">Ongoing</option>
                     <option value="COMPLETED">Completed</option>
                     <option value="CANCELLED">Cancelled</option>
                   </select>
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Package CTC (LPA) *</label>
+                  <label className="text-slate-700 font-extrabold">Package CTC (LPA) *</label>
                   <input
                     type="number"
                     step="0.1"
                     required
                     value={formData.ctc}
                     onChange={(e) => setFormData({ ...formData, ctc: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Minimum CGPA Cutoff *</label>
+                  <label className="text-slate-700 font-extrabold">Minimum CGPA Cutoff *</label>
                   <input
                     type="number"
                     step="0.01"
                     required
                     value={formData.minimumCgpa}
                     onChange={(e) => setFormData({ ...formData, minimumCgpa: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none focus:border-purple-700"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-semibold">Maximum Backlogs Allowed *</label>
+                  <label className="text-slate-700 font-extrabold">Maximum Backlogs Allowed *</label>
                   <input
                     type="number"
                     required
                     value={formData.maximumBacklogs}
                     onChange={(e) => setFormData({ ...formData, maximumBacklogs: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono focus:outline-none focus:border-purple-700"
                   />
                 </div>
               </div>
 
               {/* Eligible departments checkboxes */}
-              <div className="space-y-2 pt-2 border-t border-brand-cocoa border-opacity-20">
-                <label className="text-gray-400 font-semibold block">Eligible Departments *</label>
+              <div className="space-y-2 pt-2 border-t border-slate-100">
+                <label className="text-slate-800 font-extrabold block">Eligible Streams / Departments *</label>
                 <div className="flex flex-wrap gap-4">
                   {departments.map((d) => (
-                    <label key={d.id} className="flex items-center space-x-2 cursor-pointer text-gray-300 hover:text-white">
+                    <label key={d.id} className="flex items-center space-x-2 cursor-pointer text-slate-700 font-bold hover:text-slate-900">
                       <input
                         type="checkbox"
                         checked={formData.eligibleDepartments.includes(d.code)}
                         onChange={() => handleDeptCheckbox(d.code)}
-                        className="rounded bg-brand-dark border-brand-cocoa text-brand-rosy focus:ring-0"
+                        className="rounded border-slate-300 text-purple-800 focus:ring-0"
                       />
                       <span>{d.name} ({d.code})</span>
                     </label>
@@ -1126,17 +1118,17 @@ export const PlacementDrives: React.FC = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowFormModal(false)}
-                  className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2.5 rounded-lg font-semibold"
+                  className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2.5 rounded-lg font-bold shadow-lg"
+                  className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2.5 rounded-xl font-extrabold shadow-md"
                 >
                   Schedule Drive
                 </button>
@@ -1148,16 +1140,16 @@ export const PlacementDrives: React.FC = () => {
 
       {/* 4. Complete Drive Stats and Student checkboxes modal */}
       {completingDrive && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-80 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-3xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-6 overflow-y-auto max-h-[90vh] text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-5">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider flex items-center space-x-2">
-                <UserCheck className="w-5 h-5 text-brand-rosy" />
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-3xl bg-white border border-slate-200 rounded-2xl p-6 overflow-y-auto max-h-[90vh] text-xs text-slate-800 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                <UserCheck className="w-5 h-5 text-emerald-600" />
                 <span>Mark Drive as Completed — {completingDrive.company?.name}</span>
               </h3>
               <button
                 onClick={() => setCompletingDrive(null)}
-                className="text-gray-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1165,78 +1157,78 @@ export const PlacementDrives: React.FC = () => {
 
             <form onSubmit={handleCompleteSubmit} className="space-y-6">
               {/* CTC Metrics inputs */}
-              <div className="grid grid-cols-4 gap-4 p-4 bg-brand-dark bg-opacity-35 rounded-lg border border-brand-cocoa border-opacity-25">
+              <div className="grid grid-cols-4 gap-4 p-4 bg-slate-50 rounded-xl border border-slate-200">
                 <div className="space-y-1">
-                  <label className="text-gray-500">Base CTC (LPA) *</label>
+                  <label className="text-slate-600 font-extrabold">Base CTC (LPA) *</label>
                   <input
                     type="number"
                     step="0.1"
                     required
                     value={completionData.ctc}
                     onChange={(e) => setCompletionData({ ...completionData, ctc: e.target.value })}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded py-2 px-3 text-white font-mono focus:outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono font-bold focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-500">Highest CTC (LPA) *</label>
+                  <label className="text-slate-600 font-extrabold">Highest CTC (LPA) *</label>
                   <input
                     type="number"
                     step="0.1"
                     required
                     value={completionData.highestCtc}
                     onChange={(e) => setCompletionData({ ...completionData, highestCtc: e.target.value })}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded py-2 px-3 text-white font-mono focus:outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono font-bold focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-500">Average CTC (LPA) *</label>
+                  <label className="text-slate-600 font-extrabold">Average CTC (LPA) *</label>
                   <input
                     type="number"
                     step="0.1"
                     required
                     value={completionData.averageCtc}
                     onChange={(e) => setCompletionData({ ...completionData, averageCtc: e.target.value })}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded py-2 px-3 text-white font-mono focus:outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono font-bold focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-500">Lowest CTC (LPA) *</label>
+                  <label className="text-slate-600 font-extrabold">Lowest CTC (LPA) *</label>
                   <input
                     type="number"
                     step="0.1"
                     required
                     value={completionData.lowestCtc}
                     onChange={(e) => setCompletionData({ ...completionData, lowestCtc: e.target.value })}
-                    className="w-full bg-brand-darker border border-brand-cocoa border-opacity-30 rounded py-2 px-3 text-white font-mono focus:outline-none"
+                    className="w-full bg-white border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono font-bold focus:outline-none"
                   />
                 </div>
               </div>
 
               {/* Student checkboxes selection list */}
               <div className="space-y-3">
-                <h4 className="font-bold text-white uppercase tracking-wider flex justify-between items-center">
+                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex justify-between items-center">
                   <span>Student Selectivity List ({completionData.selectedStudentIds.length} Offers Selected)</span>
-                  <span className="text-[10px] text-gray-500 font-normal">Check students who received offers.</span>
+                  <span className="text-[10px] text-slate-500 font-semibold">Check students who received offers.</span>
                 </h4>
 
                 {/* Search & Filter bar for Complete Modal */}
                 {completingDrive.students?.length > 0 && (
                   <div className="flex flex-col sm:flex-row items-center gap-3">
                     <div className="relative flex-1 w-full">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       <input
                         type="text"
                         placeholder="Search candidate by name, register number..."
                         value={completeSearch}
                         onChange={(e) => setCompleteSearch(e.target.value)}
-                        className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg h-9 pl-9 pr-3 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-brand-rosy transition-all"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg h-9 pl-9 pr-3 text-xs text-slate-900 font-medium placeholder-slate-400 focus:outline-none focus:border-purple-700 transition-all"
                       />
                     </div>
                     <div className="w-full sm:w-48">
                       <select
                         value={completeDept}
                         onChange={(e) => setCompleteDept(e.target.value)}
-                        className="w-full bg-brand-darker border border-brand-cocoa border-opacity-35 rounded-lg h-9 px-3 text-xs text-gray-400 focus:outline-none focus:border-brand-rosy transition-all"
+                        className="w-full bg-slate-50 border border-slate-300 rounded-lg h-9 px-3 text-xs text-slate-800 font-bold focus:outline-none focus:border-purple-700 transition-all"
                       >
                         <option value="">All Departments</option>
                         {Array.from(new Set((completingDrive.students || []).map((item: any) => item.student?.department?.code).filter(Boolean))).map((deptCode: any) => (
@@ -1248,18 +1240,18 @@ export const PlacementDrives: React.FC = () => {
                 )}
 
                 {completingDrive.students?.length === 0 ? (
-                  <div className="text-center py-6 text-gray-500 italic bg-brand-dark bg-opacity-20 rounded-lg">
+                  <div className="text-center py-6 text-slate-500 italic bg-slate-50 rounded-xl border border-slate-200">
                     No eligible students are registered/participated in this drive.
                   </div>
                 ) : filteredCompletingStudents.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500 italic bg-brand-dark bg-opacity-20 rounded-lg border border-brand-cocoa border-opacity-10">
+                  <div className="text-center py-8 text-slate-500 italic bg-slate-50 rounded-xl border border-slate-200">
                     No students match search or department filter criteria.
                   </div>
                 ) : (
-                  <div className="max-h-60 overflow-y-auto border border-brand-cocoa border-opacity-25 rounded-lg bg-brand-dark bg-opacity-10">
+                  <div className="max-h-60 overflow-y-auto border border-slate-200 rounded-xl bg-white shadow-inner">
                     <table className="w-full text-left border-collapse">
-                      <thead className="bg-brand-dark border-b border-brand-cocoa border-opacity-20 sticky top-0 z-10">
-                        <tr className="font-mono text-[9px] uppercase tracking-wider text-gray-500">
+                      <thead className="bg-slate-100 border-b border-slate-200 sticky top-0 z-10">
+                        <tr className="font-mono text-[9px] uppercase tracking-wider text-slate-600 font-bold">
                           <th className="p-3 text-center w-20">Selected</th>
                           <th className="p-3 w-32">Register No.</th>
                           <th className="p-3">Student Name</th>
@@ -1267,21 +1259,21 @@ export const PlacementDrives: React.FC = () => {
                           <th className="p-3 w-24 text-right pr-4">CGPA</th>
                         </tr>
                       </thead>
-                      <tbody className="divide-y divide-brand-cocoa divide-opacity-10 font-mono text-[10px] text-gray-400">
+                      <tbody className="divide-y divide-slate-100 font-mono text-[10px] text-slate-700">
                         {filteredCompletingStudents.map((item: any) => (
-                          <tr key={item.studentId} className="hover:bg-brand-card hover:bg-opacity-25 transition-all">
+                          <tr key={item.studentId} className="hover:bg-slate-50 transition-all">
                             <td className="p-3 text-center w-20">
                               <input
                                 type="checkbox"
                                 checked={completionData.selectedStudentIds.includes(item.studentId)}
                                 onChange={() => handleStudentCheckbox(item.studentId, 'selectedStudentIds')}
-                                className="rounded bg-brand-darker border-brand-cocoa border-opacity-40 text-brand-rosy focus:ring-0 cursor-pointer"
+                                className="rounded border-slate-300 text-emerald-700 focus:ring-0 cursor-pointer"
                               />
                             </td>
-                            <td className="p-3 font-semibold text-white w-32">{item.student?.registerNumber}</td>
-                            <td className="p-3 font-sans font-bold text-white">{item.student?.name}</td>
-                            <td className="p-3 w-32">{item.student?.department?.code}</td>
-                            <td className="p-3 text-brand-rosy font-bold w-24 text-right pr-4">{item.student?.ugPercentage}</td>
+                            <td className="p-3 font-bold text-slate-900 w-32">{item.student?.registerNumber}</td>
+                            <td className="p-3 font-sans font-extrabold text-slate-900">{item.student?.name}</td>
+                            <td className="p-3 w-32 font-bold">{item.student?.department?.code}</td>
+                            <td className="p-3 text-purple-800 font-extrabold w-24 text-right pr-4">{item.student?.ugPercentage}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1290,18 +1282,18 @@ export const PlacementDrives: React.FC = () => {
                 )}
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setCompletingDrive(null)}
-                  className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2.5 rounded-lg font-bold"
+                  className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
                   disabled={completionLoading}
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-6 py-2.5 rounded-lg font-black transition-all flex items-center space-x-2 disabled:opacity-50 shadow-lg"
+                  className="bg-emerald-700 hover:bg-emerald-800 text-white px-6 py-2.5 rounded-xl font-black transition-all flex items-center space-x-2 disabled:opacity-50 shadow-md text-xs"
                 >
                   {completionLoading ? (
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -1320,40 +1312,38 @@ export const PlacementDrives: React.FC = () => {
 
       {/* PDF Document Viewer Modal */}
       {showPdfViewer && selectedDrive && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-80 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-4xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-5 text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-4">
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-4xl bg-white border border-slate-200 rounded-2xl p-5 text-xs text-slate-800 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">Job Description Document</h3>
-                <p className="text-[10px] text-gray-500 font-mono mt-0.5">{selectedDrive.jdFileName}</p>
+                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Job Description Document</h3>
+                <p className="text-[10px] text-slate-500 font-mono mt-0.5">{selectedDrive.jdFileName}</p>
               </div>
               <button
                 onClick={() => setShowPdfViewer(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
             {/* Professional Document Viewer */}
-            <div className="bg-brand-dark bg-opacity-40 rounded-lg overflow-hidden border border-brand-cocoa border-opacity-20">
-              <div className="p-3 bg-brand-black flex justify-between items-center border-b border-brand-cocoa border-opacity-15 font-mono text-[10px]">
+            <div className="bg-slate-100 rounded-xl overflow-hidden border border-slate-200">
+              <div className="p-3 bg-slate-200 flex justify-between items-center border-b border-slate-300 font-mono text-[10px]">
                 <div className="flex items-center space-x-4">
-                  <span>Zoom: <span className="text-white font-bold">100%</span></span>
-                  <span>Pages: <span className="text-white font-bold">1 of 1</span></span>
+                  <span>Status: <span className="text-slate-900 font-bold">Document Loaded</span></span>
                 </div>
                 <a
                   href={selectedDrive.jdFileUrl}
                   download
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-3 py-1 rounded transition-all font-bold"
+                  className="bg-purple-900 hover:bg-purple-950 text-white px-3 py-1 rounded-lg transition-all font-bold shadow-xs text-xs"
                 >
                   Download PDF
                 </a>
               </div>
-              <div className="flex justify-center items-center bg-zinc-900 min-h-[500px]">
-                {/* Embed PDF inside frame */}
+              <div className="flex justify-center items-center bg-slate-50 min-h-[500px]">
                 <iframe
                   src={selectedDrive.jdFileUrl}
                   title="PDF Viewer"
@@ -1365,7 +1355,7 @@ export const PlacementDrives: React.FC = () => {
             <div className="flex justify-end pt-4">
               <button
                 onClick={() => setShowPdfViewer(false)}
-                className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-4 py-2 rounded font-bold transition-all"
+                className="bg-purple-900 hover:bg-purple-950 text-white px-4 py-2 rounded-xl font-extrabold transition-all text-xs shadow-xs"
               >
                 Close Viewer
               </button>
@@ -1376,17 +1366,17 @@ export const PlacementDrives: React.FC = () => {
 
       {/* Extracted JD Info Editor Modal */}
       {showJdEditor && selectedDrive && editedJdInfo && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-85 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-2xl bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-6 text-xs text-gray-300 max-h-[90vh] flex flex-col justify-between">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-4">
+        <div className="fixed inset-0 bg-slate-900/70 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-2xl bg-white border border-slate-200 rounded-2xl p-6 text-xs text-slate-800 max-h-[90vh] flex flex-col justify-between shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-4">
               <div className="flex items-center space-x-2">
-                <Sparkles className="w-4 h-4 text-brand-rosy animate-pulse" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider">AI Extracted JD Requirements</h3>
-                <span className="bg-brand-cocoa text-[8px] font-bold text-white px-1.5 py-0.5 rounded tracking-widest uppercase">AI Extracted</span>
+                <Sparkles className="w-4 h-4 text-purple-700 animate-pulse" />
+                <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">AI Extracted Requirements</h3>
+                <span className="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-purple-200 uppercase">AI Extracted</span>
               </div>
               <button
                 onClick={() => setShowJdEditor(false)}
-                className="text-gray-400 hover:text-white"
+                className="text-slate-400 hover:text-slate-700 p-1 rounded-lg"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1394,89 +1384,89 @@ export const PlacementDrives: React.FC = () => {
 
             <div className="flex-1 overflow-y-auto space-y-4 my-2 pr-1">
               <div className="space-y-1">
-                <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Job Description</label>
+                <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Job Description</label>
                 <textarea
                   rows={4}
                   value={editedJdInfo.jobDescription || ''}
                   onChange={(e) => setEditedJdInfo({ ...editedJdInfo, jobDescription: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded p-2 text-white focus:outline-none focus:border-brand-rosy"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Salary / CTC</label>
+                  <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Salary / CTC</label>
                   <input
                     type="text"
                     value={editedJdInfo.salaryCtc || ''}
                     onChange={(e) => setEditedJdInfo({ ...editedJdInfo, salaryCtc: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 font-medium focus:outline-none"
                   />
                 </div>
                 <div className="space-y-1">
-                  <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Experience Requirements</label>
+                  <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Experience Requirements</label>
                   <input
                     type="text"
                     value={editedJdInfo.experience || ''}
                     onChange={(e) => setEditedJdInfo({ ...editedJdInfo, experience: e.target.value })}
-                    className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                    className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 font-medium focus:outline-none"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Required Skills (Comma separated)</label>
+                <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Required Skills (Comma separated)</label>
                 <input
                   type="text"
                   value={Array.isArray(editedJdInfo.requiredSkills) ? editedJdInfo.requiredSkills.join(', ') : editedJdInfo.requiredSkills || ''}
                   onChange={(e) => setEditedJdInfo({ ...editedJdInfo, requiredSkills: e.target.value.split(',').map((s: string) => s.trim()) })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none focus:border-brand-rosy"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Preferred Skills (Comma separated)</label>
+                <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Preferred Skills (Comma separated)</label>
                 <input
                   type="text"
                   value={Array.isArray(editedJdInfo.preferredSkills) ? editedJdInfo.preferredSkills.join(', ') : editedJdInfo.preferredSkills || ''}
                   onChange={(e) => setEditedJdInfo({ ...editedJdInfo, preferredSkills: e.target.value.split(',').map((s: string) => s.trim()) })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none focus:border-brand-rosy"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Technical Skills (Comma separated)</label>
+                <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Technical Skills (Comma separated)</label>
                 <input
                   type="text"
                   value={Array.isArray(editedJdInfo.technicalSkills) ? editedJdInfo.technicalSkills.join(', ') : editedJdInfo.technicalSkills || ''}
                   onChange={(e) => setEditedJdInfo({ ...editedJdInfo, technicalSkills: e.target.value.split(',').map((s: string) => s.trim()) })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none focus:border-brand-rosy"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-bold uppercase tracking-wider block mb-1">Key Responsibilities (one per line)</label>
+                <label className="text-slate-700 font-extrabold uppercase tracking-wider block mb-1">Key Responsibilities (one per line)</label>
                 <textarea
                   rows={3}
                   value={Array.isArray(editedJdInfo.responsibilities) ? editedJdInfo.responsibilities.join('\n') : editedJdInfo.responsibilities || ''}
                   onChange={(e) => setEditedJdInfo({ ...editedJdInfo, responsibilities: e.target.value.split('\n').map((s: string) => s.trim()).filter(Boolean) })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded p-2 text-white focus:outline-none focus:border-brand-rosy"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-xl p-2.5 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
             </div>
 
-            <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+            <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
               <button
                 type="button"
                 onClick={() => setShowJdEditor(false)}
-                className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2 rounded-lg font-semibold"
+                className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2 rounded-xl font-bold shadow-xs"
               >
                 Cancel
               </button>
               <button
                 type="button"
                 onClick={handleSaveJdEdits}
-                className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2 rounded-lg font-bold shadow-lg"
+                className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2 rounded-xl font-extrabold shadow-md"
               >
                 Save Requirements
               </button>

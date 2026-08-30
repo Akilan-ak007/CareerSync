@@ -123,8 +123,8 @@ export const PlacementTeam: React.FC = () => {
       </div>
 
       {error && (
-        <div className="p-4 bg-red-950 bg-opacity-30 border border-red-900 rounded-lg text-red-300 flex items-center space-x-2">
-          <AlertCircle className="w-5 h-5" />
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-xl text-rose-800 flex items-center space-x-2 text-xs font-bold">
+          <AlertCircle className="w-5 h-5 shrink-0 text-rose-600" />
           <span>{error}</span>
         </div>
       )}
@@ -132,49 +132,49 @@ export const PlacementTeam: React.FC = () => {
       {/* Roster Cards Grid */}
       {loading ? (
         <div className="py-20 text-center">
-          <span className="w-8 h-8 border-3 border-brand-rosy border-t-transparent rounded-full inline-block animate-spin" />
+          <span className="w-8 h-8 border-3 border-purple-800 border-t-transparent rounded-full inline-block animate-spin" />
         </div>
       ) : officers.length === 0 ? (
         <div className="py-20 text-center space-y-3">
-          <p className="text-sm text-gray-400">No personnel accounts logged.</p>
+          <p className="text-sm text-slate-500 font-medium">No personnel accounts logged.</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {officers.map((officer) => (
             <div
               key={officer.id}
-              className="glass-panel p-5 border border-brand-cocoa border-opacity-30 flex flex-col justify-between"
+              className="p-5 rounded-2xl bg-white border border-slate-200 shadow-xs flex flex-col justify-between hover:shadow-md transition-all"
             >
               <div>
                 <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-10 h-10 rounded-full bg-brand-cocoa bg-opacity-25 flex items-center justify-center text-white font-bold">
+                  <div className="w-10 h-10 rounded-full bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-900 font-extrabold text-sm">
                     {officer.name.charAt(0)}
                   </div>
                   <div>
-                    <h4 className="text-sm font-bold text-white leading-tight">{officer.name}</h4>
-                    <span className="text-[9px] text-brand-rosy uppercase tracking-wider font-bold">
+                    <h4 className="text-sm font-extrabold text-slate-900 leading-tight">{officer.name}</h4>
+                    <span className="text-[10px] text-purple-800 uppercase tracking-wider font-extrabold">
                       {officer.role.replace('_', ' ')}
                     </span>
                   </div>
                 </div>
 
-                <div className="space-y-2 text-[10px] text-gray-400 font-medium">
+                <div className="space-y-2 text-xs text-slate-600 font-semibold">
                   <div className="flex items-center space-x-2">
-                    <Mail className="w-4 h-4 text-brand-rosy" />
-                    <span className="truncate">{officer.email}</span>
+                    <Mail className="w-4 h-4 text-purple-700 shrink-0" />
+                    <span className="truncate font-mono">{officer.email}</span>
                   </div>
                   <div className="flex items-center space-x-2">
-                    <UserCheck className="w-4 h-4 text-brand-rosy" />
+                    <UserCheck className="w-4 h-4 text-purple-700 shrink-0" />
                     <span>Registered on {new Date(officer.createdAt).toLocaleDateString()}</span>
                   </div>
                 </div>
               </div>
 
               {isAdmin && (
-                <div className="flex items-center justify-end space-x-3 mt-6 pt-3 border-t border-brand-cocoa border-opacity-20">
+                <div className="flex items-center justify-end space-x-3 mt-6 pt-3 border-t border-slate-100">
                   <button
                     onClick={() => handleOpenEdit(officer)}
-                    className="p-1 text-gray-500 hover:text-brand-rosy transition-all"
+                    className="p-1 text-slate-400 hover:text-purple-800 transition-all hover:bg-slate-100 rounded"
                     title="Edit profile"
                   >
                     <Edit2 className="w-4 h-4" />
@@ -182,7 +182,7 @@ export const PlacementTeam: React.FC = () => {
                   <button
                     onClick={() => handleDelete(officer.id)}
                     disabled={officer.id === user?.id}
-                    className="p-1 text-gray-500 hover:text-red-400 transition-all disabled:opacity-30"
+                    className="p-1 text-slate-400 hover:text-rose-600 transition-all disabled:opacity-30 hover:bg-slate-100 rounded"
                     title="Delete user"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -196,42 +196,42 @@ export const PlacementTeam: React.FC = () => {
 
       {/* Account form modal (Admin only) */}
       {showFormModal && (
-        <div className="fixed inset-0 bg-brand-black bg-opacity-70 z-50 flex items-center justify-center p-4">
-          <div className="w-full max-w-md bg-brand-card border border-brand-cocoa border-opacity-50 rounded-xl p-6 text-xs text-gray-300">
-            <div className="flex justify-between items-center border-b border-brand-cocoa border-opacity-20 pb-3 mb-5">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider">
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 flex items-center justify-center p-4">
+          <div className="w-full max-w-md bg-white border border-slate-200 rounded-2xl p-6 text-xs text-slate-800 shadow-2xl">
+            <div className="flex justify-between items-center border-b border-slate-100 pb-3 mb-5">
+              <h3 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">
                 {editingUserId ? 'Modify Staff Account' : 'Register New Personnel'}
               </h3>
-              <button onClick={() => setShowFormModal(false)} className="text-gray-400 hover:text-white">
+              <button onClick={() => setShowFormModal(false)} className="text-slate-400 hover:text-slate-700 p-1 rounded-lg">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <form onSubmit={handleFormSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">Full Name *</label>
+                <label className="text-slate-700 font-extrabold">Full Name *</label>
                 <input
                   type="text"
                   required
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none focus:border-purple-700"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">Email Address *</label>
+                <label className="text-slate-700 font-extrabold">Email Address *</label>
                 <input
                   type="email"
                   required
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none font-mono"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-mono text-xs focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">
+                <label className="text-slate-700 font-extrabold">
                   {editingUserId ? 'Password (Leave empty to keep unchanged)' : 'Initial Password *'}
                 </label>
                 <input
@@ -239,16 +239,16 @@ export const PlacementTeam: React.FC = () => {
                   required={!editingUserId}
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-white focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-medium focus:outline-none"
                 />
               </div>
 
               <div className="space-y-1">
-                <label className="text-gray-400 font-semibold">Role Profile *</label>
+                <label className="text-slate-700 font-extrabold">Role Profile *</label>
                 <select
                   value={formData.roleName}
                   onChange={(e) => setFormData({ ...formData, roleName: e.target.value })}
-                  className="w-full bg-brand-dark border border-brand-cocoa border-opacity-40 rounded py-2 px-3 text-gray-300 focus:outline-none"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg py-2 px-3 text-slate-900 font-extrabold focus:outline-none focus:border-purple-700"
                 >
                   <option value="PLACEMENT_TEAM">Placement Team Member</option>
                   <option value="MANAGER">Manager / Dean</option>
@@ -256,19 +256,19 @@ export const PlacementTeam: React.FC = () => {
                 </select>
               </div>
 
-              <div className="flex justify-end space-x-3 pt-4 border-t border-brand-cocoa border-opacity-20">
+              <div className="flex justify-end space-x-3 pt-4 border-t border-slate-100">
                 <button
                   type="button"
                   onClick={() => setShowFormModal(false)}
-                  className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 text-gray-300 px-4 py-2.5 rounded-lg font-semibold"
+                  className="bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold shadow-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2.5 rounded-lg font-bold shadow-lg"
+                  className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2.5 rounded-xl font-extrabold shadow-md"
                 >
-                  Save Account
+                  {editingUserId ? 'Save Account Edits' : 'Create Staff Account'}
                 </button>
               </div>
             </form>
