@@ -25,7 +25,9 @@ import {
   Calendar,
   UserX,
   ShieldAlert,
-  RotateCcw
+  RotateCcw,
+  FileText,
+  Video
 } from 'lucide-react';
 
 const GithubIcon = () => (
@@ -734,6 +736,36 @@ export const Students: React.FC = () => {
                   <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
                 </a>
               ) : null}
+
+              {selectedStudent.resumeUrl ? (
+                <a
+                  href={selectedStudent.resumeUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-xl text-slate-900 font-bold transition-colors"
+                >
+                  <span className="flex items-center space-x-2">
+                    <FileText className="w-4 h-4 text-orange-600" />
+                    <span>Resume / CV</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-orange-400" />
+                </a>
+              ) : null}
+
+              {selectedStudent.selfIntroUrl ? (
+                <a
+                  href={selectedStudent.selfIntroUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-between p-2.5 bg-sky-50 hover:bg-sky-100 border border-sky-200 rounded-xl text-slate-900 font-bold transition-colors"
+                >
+                  <span className="flex items-center space-x-2">
+                    <Video className="w-4 h-4 text-sky-600" />
+                    <span>Self Introduction Video</span>
+                  </span>
+                  <ExternalLink className="w-3.5 h-3.5 text-sky-400" />
+                </a>
+              ) : null}
             </div>
 
             {/* Academic Section */}
@@ -781,31 +813,7 @@ export const Students: React.FC = () => {
               )}
             </div>
 
-            {/* Links and Drive files */}
-            <div className="space-y-2 pt-2">
-              {selectedStudent.resumeUrl && (
-                <a
-                  href={selectedStudent.resumeUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-2.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 rounded-lg text-gray-300 hover:text-white transition-colors"
-                >
-                  <span className="font-medium">Curriculum Vitae (Resume)</span>
-                  <ExternalLink className="w-4 h-4 text-brand-rosy" />
-                </a>
-              )}
-              {selectedStudent.selfIntroUrl && (
-                <a
-                  href={selectedStudent.selfIntroUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-between p-2.5 bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-30 rounded-lg text-gray-300 hover:text-white transition-colors"
-                >
-                  <span className="font-medium">Self Introduction Video</span>
-                  <ExternalLink className="w-4 h-4 text-brand-rosy" />
-                </a>
-              )}
-            </div>
+
           </div>
         </div>
       )}
