@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
 import { utils, writeFile } from 'xlsx';
@@ -79,6 +79,7 @@ export const PlacementDrives: React.FC = () => {
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [showJdEditor, setShowJdEditor] = useState(false);
   const [editedJdInfo, setEditedJdInfo] = useState<any>(null);
+  const jdFileInputRef = useRef<HTMLInputElement>(null);
 
   // Filters
   const [selectedCompany, setSelectedCompany] = useState('');
@@ -853,47 +854,172 @@ export const PlacementDrives: React.FC = () => {
               )}
 
               {/* Job Description & AI Matching section */}
-              <div className="space-y-3 pt-4 border-t border-slate-200">
-                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1 flex items-center space-x-1.5">
-                  <FileText className="w-4 h-4 text-purple-700" />
-                  <span>Job Description & AI Matching</span>
-                </h4>
+              <div className="space-y-3.5 pt-4 border-t border-slate-200">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-1.5">
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-1.5 text-xs">
+                    <FileText className="w-4 h-4 text-purple-700" />
+                    <span>Job Description & AI Matching</span>
+                  </h4>
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => jdFileInputRef.current?.click()}
+                      className="text-purple-700 hover:text-purple-900 text-[11px] font-extrabold flex items-center space-x-1 hover:underline"
+                    >
+                      <Upload className="w-3 h-3" />
+                      <span>{selectedDrive.jdFileUrl ? 'Replace JD' : 'Upload JD'}</span>
+                    </button>
+                  )}
+                </div>
+
+                {/* Hidden File Input */}
+                <input
+                  type="file"
+                  ref={jdFileInputRef}
+                  accept=".pdf,.doc,.docx,.txt"
+                  onChange={handleJdUpload}
+                  className="hidden"
+                />
+
+                {uploadStatus && (
+                  <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-xl text-purple-900 text-xs font-bold flex items-center space-x-2 animate-pulse">
+                    <Sparkles className="w-3.5 h-3.5 text-purple-700" />
+                    <span>{uploadStatus}</span>
+                  </div>
+                )}
 
                 {(() => {
+                  const jdUrl = selectedDrive.jdFileUrl || selectedDrive.jobDescriptionUrl || selectedDrive.company?.sampleResumeUrl;
+                  const extractedInfo = selectedDrive.jdExtractedInfo;
+                  const jdDescriptionText = extractedInfo?.jobDescription || selectedDrive.jdText || selectedDrive.company?.description;
+
                   return (
                     <div className="space-y-3">
-                      {/* JD File Attachment */}
-                      {selectedDrive.jobDescriptionUrl ? (
+                      {/* JD File Attachment Card */}
+                      {jdUrl ? (
                         <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between">
                           <div className="flex items-center space-x-2.5 truncate">
                             <FileText className="w-5 h-5 text-purple-700 shrink-0" />
                             <div className="truncate">
-                              <div className="font-extrabold text-slate-900 truncate">Job Description Document</div>
+                              <div className="font-extrabold text-slate-900 truncate">
+                                {selectedDrive.jdFileName || `${selectedDrive.company?.name || 'Drive'}_Job_Description.pdf`}
+                              </div>
                               <div className="text-[10px] text-emerald-700 font-bold flex items-center space-x-1 mt-0.5">
                                 <CheckCircle2 className="w-3 h-3" />
-                                <span>Document Uploaded</span>
+                                <span>PDF Document Attached</span>
                               </div>
                             </div>
                           </div>
 
-                          <a
-                            href={selectedDrive.jobDescriptionUrl}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="bg-white hover:bg-slate-100 text-purple-900 border border-slate-300 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition-all shrink-0 shadow-xs"
-                          >
-                            <span>View JD</span>
-                            <ExternalLink className="w-3 h-3" />
-                          </a>
+                          <div className="flex items-center space-x-2 shrink-0">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (selectedDrive.jdFileUrl) {
+                                  setShowPdfViewer(true);
+                                } else {
+                                  window.open(jdUrl, '_blank');
+                                }
+                              }}
+                              className="bg-white hover:bg-slate-100 text-purple-900 border border-slate-300 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1 transition-all shadow-xs"
+                            >
+                              <span>View JD</span>
+                              <ExternalLink className="w-3 h-3" />
+                            </button>
+                            {isAdmin && selectedDrive.jdFileUrl && (
+                              <button
+                                type="button"
+                                onClick={handleJdDelete}
+                                title="Remove JD"
+                                className="p-1.5 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-lg transition-all"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </div>
                         </div>
                       ) : (
-                        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl text-amber-900 text-[11px] font-medium flex items-center space-x-2">
-                          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                          <span>No Job Description PDF attached yet. Upload a JD to enable AI ATS matching.</span>
+                        <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-2">
+                          <div className="text-amber-900 text-[11px] font-medium flex items-center space-x-2">
+                            <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+                            <span>No Job Description PDF attached yet. Upload a JD or extract AI profile.</span>
+                          </div>
+                          {isAdmin && (
+                            <button
+                              type="button"
+                              onClick={() => jdFileInputRef.current?.click()}
+                              className="bg-purple-900 hover:bg-purple-950 text-white font-extrabold px-3 py-1.5 rounded-lg text-xs flex items-center space-x-1.5 shadow-xs transition-all"
+                            >
+                              <Upload className="w-3.5 h-3.5" />
+                              <span>Upload JD Document (PDF)</span>
+                            </button>
+                          )}
                         </div>
                       )}
 
-                      {/* AI Extraction state */}
+                      {/* Display Job Description Details */}
+                      {jdDescriptionText && (
+                        <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+                          <div className="font-extrabold text-slate-900 flex items-center justify-between border-b border-slate-200 pb-1">
+                            <span className="uppercase text-[10px] tracking-wider text-slate-500 font-black">Role Overview & Description</span>
+                            {selectedDrive.jdExtracted && (
+                              <span className="bg-purple-100 text-purple-800 text-[9px] font-extrabold px-2 py-0.5 rounded-full border border-purple-200">
+                                AI Synced
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-slate-700 font-medium leading-relaxed whitespace-pre-line text-[11px]">
+                            {jdDescriptionText}
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Extracted Structured Requirements */}
+                      {extractedInfo && (
+                        <div className="space-y-2.5">
+                          {/* Required Skills */}
+                          {extractedInfo.requiredSkills && extractedInfo.requiredSkills.length > 0 && (
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">Required Skills</span>
+                              <div className="flex flex-wrap gap-1">
+                                {extractedInfo.requiredSkills.map((sk: string, i: number) => (
+                                  <span key={i} className="bg-purple-100 text-purple-900 font-bold text-[10px] px-2 py-0.5 rounded-md border border-purple-200">
+                                    {sk}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Preferred Skills */}
+                          {extractedInfo.preferredSkills && extractedInfo.preferredSkills.length > 0 && (
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">Preferred Skills</span>
+                              <div className="flex flex-wrap gap-1">
+                                {extractedInfo.preferredSkills.map((sk: string, i: number) => (
+                                  <span key={i} className="bg-slate-100 text-slate-700 font-bold text-[10px] px-2 py-0.5 rounded-md border border-slate-200">
+                                    {sk}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+
+                          {/* Responsibilities */}
+                          {extractedInfo.responsibilities && extractedInfo.responsibilities.length > 0 && (
+                            <div className="space-y-1">
+                              <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 block">Responsibilities</span>
+                              <ul className="list-disc list-inside space-y-0.5 text-slate-700 font-medium text-[11px]">
+                                {extractedInfo.responsibilities.slice(0, 3).map((resp: string, i: number) => (
+                                  <li key={i} className="line-clamp-2">{resp}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      {/* AI Extraction Banner / Triggers */}
                       {!selectedDrive.jdExtracted ? (
                         <div className="p-3.5 bg-purple-50 border border-purple-200 rounded-xl space-y-2">
                           <div className="flex items-center space-x-2">
@@ -901,7 +1027,7 @@ export const PlacementDrives: React.FC = () => {
                             <span className="font-extrabold text-purple-900 text-xs">Automated AI Requirements Extractor</span>
                           </div>
                           <p className="text-[11px] text-slate-600 font-medium leading-relaxed">
-                            Extract required skills, keywords, experience, and candidate criteria automatically from the uploaded JD document using AI.
+                            Extract required skills, keywords, experience, and candidate criteria automatically using AI.
                           </p>
 
                           {isAdmin ? (
@@ -918,21 +1044,36 @@ export const PlacementDrives: React.FC = () => {
                           )}
                         </div>
                       ) : (
-                        /* If extracted, display options */
-                        <div className="space-y-2">
-                          <button
-                            onClick={() => {
-                              setEditedJdInfo(selectedDrive.jdExtractedInfo);
-                              setShowJdEditor(true);
-                            }}
-                            className="w-full bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 text-xs shadow-xs"
-                          >
-                            <Sparkles className="w-3.5 h-3.5 text-purple-700" />
-                            <span>Review Requirements (AI)</span>
-                          </button>
+                        /* If extracted, display action buttons */
+                        <div className="space-y-2 pt-1">
+                          <div className="grid grid-cols-2 gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setEditedJdInfo(selectedDrive.jdExtractedInfo);
+                                setShowJdEditor(true);
+                              }}
+                              className="bg-white hover:bg-slate-50 border border-slate-300 text-slate-900 py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 text-xs shadow-xs"
+                            >
+                              <Sparkles className="w-3.5 h-3.5 text-purple-700" />
+                              <span>Edit Requirements</span>
+                            </button>
+                            {isAdmin && (
+                              <button
+                                type="button"
+                                onClick={() => handleJdExtraction()}
+                                disabled={isExtracting}
+                                className="bg-slate-100 hover:bg-slate-200 text-slate-800 py-2 rounded-xl font-bold transition-all flex items-center justify-center space-x-1.5 text-xs border border-slate-200"
+                              >
+                                <RefreshCw className={`w-3 h-3 ${isExtracting ? 'animate-spin' : ''}`} />
+                                <span>Re-extract AI</span>
+                              </button>
+                            )}
+                          </div>
 
                           {/* Go to ATS Candidates matching screen */}
                           <button
+                            type="button"
                             onClick={() => {
                               setSelectedDrive(null);
                               navigate(`/drives/${selectedDrive.id}/ats`);
