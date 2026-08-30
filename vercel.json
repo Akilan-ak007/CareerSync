@@ -1,29 +1,19 @@
 {
-  "version": 2,
-  "builds": [
-    {
-      "src": "api/index.ts",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist"
-      }
-    }
-  ],
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.ts"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/index" },
+    { "source": "/login", "destination": "/index.html" },
+    { "source": "/dashboard", "destination": "/index.html" },
+    { "source": "/drives", "destination": "/index.html" },
+    { "source": "/drives/(.*)", "destination": "/index.html" },
+    { "source": "/students", "destination": "/index.html" },
+    { "source": "/students/(.*)", "destination": "/index.html" },
+    { "source": "/companies", "destination": "/index.html" },
+    { "source": "/company-approvals", "destination": "/index.html" },
+    { "source": "/placement-team", "destination": "/index.html" },
+    { "source": "/offers", "destination": "/index.html" },
+    { "source": "/audit-logs", "destination": "/index.html" },
+    { "source": "/reports", "destination": "/index.html" }
   ]
 }
