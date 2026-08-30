@@ -807,7 +807,7 @@ export const Companies: React.FC = () => {
                       <span>Select HQ Location on Interactive Map *</span>
                     </label>
                     <p className="text-[10px] text-slate-500 font-medium">Click on map or drag marker to set exact coordinates.</p>
-                    <div className="h-64 rounded-xl border border-slate-300 overflow-hidden shadow-xs relative">
+                    <div className="relative">
                       <MapSelector
                         initialLat={formData.latitude}
                         initialLng={formData.longitude}
