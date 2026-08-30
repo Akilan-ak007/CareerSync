@@ -280,8 +280,8 @@ export const CompanyApprovals: React.FC = () => {
                   <div className="space-y-2">
                     <div className="text-slate-800 leading-relaxed font-medium">{viewCompany.formattedAddress}</div>
                     <div className="flex space-x-4 font-mono text-slate-500 font-bold">
-                      <div>Lat: {viewCompany.latitude.toFixed(5)}</div>
-                      <div>Lng: {viewCompany.longitude.toFixed(5)}</div>
+                      <div>Lat: {viewCompany.latitude != null ? Number(viewCompany.latitude).toFixed(5) : 'N/A'}</div>
+                      <div>Lng: {viewCompany.longitude != null ? Number(viewCompany.longitude).toFixed(5) : 'N/A'}</div>
                     </div>
                     {viewCompany.googleMapsUrl && (
                       <a

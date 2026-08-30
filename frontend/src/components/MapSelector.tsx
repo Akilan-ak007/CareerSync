@@ -228,8 +228,8 @@ export const MapSelector: React.FC<MapSelectorProps> = ({
           <span className="text-white">Address:</span> {address || 'No location selected yet. Click map to set marker.'}
         </div>
         <div className="flex space-x-4 text-gray-500 font-mono">
-          <div>Latitude: <span className="text-gray-300">{position[0].toFixed(6)}</span></div>
-          <div>Longitude: <span className="text-gray-300">{position[1].toFixed(6)}</span></div>
+          <div>Latitude: <span className="text-gray-300">{position?.[0] != null ? Number(position[0]).toFixed(6) : 'N/A'}</span></div>
+          <div>Longitude: <span className="text-gray-300">{position?.[1] != null ? Number(position[1]).toFixed(6) : 'N/A'}</span></div>
         </div>
       </div>
     </div>

@@ -611,8 +611,8 @@ export const Companies: React.FC = () => {
                   <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
                     <div className="text-slate-800 font-medium leading-relaxed">{selectedCompany.formattedAddress}</div>
                     <div className="flex space-x-4 font-mono text-slate-500 font-bold">
-                      <div>Lat: {selectedCompany.latitude.toFixed(5)}</div>
-                      <div>Lng: {selectedCompany.longitude.toFixed(5)}</div>
+                      <div>Lat: {selectedCompany.latitude != null ? Number(selectedCompany.latitude).toFixed(5) : 'N/A'}</div>
+                      <div>Lng: {selectedCompany.longitude != null ? Number(selectedCompany.longitude).toFixed(5) : 'N/A'}</div>
                     </div>
                     {selectedCompany.googleMapsUrl && (
                       <a
@@ -821,8 +821,8 @@ export const Companies: React.FC = () => {
                     <div className="text-slate-900 font-sans font-extrabold text-xs">Selected Location Metadata:</div>
                     <div className="text-slate-800 font-sans font-medium line-clamp-2">{formData.formattedAddress || 'No location selected yet.'}</div>
                     <div className="flex space-x-4 text-slate-500 font-bold pt-1 border-t border-slate-200">
-                      <div>Latitude: {formData.latitude.toFixed(5)}</div>
-                      <div>Longitude: {formData.longitude.toFixed(5)}</div>
+                      <div>Latitude: {formData.latitude != null ? Number(formData.latitude).toFixed(5) : 'N/A'}</div>
+                      <div>Longitude: {formData.longitude != null ? Number(formData.longitude).toFixed(5) : 'N/A'}</div>
                     </div>
                   </div>
                 </div>
