@@ -1,5 +1,5 @@
-import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext.js';
 import {
   LayoutDashboard,
@@ -10,7 +10,6 @@ import {
   Briefcase,
   FileText,
   History,
-  LogOut,
   UserCheck,
   X,
   GraduationCap
@@ -22,16 +21,10 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onClose }) => {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
+  const { user } = useAuth();
+  const [isHovered, setIsHovered] = useState(false);
 
   if (!user) return null;
-
-  const handleLogout = () => {
-    logout();
-    if (onClose) onClose();
-    navigate('/login');
-  };
 
   const navItems = [
     {
@@ -93,37 +86,47 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onClose })
   const filteredItems = navItems.filter((item) => item.roles.includes(user.role));
 
   const sidebarContent = (
-    <aside className="w-64 bg-white border-r border-slate-200 min-h-screen flex flex-col justify-between text-slate-700 shadow-sm">
+    <aside
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className={`bg-white border-r border-slate-200 min-h-screen flex flex-col justify-between text-slate-700 shadow-lg transition-all duration-300 ease-in-out group z-40 ${
+        isHovered ? 'w-64' : 'w-16 md:w-20'
+      }`}
+    >
       <div className="flex flex-col">
-        {/* Rathinam College RGU Logo Header */}
-        <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80">
-          <div className="flex flex-col space-y-1.5 w-full">
-            <div className="flex items-center justify-between">
+        {/* Rathinam RGU Logo Header */}
+        <div className="p-3 md:p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/80 overflow-hidden h-16">
+          <div className="flex items-center space-x-3 min-w-max">
+            <div className="w-10 h-10 rounded-xl bg-purple-900 text-white flex items-center justify-center font-black shrink-0 shadow-md">
+              <GraduationCap className="w-6 h-6" />
+            </div>
+            
+            <div className={`flex flex-col space-y-1 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0 hidden'}`}>
               <img 
                 src="/rgu-banner-logo.png" 
                 alt="Rathinam Global University" 
-                className="h-9 max-w-[190px] object-contain"
+                className="h-7 max-w-[160px] object-contain"
                 onError={(e) => { (e.target as HTMLElement).style.display = 'none'; }}
               />
-              {onClose && (
-                <button
-                  onClick={onClose}
-                  className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-              )}
-            </div>
-            
-            <div className="flex items-center justify-between pt-1 border-t border-slate-200/60 text-[9px] font-mono font-bold">
-              <span className="bg-purple-100 text-purple-800 px-1.5 py-0.5 rounded border border-purple-200 uppercase">RGU CAREERSYNC</span>
-              <span className="bg-emerald-100 text-emerald-800 px-1.5 py-0.5 rounded border border-emerald-200 uppercase">NAAC A++</span>
+              <div className="flex items-center space-x-1 text-[9px] font-mono font-bold">
+                <span className="bg-purple-100 text-purple-800 px-1 rounded uppercase">RGU CAREERSYNC</span>
+                <span className="bg-emerald-100 text-emerald-800 px-1 rounded uppercase">A++</span>
+              </div>
             </div>
           </div>
+
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="md:hidden p-1.5 rounded-lg text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
 
         {/* Navigation */}
-        <nav className="p-3 space-y-1 flex-1">
+        <nav className="p-2 md:p-3 space-y-1.5 flex-1 overflow-x-hidden">
           {filteredItems.map((item) => (
             <NavLink
               key={item.path}
@@ -131,49 +134,38 @@ export const Sidebar: React.FC<SidebarProps> = ({ mobileOpen = false, onClose })
               onClick={() => {
                 if (onClose) onClose();
               }}
+              title={item.label}
               className={({ isActive }) =>
-                `flex items-center space-x-3 px-3.5 py-2.5 rounded-lg text-xs font-bold tracking-wide transition-all duration-200 ${
+                `flex items-center space-x-3.5 px-3 py-3 rounded-xl text-xs font-extrabold tracking-wide transition-all duration-200 whitespace-nowrap ${
                   isActive
                     ? 'bg-purple-900 text-white shadow-md shadow-purple-950/20 font-bold'
                     : 'text-slate-700 hover:bg-purple-50 hover:text-purple-900'
                 }`
               }
             >
-              <item.icon className="w-4 h-4" />
-              <span>{item.label}</span>
+              <item.icon className="w-5 h-5 shrink-0" />
+              <span className={`transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0 hidden'}`}>
+                {item.label}
+              </span>
             </NavLink>
           ))}
         </nav>
       </div>
 
-      {/* User Profile & Logout */}
-      <div className="p-4 border-t border-slate-100 bg-slate-50/80">
-        <div className="flex items-center space-x-3 p-2.5 rounded-xl bg-white border border-slate-200 mb-3 shadow-xs">
-          <div className="w-9 h-9 rounded-lg bg-purple-900 text-white font-extrabold flex items-center justify-center text-sm shadow-xs">
-            {user.name.charAt(0)}
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xs font-extrabold text-slate-900 truncate">{user.name}</h2>
-            <p className="text-[10px] text-purple-700 uppercase font-extrabold tracking-wider truncate">
-              {user.role.replace('_', ' ')}
-            </p>
-          </div>
+      {/* Footer Info Pill when expanded */}
+      <div className={`p-3 border-t border-slate-100 bg-slate-50/80 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0 hidden'}`}>
+        <div className="flex items-center justify-between text-[10px] text-slate-500 font-bold">
+          <span>RGU PORTAL v2.5</span>
+          <span className="text-emerald-700">ONLINE</span>
         </div>
-        <button
-          onClick={handleLogout}
-          className="w-full flex items-center justify-center space-x-2 py-2 px-4 bg-white hover:bg-rose-50 text-slate-700 hover:text-rose-800 border border-slate-200 hover:border-rose-200 rounded-lg text-xs font-bold transition-all duration-200 shadow-xs"
-        >
-          <LogOut className="w-3.5 h-3.5" />
-          <span>Logout Session</span>
-        </button>
       </div>
     </aside>
   );
 
   return (
     <>
-      {/* Desktop Fixed Sidebar */}
-      <div className="hidden md:flex flex-shrink-0">
+      {/* Desktop Collapsible Floating Sidebar */}
+      <div className="hidden md:flex flex-shrink-0 relative z-30">
         {sidebarContent}
       </div>
 

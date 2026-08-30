@@ -131,32 +131,32 @@ export const Reports: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-gray-300">
+    <div className="h-full p-6 md:p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-extrabold text-white">Reports Generator</h1>
-        <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">
-          Export spreadsheet databases for institutional records and audits
+        <h1 className="text-xl font-extrabold text-slate-900 uppercase tracking-tight">Reports & Analytics Generator</h1>
+        <p className="text-xs text-purple-800 font-extrabold tracking-wider uppercase mt-1">
+          Export spreadsheet databases for institutional records, placement audits, and management reviews
         </p>
       </div>
 
       {/* Reports Grid cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {/* Student report card */}
-        <div className="glass-panel p-6 border border-brand-cocoa border-opacity-35 flex flex-col justify-between h-56">
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between h-64 hover:border-purple-300 transition-all">
           <div className="space-y-3">
-            <div className="p-3 bg-brand-cocoa bg-opacity-15 text-brand-rosy w-max rounded-xl">
+            <div className="p-3 bg-purple-100 text-purple-900 w-max rounded-xl border border-purple-200">
               <Users className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-white">Student Roster Database</h4>
-            <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
-              Export complete student demographics, academic percentages, contact information, links, and placement status profiles.
+            <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Student Roster Database</h4>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Export complete student demographics, academic percentages (SSLC, HSC, UG/PG CGPA), contact details, resume links, and placement status profiles.
             </p>
           </div>
           <button
             onClick={handleDownloadStudents}
             disabled={!!downloading}
-            className="w-full mt-4 bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 px-4 rounded-lg font-bold flex items-center justify-center space-x-2 transition-all duration-300 shadow-md disabled:opacity-50"
+            className="w-full mt-4 bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
           >
             {downloading === 'students' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -170,20 +170,20 @@ export const Reports: React.FC = () => {
         </div>
 
         {/* Company report card */}
-        <div className="glass-panel p-6 border border-brand-cocoa border-opacity-35 flex flex-col justify-between h-56">
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between h-64 hover:border-purple-300 transition-all">
           <div className="space-y-3">
-            <div className="p-3 bg-brand-cocoa bg-opacity-15 text-brand-rosy w-max rounded-xl">
+            <div className="p-3 bg-purple-100 text-purple-900 w-max rounded-xl border border-purple-200">
               <Building className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-white">Companies Directory</h4>
-            <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
-              Export complete list of approved, pending, and draft corporate recruiters including address, maps coordinates, and HR contacts.
+            <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Companies Directory</h4>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Export complete list of approved, pending, and draft corporate recruiters including address, maps coordinates, CTC packages, and HR contacts.
             </p>
           </div>
           <button
             onClick={handleDownloadCompanies}
             disabled={!!downloading}
-            className="w-full mt-4 bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 px-4 rounded-lg font-bold flex items-center justify-center space-x-2 transition-all duration-300 shadow-md disabled:opacity-50"
+            className="w-full mt-4 bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
           >
             {downloading === 'companies' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -197,20 +197,20 @@ export const Reports: React.FC = () => {
         </div>
 
         {/* Drives report card */}
-        <div className="glass-panel p-6 border border-brand-cocoa border-opacity-35 flex flex-col justify-between h-56">
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between h-64 hover:border-purple-300 transition-all">
           <div className="space-y-3">
-            <div className="p-3 bg-brand-cocoa bg-opacity-15 text-brand-rosy w-max rounded-xl">
+            <div className="p-3 bg-purple-100 text-purple-900 w-max rounded-xl border border-purple-200">
               <CalendarDays className="w-6 h-6" />
             </div>
-            <h4 className="text-sm font-bold text-white">Placement Drive Logs</h4>
-            <p className="text-[11px] text-gray-500 leading-relaxed font-medium">
-              Export detailed statistics of scheduled placement drives, cgpa requirements, CTC packages (LPA), and headcount of offers.
+            <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Placement Drive Logs</h4>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Export detailed statistics of scheduled placement drives, CGPA cutoffs, max backlogs allowed, CTC packages (LPA), and offer counts.
             </p>
           </div>
           <button
             onClick={handleDownloadDrives}
             disabled={!!downloading}
-            className="w-full mt-4 bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white py-2 px-4 rounded-lg font-bold flex items-center justify-center space-x-2 transition-all duration-300 shadow-md disabled:opacity-50"
+            className="w-full mt-4 bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
           >
             {downloading === 'drives' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />

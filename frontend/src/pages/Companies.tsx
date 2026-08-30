@@ -433,8 +433,8 @@ export const Companies: React.FC = () => {
                 <div>
                   <div className="flex justify-between items-start mb-3">
                     <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 rounded-xl bg-purple-50 border border-purple-200 flex items-center justify-center text-purple-900 overflow-hidden">
-                        <img src="/company-logo.svg" alt={comp.name} className="w-full h-full object-cover rounded-xl" />
+                      <div className="w-10 h-10 rounded-xl bg-purple-100 border border-purple-200 flex items-center justify-center text-purple-900 shrink-0">
+                        <Building className="w-5 h-5 text-purple-800" />
                       </div>
                       <div>
                         <h4 className="text-sm font-extrabold text-slate-900 leading-tight">{comp.name}</h4>
@@ -519,108 +519,126 @@ export const Companies: React.FC = () => {
         )}
       </div>
 
+      {/* Floating Company Details Drawer Overlay */}
       {selectedCompany && (
-        <div className="w-96 bg-white border-l border-slate-200 h-full flex flex-col z-30 animate-fade-in relative shadow-xl">
-          <div className="p-5 border-b border-slate-200 flex items-center justify-between bg-slate-50">
-            <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
-              <Building className="w-4.5 h-4.5 text-purple-700" />
-              <span>Company Profile</span>
-            </h2>
-            <button
-              onClick={() => setSelectedCompany(null)}
-              className="p-1 rounded-lg hover:bg-slate-200 text-slate-500 hover:text-slate-900"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-700">
-            <div className="text-center pb-4 border-b border-slate-100">
-              <div className="w-16 h-16 rounded-2xl bg-purple-50 text-slate-900 flex items-center justify-center mx-auto mb-3 shadow-sm border border-purple-200 overflow-hidden">
-                <img src="/company-logo.svg" alt={selectedCompany.name} className="w-full h-full object-cover rounded-2xl" />
-              </div>
-              <h3 className="text-base font-extrabold text-slate-900">{selectedCompany.name}</h3>
-              <p className="text-xs text-purple-800 font-extrabold mt-0.5">{selectedCompany.industry || 'Corporate Partner'}</p>
-              <div className="mt-2.5 flex justify-center">{getStatusBadge(selectedCompany.status)}</div>
+        <div
+          className="fixed inset-0 bg-slate-900/50 backdrop-blur-xs z-50 flex justify-end animate-fade-in"
+          onClick={() => setSelectedCompany(null)}
+        >
+          <div
+            className="w-full max-w-md bg-white border-l border-slate-200 h-full flex flex-col shadow-2xl relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="p-5 border-b border-slate-100 flex items-center justify-between bg-slate-50">
+              <h2 className="text-xs font-extrabold text-slate-900 uppercase tracking-wider flex items-center space-x-2">
+                <Building className="w-4.5 h-4.5 text-purple-700" />
+                <span>Corporate Partner Profile</span>
+              </h2>
+              <button
+                onClick={() => setSelectedCompany(null)}
+                className="p-1.5 rounded-xl hover:bg-slate-200 text-slate-500 hover:text-slate-900 transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
 
-            <div className="space-y-3">
-              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
-                Corporate Overview
-              </h4>
-              <div className="space-y-2">
-                <p className="leading-relaxed text-slate-600 font-medium">{selectedCompany.description || 'No description provided.'}</p>
-                <div className="grid grid-cols-2 gap-3 text-slate-600 mt-2 font-bold">
-                  <div>Company Size: <span className="text-slate-900 block mt-0.5">{selectedCompany.companySize}</span></div>
-                  {selectedCompany.ctcLakhs && (
-                    <div>Offered CTC: <span className="text-purple-800 font-extrabold block mt-0.5">{selectedCompany.ctcLakhs} LPA</span></div>
-                  )}
-                  {selectedCompany.foundedYear && (
-                    <div>Founded In: <span className="text-slate-900 block mt-0.5">{selectedCompany.foundedYear}</span></div>
-                  )}
+            <div className="flex-1 overflow-y-auto p-6 space-y-6 text-xs text-slate-800">
+              <div className="text-center pb-4 border-b border-slate-100">
+                <div className="w-16 h-16 rounded-2xl bg-purple-100 text-purple-900 flex items-center justify-center mx-auto mb-3 shadow-md border border-purple-200">
+                  <Building className="w-8 h-8 text-purple-800" />
                 </div>
-                {selectedCompany.sampleResumeUrl && (
-                  <div className="pt-2">
-                    <a
-                      href={selectedCompany.sampleResumeUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex items-center justify-between p-2.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-bold transition-colors"
-                    >
-                      <span className="flex items-center space-x-2">
-                        <FileText className="w-4 h-4 text-purple-700" />
-                        <span>Sample Resume / JD Document</span>
-                      </span>
-                      <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
-                    </a>
-                  </div>
-                )}
+                <h3 className="text-lg font-black text-slate-900">{selectedCompany.name}</h3>
+                <p className="text-xs text-purple-800 font-extrabold mt-0.5">{selectedCompany.industry || 'Corporate Partner'}</p>
+                <div className="mt-3 flex justify-center">{getStatusBadge(selectedCompany.status)}</div>
               </div>
-            </div>
 
-            <div className="space-y-3">
-              <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
-                Contact Representative (HR)
-              </h4>
-              <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 font-semibold">
-                <div className="font-extrabold text-slate-900 text-xs">{selectedCompany.contactPersonName}</div>
-                <div className="flex items-center space-x-2 text-xs text-slate-700">
-                  <Mail className="w-3.5 h-3.5 text-purple-700" />
-                  <span>{selectedCompany.contactPersonEmail}</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs text-slate-700">
-                  <Phone className="w-3.5 h-3.5 text-purple-700" />
-                  <span>{selectedCompany.contactPersonPhone}</span>
-                </div>
-              </div>
-            </div>
-
-            {selectedCompany.latitude && selectedCompany.longitude && (
               <div className="space-y-3">
-                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1">
-                  Location Coordinates
+                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1.5">
+                  Corporate Overview
                 </h4>
-                <div className="p-3 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
-                  <div className="text-slate-800 font-medium leading-relaxed">{selectedCompany.formattedAddress}</div>
-                  <div className="flex space-x-4 font-mono text-slate-500 font-bold">
-                    <div>Lat: {selectedCompany.latitude.toFixed(5)}</div>
-                    <div>Lng: {selectedCompany.longitude.toFixed(5)}</div>
+                <div className="space-y-2">
+                  <p className="leading-relaxed text-slate-600 font-medium">{selectedCompany.description || 'No description provided.'}</p>
+                  <div className="grid grid-cols-2 gap-3 text-slate-600 mt-2 font-bold">
+                    <div>Company Size: <span className="text-slate-900 block mt-0.5">{selectedCompany.companySize}</span></div>
+                    {selectedCompany.ctcLakhs && (
+                      <div>Offered CTC: <span className="text-purple-800 font-extrabold block mt-0.5 font-mono">{selectedCompany.ctcLakhs} LPA</span></div>
+                    )}
+                    {selectedCompany.foundedYear && (
+                      <div>Founded In: <span className="text-slate-900 block mt-0.5">{selectedCompany.foundedYear}</span></div>
+                    )}
                   </div>
-                  {selectedCompany.googleMapsUrl && (
-                    <a
-                      href={selectedCompany.googleMapsUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-flex items-center space-x-1.5 text-purple-800 hover:underline font-extrabold transition-colors"
-                    >
-                      <MapPin className="w-3.5 h-3.5" />
-                      <span>Open Google Maps</span>
-                      <ExternalLink className="w-3 h-3" />
-                    </a>
+                  {selectedCompany.sampleResumeUrl && (
+                    <div className="pt-2">
+                      <a
+                        href={selectedCompany.sampleResumeUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center justify-between p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl text-slate-900 font-bold transition-colors shadow-xs"
+                      >
+                        <span className="flex items-center space-x-2">
+                          <FileText className="w-4 h-4 text-purple-700" />
+                          <span>Sample Resume / JD Document</span>
+                        </span>
+                        <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
+                      </a>
+                    </div>
                   )}
                 </div>
               </div>
-            )}
+
+              <div className="space-y-3">
+                <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1.5">
+                  Contact Representative (HR)
+                </h4>
+                <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 font-semibold">
+                  <div className="font-extrabold text-slate-900 text-xs">{selectedCompany.contactPersonName}</div>
+                  <div className="flex items-center space-x-2 text-xs text-slate-700 font-mono">
+                    <Mail className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                    <span>{selectedCompany.contactPersonEmail}</span>
+                  </div>
+                  <div className="flex items-center space-x-2 text-xs text-slate-700 font-mono">
+                    <Phone className="w-3.5 h-3.5 text-purple-700 shrink-0" />
+                    <span>{selectedCompany.contactPersonPhone}</span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedCompany.latitude && selectedCompany.longitude && (
+                <div className="space-y-3">
+                  <h4 className="font-extrabold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-1.5">
+                    Location Coordinates & Maps
+                  </h4>
+                  <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl space-y-2 text-xs">
+                    <div className="text-slate-800 font-medium leading-relaxed">{selectedCompany.formattedAddress}</div>
+                    <div className="flex space-x-4 font-mono text-slate-500 font-bold">
+                      <div>Lat: {selectedCompany.latitude.toFixed(5)}</div>
+                      <div>Lng: {selectedCompany.longitude.toFixed(5)}</div>
+                    </div>
+                    {selectedCompany.googleMapsUrl && (
+                      <a
+                        href={selectedCompany.googleMapsUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex items-center space-x-1.5 text-purple-800 hover:underline font-extrabold transition-colors"
+                      >
+                        <MapPin className="w-3.5 h-3.5" />
+                        <span>Open Google Maps</span>
+                        <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="p-4 border-t border-slate-100 bg-slate-50 flex justify-end">
+              <button
+                onClick={() => setSelectedCompany(null)}
+                className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2 rounded-xl font-extrabold text-xs shadow-sm"
+              >
+                Close Drawer
+              </button>
+            </div>
           </div>
         </div>
       )}
