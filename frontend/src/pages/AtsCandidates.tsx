@@ -202,15 +202,15 @@ export const AtsCandidates: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-gray-300">
+    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
       {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-xl font-extrabold text-white flex items-center space-x-2">
-            <Sparkles className="w-5 h-5 text-brand-rosy animate-pulse" />
+          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight flex items-center space-x-2">
+            <Sparkles className="w-5 h-5 text-purple-700 animate-pulse" />
             <span>AI Resume Matching & ATS Rankings</span>
           </h1>
-          <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">
+          <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">
             {drive ? `${drive.company.name} • ${drive.jobRole}` : 'Analyzing Placement Drive Credentials'}
           </p>
         </div>
@@ -218,7 +218,7 @@ export const AtsCandidates: React.FC = () => {
         {isAuthorized && drive?.jdExtracted && !matchingState && (
           <button
             onClick={handleTriggerAtsMatching}
-            className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-5 py-2.5 rounded-lg font-bold flex items-center space-x-2 transition-all shadow-lg"
+            className="bg-purple-900 hover:bg-purple-950 text-white px-5 py-2.5 rounded-xl font-extrabold flex items-center space-x-2 transition-all shadow-md"
           >
             <RefreshCw className="w-4 h-4" />
             <span>Re-Run ATS Analysis</span>

@@ -323,14 +323,14 @@ export const Companies: React.FC = () => {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-xl font-extrabold text-white">Companies Directory</h1>
-            <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">Manage corporate placement partners</p>
+            <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Companies Directory</h1>
+            <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">Manage corporate placement partners</p>
           </div>
 
           {viewDeleted && isAdmin ? (
             <button
               onClick={() => exportDeletedCompanies(deletedCompanies)}
-              className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider flex items-center space-x-2 transition-all shadow-md animate-fade-in"
+              className="bg-purple-900 hover:bg-purple-950 text-white px-4 py-2.5 rounded-xl text-xs font-extrabold tracking-wider flex items-center space-x-2 transition-all shadow-md animate-fade-in"
             >
               <Download className="w-4 h-4" />
               <span>Export Delete History (.xlsx)</span>
@@ -339,7 +339,7 @@ export const Companies: React.FC = () => {
             !isManager && (
               <button
                 onClick={handleOpenCreate}
-                className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider flex items-center space-x-2 transition-all shadow-md"
+                className="bg-purple-900 hover:bg-purple-950 text-white px-4 py-2.5 rounded-xl text-xs font-extrabold tracking-wider flex items-center space-x-2 transition-all shadow-md"
               >
                 <Plus className="w-4.5 h-4.5" />
                 <span>{isAdmin ? 'Add New Company' : 'Submit Company'}</span>
@@ -350,19 +350,19 @@ export const Companies: React.FC = () => {
 
         {/* Admin Deleted Chunk Tab Selector */}
         {isAdmin && (
-          <div className="flex border-b border-brand-cocoa border-opacity-25 pb-px font-mono text-[10px]">
+          <div className="flex border-b border-slate-200 pb-px font-mono text-[10px]">
             <button
               onClick={() => { setViewDeleted(false); setPage(1); }}
-              className={`pb-2 px-4 font-bold border-b-2 transition-all ${
-                !viewDeleted ? 'border-brand-rosy text-white font-black' : 'border-transparent text-gray-500 hover:text-gray-300'
+              className={`pb-2.5 px-4 font-extrabold border-b-2 transition-all ${
+                !viewDeleted ? 'border-purple-800 text-purple-900 font-black' : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
               ACTIVE PARTNERS
             </button>
             <button
               onClick={() => { setViewDeleted(true); setPage(1); }}
-              className={`pb-2 px-4 font-bold border-b-2 transition-all ${
-                viewDeleted ? 'border-brand-rosy text-white font-black' : 'border-transparent text-gray-500 hover:text-gray-300'
+              className={`pb-2.5 px-4 font-extrabold border-b-2 transition-all ${
+                viewDeleted ? 'border-purple-800 text-purple-900 font-black' : 'border-transparent text-slate-500 hover:text-slate-900'
               }`}
             >
               DELETE HISTORY
@@ -371,7 +371,7 @@ export const Companies: React.FC = () => {
         )}
 
         {/* Toolbar */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-30 rounded-xl">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
           <div className="relative">
             <input
               type="text"

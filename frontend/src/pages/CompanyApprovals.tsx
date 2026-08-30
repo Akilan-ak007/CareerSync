@@ -87,11 +87,11 @@ export const CompanyApprovals: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-gray-300">
+    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
       {/* Header */}
       <div>
-        <h1 className="text-xl font-extrabold text-white">Company Approval Queue</h1>
-        <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">
+        <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Company Approval Queue</h1>
+        <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">
           Review new corporate entries submitted by managers and team officers
         </p>
       </div>

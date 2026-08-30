@@ -8,8 +8,11 @@ import {
   Users,
   Building,
   CalendarDays,
-  FileCheck,
-  AlertCircle
+  Award,
+  ShieldCheck,
+  Sparkles,
+  FileSpreadsheet,
+  CheckCircle2
 } from 'lucide-react';
 
 export const Reports: React.FC = () => {
@@ -32,11 +35,9 @@ export const Reports: React.FC = () => {
   };
 
   const handleDownloadStudents = async () => {
-    console.log("handleDownloadStudents clicked");
     setDownloading('students');
     try {
-      const res = await api.students.list({ limit: 1000 }); // Large limit to get all records
-      console.log("Students fetch result:", res);
+      const res = await api.students.list({ limit: 1000 });
       if (res.success) {
         const formatted = res.data.students.map((s: any) => ({
           'Name': s.name,
@@ -51,15 +52,15 @@ export const Reports: React.FC = () => {
           'UG CGPA': s.ugPercentage,
           'PG CGPA': s.pgPercentage || 'N/A',
           'Status': s.placementStatus,
-          'Resume URL': s.resumeUrl || (s.registerNumber ? `https://drive.google.com/file/d/1resume_${s.registerNumber}/view?usp=sharing` : ''),
-          'Portfolio URL': s.portfolioUrl
+          'Resume URL': s.resumeUrl || '',
+          'Portfolio URL': s.portfolioUrl || ''
         }));
         exportToExcel(formatted, 'Placement_Student_Roster', 'Students');
       } else {
-        toast.error("Failed to fetch students.");
+        toast.error("Failed to fetch students dataset.");
       }
     } catch (err: any) {
-      console.error("handleDownloadStudents caught error:", err);
+      console.error(err);
       toast.error('Failed to construct student report: ' + err.message);
     } finally {
       setDownloading(null);
@@ -67,157 +68,237 @@ export const Reports: React.FC = () => {
   };
 
   const handleDownloadCompanies = async () => {
-    console.log("handleDownloadCompanies clicked");
     setDownloading('companies');
     try {
       const res = await api.companies.list({ limit: 1000 });
-      console.log("Companies fetch result:", res);
       if (res.success) {
         const formatted = res.data.companies.map((c: any) => ({
           'Company Name': c.name,
           'Location': c.location,
-          'Industry': c.industry || 'IT',
-          'Size': c.companySize,
+          'Industry': c.industry || 'Information Technology',
+          'Company Size': c.companySize,
           'Website': c.website,
-          'Contact Name': c.contactPersonName,
+          'Contact Person': c.contactPersonName,
           'Contact Phone': c.contactPersonPhone,
           'Contact Email': c.contactPersonEmail,
           'HQ Address': c.companyAddress,
-          'Status': c.status,
+          'Approval Status': c.status,
           'Latitude': c.latitude || 'N/A',
           'Longitude': c.longitude || 'N/A'
         }));
         exportToExcel(formatted, 'Placement_Company_Directory', 'Companies');
       } else {
-        alert("Failed: " + JSON.stringify(res));
+        toast.error("Failed to fetch corporate partners directory.");
       }
     } catch (err: any) {
-      console.error("handleDownloadCompanies caught error:", err);
-      alert('Failed to construct company report: ' + err.message);
+      console.error(err);
+      toast.error('Failed to construct company report: ' + err.message);
     } finally {
       setDownloading(null);
     }
   };
 
   const handleDownloadDrives = async () => {
-    console.log("handleDownloadDrives clicked");
     setDownloading('drives');
     try {
       const res = await api.drives.list({ limit: 1000 });
-      console.log("Drives fetch result:", res);
       if (res.success) {
         const formatted = res.data.drives.map((d: any) => ({
           'Company': d.company?.name || 'N/A',
-          'Date': new Date(d.driveDate).toLocaleDateString(),
+          'Drive Date': new Date(d.driveDate).toLocaleDateString(),
           'Location': d.driveLocation,
           'Recruitment Type': d.driveType,
           'Job Role': d.jobRole,
           'Min CGPA Cutoff': d.minimumCgpa,
           'Max Backlogs Allowed': d.maximumBacklogs,
-          'CTC LPA': d.ctc,
-          'Offers Count': d.offersCount,
-          'Status': d.status
+          'CTC Package (LPA)': d.ctc,
+          'Total Offers': d.offersCount,
+          'Drive Status': d.status
         }));
         exportToExcel(formatted, 'Placement_Drive_Log', 'Drives');
       } else {
-        alert("Failed: " + JSON.stringify(res));
+        toast.error("Failed to fetch placement drive logs.");
       }
     } catch (err: any) {
-      console.error("handleDownloadDrives caught error:", err);
-      alert('Failed to construct drive report: ' + err.message);
+      console.error(err);
+      toast.error('Failed to construct drive report: ' + err.message);
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  const handleDownloadOffers = async () => {
+    setDownloading('offers');
+    try {
+      const res = await api.offers.list({ limit: 1000 });
+      if (res.success) {
+        const formatted = (res.data.offers || res.data || []).map((o: any) => ({
+          'Student Name': o.student?.name || 'N/A',
+          'Register Number': o.student?.registerNumber || 'N/A',
+          'Department': o.student?.department?.code || 'N/A',
+          'Company': o.company?.name || o.drive?.company?.name || 'N/A',
+          'Job Role': o.jobRole || o.drive?.jobRole || 'N/A',
+          'Package CTC (LPA)': o.ctc || o.drive?.ctc || 'N/A',
+          'Offer Date': o.offerDate ? new Date(o.offerDate).toLocaleDateString() : 'N/A',
+          'Status': o.status || 'OFFERED'
+        }));
+        exportToExcel(formatted, 'Placement_Offers_Ledger', 'Offers');
+      } else {
+        toast.error("Failed to fetch offer ledger.");
+      }
+    } catch (err: any) {
+      console.error(err);
+      toast.error('Failed to construct offer report: ' + err.message);
     } finally {
       setDownloading(null);
     }
   };
 
   return (
-    <div className="h-full p-6 md:p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
-      {/* Header */}
-      <div>
-        <h1 className="text-xl font-extrabold text-slate-900 uppercase tracking-tight">Reports & Analytics Generator</h1>
-        <p className="text-xs text-purple-800 font-extrabold tracking-wider uppercase mt-1">
-          Export spreadsheet databases for institutional records, placement audits, and management reviews
-        </p>
+    <div className="h-full p-6 md:p-8 space-y-6 md:space-y-8 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
+      {/* Header Banner */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 border-b border-slate-200 pb-5">
+        <div>
+          <div className="flex items-center space-x-2">
+            <span className="bg-purple-100 text-purple-900 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full border border-purple-200 uppercase tracking-wider">
+              Institutional Reports Center
+            </span>
+            <span className="text-slate-400 font-mono text-[10px]">Excel (.xlsx) Format</span>
+          </div>
+          <h1 className="text-xl md:text-2xl font-black tracking-tight text-slate-900 mt-1">
+            Reports & Spreadsheet Analytics Generator
+          </h1>
+          <p className="text-xs text-slate-600 font-medium max-w-2xl mt-1">
+            Export institutional datasets, audit spreadsheets, recruitment statistics, and offer ledgers for NAAC, NIRF, and internal placement reviews.
+          </p>
+        </div>
       </div>
 
-      {/* Reports Grid cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {/* Student report card */}
-        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between h-64 hover:border-purple-300 transition-all">
+      {/* Reports Grid Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+        {/* Student Roster Report Card */}
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between hover:border-purple-300 transition-all space-y-5">
           <div className="space-y-3">
-            <div className="p-3 bg-purple-100 text-purple-900 w-max rounded-xl border border-purple-200">
-              <Users className="w-6 h-6" />
+            <div className="flex items-center justify-between">
+              <div className="p-3.5 bg-purple-100 text-purple-900 rounded-2xl border border-purple-200 shadow-xs">
+                <Users className="w-6 h-6" />
+              </div>
+              <span className="text-[10px] font-mono font-extrabold text-purple-800 bg-purple-50 px-2.5 py-1 rounded-full border border-purple-200">
+                STUDENTS ROSTER
+              </span>
             </div>
-            <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Student Roster Database</h4>
+            <h3 className="text-base font-black text-slate-900">Student Roster & Academic Database</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-medium">
-              Export complete student demographics, academic percentages (SSLC, HSC, UG/PG CGPA), contact details, resume links, and placement status profiles.
+              Export complete student profiles including Register Numbers, Department/Stream, Hostel vs Day Scholar classifications, SSLC/HSC marks, UG/PG CGPA cutoffs, and placement statuses.
             </p>
           </div>
           <button
             onClick={handleDownloadStudents}
             disabled={!!downloading}
-            className="w-full mt-4 bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
+            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-3 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
           >
             {downloading === 'students' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>Export Students (.xlsx)</span>
+                <span>Export Students Database (.xlsx)</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Company report card */}
-        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between h-64 hover:border-purple-300 transition-all">
+        {/* Corporate Partners Directory Card */}
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between hover:border-purple-300 transition-all space-y-5">
           <div className="space-y-3">
-            <div className="p-3 bg-purple-100 text-purple-900 w-max rounded-xl border border-purple-200">
-              <Building className="w-6 h-6" />
+            <div className="flex items-center justify-between">
+              <div className="p-3.5 bg-sky-100 text-sky-900 rounded-2xl border border-sky-200 shadow-xs">
+                <Building className="w-6 h-6" />
+              </div>
+              <span className="text-[10px] font-mono font-extrabold text-sky-800 bg-sky-50 px-2.5 py-1 rounded-full border border-sky-200">
+                CORPORATE DIRECTORY
+              </span>
             </div>
-            <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Companies Directory</h4>
+            <h3 className="text-base font-black text-slate-900">Corporate Placement Partners Directory</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-medium">
-              Export complete list of approved, pending, and draft corporate recruiters including address, maps coordinates, CTC packages, and HR contacts.
+              Export complete corporate recruiter directories including HQ addresses, geolocation coordinates, industry sectors, company size, website links, and primary HR contact details.
             </p>
           </div>
           <button
             onClick={handleDownloadCompanies}
             disabled={!!downloading}
-            className="w-full mt-4 bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
+            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-3 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
           >
             {downloading === 'companies' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>Export Companies (.xlsx)</span>
+                <span>Export Corporate Directory (.xlsx)</span>
               </>
             )}
           </button>
         </div>
 
-        {/* Drives report card */}
-        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between h-64 hover:border-purple-300 transition-all">
+        {/* Drive Execution Logs Card */}
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between hover:border-purple-300 transition-all space-y-5">
           <div className="space-y-3">
-            <div className="p-3 bg-purple-100 text-purple-900 w-max rounded-xl border border-purple-200">
-              <CalendarDays className="w-6 h-6" />
+            <div className="flex items-center justify-between">
+              <div className="p-3.5 bg-emerald-100 text-emerald-900 rounded-2xl border border-emerald-200 shadow-xs">
+                <CalendarDays className="w-6 h-6" />
+              </div>
+              <span className="text-[10px] font-mono font-extrabold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                PLACEMENT DRIVES
+              </span>
             </div>
-            <h4 className="text-sm font-extrabold text-slate-900 uppercase tracking-wider">Placement Drive Logs</h4>
+            <h3 className="text-base font-black text-slate-900">Placement Drive Execution Logs</h3>
             <p className="text-xs text-slate-600 leading-relaxed font-medium">
-              Export detailed statistics of scheduled placement drives, CGPA cutoffs, max backlogs allowed, CTC packages (LPA), and offer counts.
+              Export comprehensive drive session records including drive dates, venue locations, job role designations, minimum CGPA eligibility cutoffs, max backlog limits, and CTC packages.
             </p>
           </div>
           <button
             onClick={handleDownloadDrives}
             disabled={!!downloading}
-            className="w-full mt-4 bg-purple-900 hover:bg-purple-950 text-white py-2.5 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
+            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-3 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
           >
             {downloading === 'drives' ? (
               <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
               <>
                 <Download className="w-4 h-4" />
-                <span>Export Drive Logs (.xlsx)</span>
+                <span>Export Placement Drive Logs (.xlsx)</span>
+              </>
+            )}
+          </button>
+        </div>
+
+        {/* Student Offers Ledger Card */}
+        <div className="bg-white p-6 border border-slate-200 rounded-2xl shadow-md flex flex-col justify-between hover:border-purple-300 transition-all space-y-5">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <div className="p-3.5 bg-amber-100 text-amber-900 rounded-2xl border border-amber-200 shadow-xs">
+                <Award className="w-6 h-6" />
+              </div>
+              <span className="text-[10px] font-mono font-extrabold text-amber-800 bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                OFFER CONVERSIONS
+              </span>
+            </div>
+            <h3 className="text-base font-black text-slate-900">Student Offers & CTC Salary Ledger</h3>
+            <p className="text-xs text-slate-600 leading-relaxed font-medium">
+              Export official offer letter issuance logs including candidate register numbers, hiring corporate partners, job titles, CTC compensation packages (LPA), and offer dates.
+            </p>
+          </div>
+          <button
+            onClick={handleDownloadOffers}
+            disabled={!!downloading}
+            className="w-full bg-purple-900 hover:bg-purple-950 text-white py-3 px-4 rounded-xl font-extrabold flex items-center justify-center space-x-2 transition-all shadow-md disabled:opacity-50 text-xs"
+          >
+            {downloading === 'offers' ? (
+              <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <Download className="w-4 h-4" />
+                <span>Export Offers Ledger (.xlsx)</span>
               </>
             )}
           </button>

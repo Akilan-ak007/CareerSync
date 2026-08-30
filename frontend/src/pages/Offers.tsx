@@ -150,18 +150,18 @@ export const Offers: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex relative overflow-hidden text-xs text-gray-300">
+    <div className="h-full flex relative overflow-hidden text-xs text-slate-800">
       <div className="flex-1 p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)]">
         {/* Header */}
         <div>
-          <h1 className="text-xl font-extrabold text-white">Student Offers Tracking</h1>
-          <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">
+          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Student Offers Tracking</h1>
+          <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">
             Monitor institutional recruitment offers and acceptance conversion rates
           </p>
         </div>
 
         {/* Toolbar Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-30 rounded-xl">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-white border border-slate-200 rounded-xl shadow-xs">
           <div className="relative">
             <input
               type="text"

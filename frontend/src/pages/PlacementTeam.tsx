@@ -101,12 +101,12 @@ export const PlacementTeam: React.FC = () => {
   };
 
   return (
-    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-gray-300">
+    <div className="h-full p-8 space-y-6 overflow-y-auto max-h-[calc(100vh-4rem)] animate-fade-in text-xs text-slate-800">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl font-extrabold text-white">Placement Officers & Staff</h1>
-          <p className="text-[10px] text-brand-rosy uppercase tracking-widest font-semibold mt-1">
+          <h1 className="text-xl font-extrabold text-slate-900 tracking-tight">Placement Officers & Staff</h1>
+          <p className="text-xs text-purple-800 uppercase tracking-wider font-extrabold mt-0.5">
             Manage administrative personnel and account clearances
           </p>
         </div>
@@ -114,7 +114,7 @@ export const PlacementTeam: React.FC = () => {
         {isAdmin && (
           <button
             onClick={handleOpenCreate}
-            className="bg-brand-cocoa hover:bg-brand-rosy hover:text-brand-black text-white px-4 py-2.5 rounded-lg text-xs font-bold tracking-wider flex items-center space-x-2 transition-all shadow-md"
+            className="bg-purple-900 hover:bg-purple-950 text-white px-4 py-2.5 rounded-xl text-xs font-extrabold tracking-wider flex items-center space-x-2 transition-all shadow-md"
           >
             <Plus className="w-4.5 h-4.5" />
             <span>Create Staff Account</span>
