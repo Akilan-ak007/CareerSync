@@ -598,28 +598,28 @@ export const AtsCandidates: React.FC = () => {
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Required Academic Thresholds</span>
-                        <div className="space-y-1 text-gray-300">
-                          <div>Min CGPA: <span className="font-bold text-white font-mono">{detailData.drive.minimumCgpa}</span></div>
-                          <div>Eligible Streams: <span className="font-bold text-white">{detailData.drive.eligibleDepartments.join(', ')}</span></div>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Required Academic Thresholds</span>
+                        <div className="space-y-1 text-slate-700">
+                          <div>Min CGPA: <span className="font-bold text-slate-900 font-mono">{detailData.drive.minimumCgpa}</span></div>
+                          <div>Eligible Streams: <span className="font-bold text-slate-900">{(detailData.drive.eligibleDepartments || []).join(', ')}</span></div>
                         </div>
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Eligible Experience</span>
-                        <p className="text-gray-400 font-medium leading-relaxed">{detailData.drive.jdExtractedInfo?.experience}</p>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Eligible Experience</span>
+                        <p className="text-slate-600 font-medium leading-relaxed">{detailData.drive.jdExtractedInfo?.experience || 'Not specified'}</p>
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1.5">Primary Skill Requirements</span>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5">Primary Skill Requirements</span>
                         <div className="flex flex-wrap gap-1.5">
                           {(detailData.drive.jdExtractedInfo?.requiredSkills || []).map((sk: string, i: number) => (
-                            <span key={i} className="px-2 py-0.5 rounded bg-brand-dark border border-brand-cocoa border-opacity-35 text-white font-medium">
+                            <span key={i} className="px-2 py-0.5 rounded bg-slate-100 border border-slate-200 text-slate-800 font-medium text-xs">
                               {sk}
                             </span>
                           ))}
                           {(detailData.drive.jdExtractedInfo?.preferredSkills || []).map((sk: string, i: number) => (
-                            <span key={i} className="px-2 py-0.5 rounded bg-brand-dark border border-brand-cocoa border-opacity-15 text-gray-400 font-medium">
+                            <span key={i} className="px-2 py-0.5 rounded bg-slate-50 border border-slate-200 text-slate-500 font-medium text-xs">
                               {sk}
                             </span>
                           ))}
@@ -629,31 +629,31 @@ export const AtsCandidates: React.FC = () => {
                   </div>
 
                   {/* Right Column: Student Profile details */}
-                  <div className="glass-panel p-5 space-y-4 border border-brand-cocoa border-opacity-35">
-                    <h4 className="text-xs font-bold text-white uppercase tracking-wider border-b border-brand-cocoa border-opacity-20 pb-2 flex items-center space-x-1.5">
-                      <Award className="w-4 h-4 text-brand-rosy" />
+                  <div className="glass-panel p-5 space-y-4 border border-slate-200 shadow-xs bg-white rounded-xl">
+                    <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wider border-b border-slate-100 pb-2 flex items-center space-x-1.5">
+                      <Award className="w-4 h-4 text-red-800" />
                       <span>Student Roster Profile</span>
                     </h4>
                     
                     <div className="space-y-3">
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-0.5">Name & Register Number</span>
-                        <div className="text-white font-bold">{detailData.student.name}</div>
-                        <div className="text-gray-400 mt-0.5 font-mono">{detailData.student.registerNumber}</div>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-0.5">Name & Register Number</span>
+                        <div className="text-slate-900 font-bold">{detailData.student.name}</div>
+                        <div className="text-slate-500 mt-0.5 font-mono">{detailData.student.registerNumber}</div>
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Student Academic Scores</span>
-                        <div className="space-y-1 text-gray-300">
-                          <div>UG CGPA: <span className="font-bold text-white font-mono">{detailData.student.cgpa}</span></div>
-                          <div>Stream: <span className="font-bold text-white">{detailData.student.departmentName} ({detailData.student.deptCode})</span></div>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Student Academic Scores</span>
+                        <div className="space-y-1 text-slate-700">
+                          <div>UG CGPA: <span className="font-bold text-slate-900 font-mono">{detailData.student.cgpa}</span></div>
+                          <div>Stream: <span className="font-bold text-slate-900">{detailData.student.departmentName} ({detailData.student.deptCode})</span></div>
                         </div>
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Resume Document Reference</span>
-                        <div className="flex items-center justify-between p-2 bg-brand-dark bg-opacity-40 rounded border border-brand-cocoa border-opacity-20">
-                          <span className="text-gray-400 truncate max-w-[200px] font-mono">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Resume Document Reference</span>
+                        <div className="flex items-center justify-between p-2 bg-slate-50 rounded-lg border border-slate-200">
+                          <span className="text-slate-600 truncate max-w-[200px] font-mono text-xs">
                             {detailData.student.resumeUrl ? detailData.student.resumeUrl.split('/').pop() : 'No resume document linked'}
                           </span>
                           {detailData.student.resumeUrl && (
@@ -661,7 +661,7 @@ export const AtsCandidates: React.FC = () => {
                               href={detailData.student.resumeUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="text-brand-rosy hover:text-white flex items-center space-x-1 font-bold"
+                              className="text-red-800 hover:text-red-900 flex items-center space-x-1 font-bold text-xs"
                             >
                               <span>Review File</span>
                               <ExternalLink className="w-3.5 h-3.5" />
@@ -671,26 +671,26 @@ export const AtsCandidates: React.FC = () => {
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1.5">Academic Match Checks</span>
-                        <div className="flex space-x-3">
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5">Academic Match Checks</span>
+                        <div className="flex space-x-3 text-xs">
                           <div className="flex items-center space-x-1.5">
-                            {detailData.matchStats.educationMatch === 'Match' ? (
-                              <CheckCircle className="w-4 h-4 text-green-400" />
-                            ) : detailData.matchStats.educationMatch === 'Partial' ? (
-                              <Clock className="w-4 h-4 text-amber-400" />
+                            {detailData.matchStats?.educationMatch === 'Match' ? (
+                              <CheckCircle className="w-4 h-4 text-emerald-600" />
+                            ) : detailData.matchStats?.educationMatch === 'Partial' ? (
+                              <Clock className="w-4 h-4 text-amber-600" />
                             ) : (
-                              <XCircle className="w-4 h-4 text-red-400" />
+                              <XCircle className="w-4 h-4 text-rose-600" />
                             )}
-                            <span>Stream Match: <span className="font-bold text-white">{detailData.matchStats.educationMatch}</span></span>
+                            <span>Stream Match: <span className="font-bold text-slate-900">{detailData.matchStats?.educationMatch || 'N/A'}</span></span>
                           </div>
                           
                           <div className="flex items-center space-x-1.5">
                             {detailData.student.cgpa >= detailData.drive.minimumCgpa ? (
-                              <CheckCircle className="w-4 h-4 text-green-400" />
+                              <CheckCircle className="w-4 h-4 text-emerald-600" />
                             ) : (
-                              <XCircle className="w-4 h-4 text-red-400" />
+                              <XCircle className="w-4 h-4 text-rose-600" />
                             )}
-                            <span>CGPA Match: <span className="font-bold text-white">
+                            <span>CGPA Match: <span className="font-bold text-slate-900">
                               {detailData.student.cgpa >= detailData.drive.minimumCgpa ? 'Eligible' : 'Cutoff Mismatch'}
                             </span></span>
                           </div>
@@ -703,18 +703,18 @@ export const AtsCandidates: React.FC = () => {
                 {/* 3. Skill & Keywords Matrices Comparison */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {/* Matching/Missing Skills lists */}
-                  <div className="p-4 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-xl space-y-4">
-                    <span className="font-bold text-white block mb-2 uppercase tracking-wide text-[10px]">Skills Compatibility Match Matrix</span>
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4 shadow-xs">
+                    <span className="font-bold text-slate-900 block mb-2 uppercase tracking-wide text-[10px]">Skills Compatibility Match Matrix</span>
                     
                     <div className="space-y-3">
                       <div>
-                        <span className="text-[10px] text-green-400 font-bold block mb-1.5">Matched Skills ({detailData.matchStats.matchingSkills.length})</span>
+                        <span className="text-[10px] text-emerald-700 font-bold block mb-1.5">Matched Skills ({(detailData.matchStats?.matchingSkills || []).length})</span>
                         <div className="flex flex-wrap gap-1.5">
-                          {detailData.matchStats.matchingSkills.length === 0 ? (
-                            <span className="text-gray-500 italic">No direct skills matched.</span>
+                          {(detailData.matchStats?.matchingSkills || []).length === 0 ? (
+                            <span className="text-slate-400 italic text-xs">No direct skills matched.</span>
                           ) : (
-                            detailData.matchStats.matchingSkills.map((sk: string, i: number) => (
-                              <span key={i} className="px-2 py-0.5 rounded bg-green-950 bg-opacity-40 border border-green-900 text-green-300 font-medium">
+                            (detailData.matchStats?.matchingSkills || []).map((sk: string, i: number) => (
+                              <span key={i} className="px-2 py-0.5 rounded bg-emerald-100 border border-emerald-200 text-emerald-800 font-medium text-xs">
                                 {sk}
                               </span>
                             ))
@@ -723,13 +723,13 @@ export const AtsCandidates: React.FC = () => {
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-red-400 font-bold block mb-1.5">Missing Skills ({detailData.matchStats.missingSkills.length})</span>
+                        <span className="text-[10px] text-rose-700 font-bold block mb-1.5">Missing Skills ({(detailData.matchStats?.missingSkills || []).length})</span>
                         <div className="flex flex-wrap gap-1.5">
-                          {detailData.matchStats.missingSkills.length === 0 ? (
-                            <span className="text-green-500 font-medium">All technical requirements matched!</span>
+                          {(detailData.matchStats?.missingSkills || []).length === 0 ? (
+                            <span className="text-emerald-700 font-semibold text-xs">All technical requirements matched!</span>
                           ) : (
-                            detailData.matchStats.missingSkills.map((sk: string, i: number) => (
-                              <span key={i} className="px-2 py-0.5 rounded bg-red-950 bg-opacity-40 border border-red-900 text-red-300 font-medium">
+                            (detailData.matchStats?.missingSkills || []).map((sk: string, i: number) => (
+                              <span key={i} className="px-2 py-0.5 rounded bg-rose-100 border border-rose-200 text-rose-800 font-medium text-xs">
                                 {sk}
                               </span>
                             ))
@@ -740,28 +740,28 @@ export const AtsCandidates: React.FC = () => {
                   </div>
 
                   {/* Matching/Missing Keywords and Recommendations */}
-                  <div className="p-4 bg-brand-dark bg-opacity-40 border border-brand-cocoa border-opacity-20 rounded-xl space-y-4">
-                    <span className="font-bold text-white block mb-2 uppercase tracking-wide text-[10px]">AI Matching Evaluation Feedbacks</span>
+                  <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl space-y-4 shadow-xs">
+                    <span className="font-bold text-slate-900 block mb-2 uppercase tracking-wide text-[10px]">AI Matching Evaluation Feedbacks</span>
                     
                     <div className="space-y-3">
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Keywords Strength Matrix</span>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1">Keywords Strength Matrix</span>
                         <div className="flex flex-wrap gap-1.5">
-                          {detailData.matchStats.matchingKeywords.map((kw: string, i: number) => (
-                            <span key={i} className="text-[10px] text-green-400 font-mono">+{kw}</span>
+                          {(detailData.matchStats?.matchingKeywords || []).map((kw: string, i: number) => (
+                            <span key={i} className="text-[10px] text-emerald-700 font-mono font-bold">+{kw}</span>
                           ))}
-                          {detailData.matchStats.missingKeywords.map((kw: string, i: number) => (
-                            <span key={i} className="text-[10px] text-red-400 font-mono">-{kw}</span>
+                          {(detailData.matchStats?.missingKeywords || []).map((kw: string, i: number) => (
+                            <span key={i} className="text-[10px] text-rose-700 font-mono font-bold">-{kw}</span>
                           ))}
                         </div>
                       </div>
 
                       <div>
-                        <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1.5">Placement Recommendations Checklist</span>
+                        <span className="text-[10px] text-slate-500 uppercase font-bold block mb-1.5">Placement Recommendations Checklist</span>
                         <ul className="space-y-1.5">
-                          {detailData.matchStats.recommendations.map((rec: string, i: number) => (
-                            <li key={i} className="flex items-start space-x-2 text-gray-400 leading-normal">
-                              <Sparkles className="w-3.5 h-3.5 text-brand-rosy mt-0.5 shrink-0" />
+                          {(detailData.matchStats?.recommendations || []).map((rec: string, i: number) => (
+                            <li key={i} className="flex items-start space-x-2 text-slate-600 leading-normal text-xs">
+                              <Sparkles className="w-3.5 h-3.5 text-red-800 mt-0.5 shrink-0" />
                               <span>{rec}</span>
                             </li>
                           ))}
@@ -782,17 +782,17 @@ export const AtsCandidates: React.FC = () => {
               <div className="flex items-center space-x-3 w-full md:w-auto justify-end">
                 <button
                   onClick={() => setSelectedStudentId(null)}
-                  className="bg-brand-card hover:bg-brand-dark border border-brand-cocoa border-opacity-35 text-gray-300 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center"
+                  className="bg-white hover:bg-slate-100 border border-slate-200 text-slate-700 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center shadow-xs text-xs"
                 >
                   Done
                 </button>
 
                 {isAuthorized && detailData && (
                   <>
-                    {detailData.matchStats.status !== 'Shortlisted' ? (
+                    {detailData?.matchStats?.status !== 'Shortlisted' ? (
                       <button
                         onClick={() => handleUpdateStatus(detailData.student.id, 'Shortlisted')}
-                        className="bg-brand-cocoa text-white hover:bg-brand-rosy hover:text-brand-black px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5"
+                        className="bg-red-800 text-white hover:bg-red-900 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5 shadow-xs text-xs"
                       >
                         <CheckCircle className="w-4 h-4" />
                         <span>Shortlist Candidate</span>
@@ -800,7 +800,7 @@ export const AtsCandidates: React.FC = () => {
                     ) : (
                       <button
                         onClick={() => handleUpdateStatus(detailData.student.id, 'Review')}
-                        className="bg-red-950 hover:bg-red-900 text-red-300 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5"
+                        className="bg-rose-100 hover:bg-rose-200 text-rose-800 border border-rose-300 px-5 py-2 rounded-lg font-bold transition-all w-full md:w-auto text-center flex items-center justify-center space-x-1.5 shadow-xs text-xs"
                       >
                         <XCircle className="w-4 h-4" />
                         <span>Remove from Shortlist</span>
